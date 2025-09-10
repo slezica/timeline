@@ -1,6 +1,7 @@
 {
   "name": "server",
   "version": "1.0.0",
+  "type": "module",
   "description": "Express server for timeline garden",
   "main": "index.js",
   "scripts": {

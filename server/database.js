@@ -1,7 +1,9 @@
-const Database = require('better-sqlite3')
-const path = require('path')
+import Database from 'better-sqlite3'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
 
-const db = new Database(path.join(__dirname, 'db.sqlite3'))
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const db = new Database(join(__dirname, 'db.sqlite3'))
 
 db.pragma('journal_mode = WAL')
 
@@ -36,4 +38,4 @@ for (let i = initialStatus.migration + 1; i < migrations.length; i++) {
   })()
 }
 
-module.exports = db
+export default db

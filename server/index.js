@@ -1,7 +1,6 @@
-const express = require('express')
-const cookieParser = require('cookie-parser')
-
-const { db } = require('./database')
+import express from 'express'
+import cookieParser from 'cookie-parser'
+import db from './database.js'
 
 const app = express()
 const port = 3000
