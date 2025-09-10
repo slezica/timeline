@@ -1,6 +1,8 @@
 const express = require('express')
 const cookieParser = require('cookie-parser')
 
+const { db } = require('./database')
+
 const app = express()
 const port = 3000
 const AUTH_PASSWORD = 'temp123'
