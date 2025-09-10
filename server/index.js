@@ -1,6 +1,7 @@
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import db from './database.js'
+
+import { db } from './database.js'
 
 const app = express()
 const port = 3000
