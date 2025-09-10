@@ -24,6 +24,36 @@ const migrations = [
         updatedAt TEXT NOT NULL
       )
     `).run()
+  }],
+
+  ["Create timestamps table and migrate data", (db) => {
+    // Create timestamps table
+    db.prepare(`
+      CREATE TABLE timestamps (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_id INTEGER NOT NULL,
+        kind TEXT NOT NULL,
+        datetime TEXT NOT NULL,
+        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
+      )
+    `).run()
+
+    // Create indexes for performance
+    db.prepare(`CREATE INDEX idx_timestamps_item_kind ON timestamps (item_id, kind)`).run()
+    db.prepare(`CREATE INDEX idx_timestamps_datetime ON timestamps (datetime)`).run()
+
+    // Migrate existing data
+    const items = db.prepare('SELECT id, createdAt, updatedAt FROM items').all()
+    const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
+    
+    for (const item of items) {
+      insertTimestamp.run(item.id, 'created', item.createdAt)
+      insertTimestamp.run(item.id, 'updated', item.updatedAt)
+    }
+
+    // Drop timestamp columns from items table (modern SQLite supports this)
+    db.prepare('ALTER TABLE items DROP COLUMN createdAt').run()
+    db.prepare('ALTER TABLE items DROP COLUMN updatedAt').run()
   }]
 ]
 
