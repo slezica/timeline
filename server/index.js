@@ -49,45 +49,46 @@ app.get('/', (req, res) => {
 })
 
 app.get('/api/items', (req, res) => {
-  const { sort = 'createdAt', order = 'desc', start, limit = '20' } = req.query
-  const limitNum = Math.min(parseInt(limit) || 20, 100)
+  let { sort, order, start, limit = '20' } = req.query
 
-  const validSortFields = ['createdAt', 'updatedAt', 'title']
-  const validOrders = ['asc', 'desc']
+  sort = (sort != null)
+    ? sort.toString().toLowerCase()
+    : 'created'
 
-  const sortField = validSortFields.includes(sort) ? sort : 'createdAt'
-  const sortOrder = validOrders.includes(order.toLowerCase()) ? order.toLowerCase() : 'desc'
+  order = (['asc', 'desc'].includes(order.toLowerCase()))
+    ? order
+    : 'desc'
 
-  let query = `SELECT id, kind, title, createdAt, updatedAt FROM items`
-  const params = []
+  limit = (limit != null)
+    ? Math.min(parseInt(limit) || 100, 100)
+    : 25
 
-  if (start) {
-    if (sortOrder === 'asc') {
-      query += ` WHERE ${sortField} >= ?`
-    } else {
-      query += ` WHERE ${sortField} <= ?`
-    }
+  let query = `
+    SELECT 
+      items.id, items.kind, items.title,
+      COALESCE(
+        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = ? LIMIT 1),
+        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1)
+      ) as datetime
+    FROM items`
+  
+  const params = [sort]
+
+  if (start != null) {
+    query += ` WHERE datetime ${order == 'asc' ? '>=' : '<='} ?`
     params.push(start)
   }
 
-  query += ` ORDER BY ${sortField} ${sortOrder.toUpperCase()}, id ${sortOrder.toUpperCase()} LIMIT ?`
-  params.push(limitNum)
-
+  query += ` ORDER BY datetime ${order}, items.id ${order} LIMIT ?`
+  params.push(limit)
+  
   try {
-    const stmt = db.prepare(query)
-    const items = stmt.all(...params)
+    const items = db.prepare(query).all(...params)
+    res.json({ items })
 
-    const hasMore = items.length === limitNum
-    const nextStart = items.length > 0 ? items[items.length - 1][sortField] : null
-
-    res.json({
-      items,
-      hasMore,
-      nextStart
-    })
   } catch (error) {
-    console.error('Database error:', error)
-    res.status(500).json({ error: 'Database error' })
+    console.error('[api]:', error)
+    res.status(500).json({ error: error.message })
   }
 })
 

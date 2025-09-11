@@ -41,6 +41,50 @@ export function createTestServer() {
     res.json({ message: 'Logout successful' })
   })
 
+  app.get('/api/items', (req, res) => {
+    let { sort, order, start, limit = '20' } = req.query
+
+    sort = (sort != null)
+      ? sort.toString().toLowerCase()
+      : 'created'
+
+    order = (['asc', 'desc'].includes(order?.toLowerCase()))
+      ? order
+      : 'desc'
+
+    limit = (limit != null)
+      ? Math.min(parseInt(limit) || 100, 100)
+      : 25
+
+    let query = `
+      SELECT 
+        items.id, items.kind, items.title,
+        COALESCE(
+          (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = ? LIMIT 1),
+          (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1)
+        ) as datetime
+      FROM items`
+    
+    const params = [sort]
+
+    if (start != null) {
+      query += ` WHERE datetime ${order == 'asc' ? '>=' : '<='} ?`
+      params.push(start)
+    }
+
+    query += ` ORDER BY datetime ${order}, items.id ${order} LIMIT ?`
+    params.push(limit)
+    
+    try {
+      const items = testDb.prepare(query).all(...params)
+      res.json({ items })
+
+    } catch (error) {
+      console.error('[api]:', error)
+      res.status(500).json({ error: error.message })
+    }
+  })
+
   return { app, db: testDb }
 }
 
