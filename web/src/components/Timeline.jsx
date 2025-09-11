@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useCallback } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { loadMoreItems } from '../store/actions'
 import { 
+  loadMoreItems,
   selectItems, 
   selectLoadingState, 
   selectCanLoadMore 
-} from '../store/selectors'
+} from '../store'
 import TimelineItem from './TimelineItem'
 
 export default function Timeline() {
@@ -15,13 +15,13 @@ export default function Timeline() {
   const canLoadMore = useSelector(selectCanLoadMore)
   const sentinelRef = useRef(null)
 
-  const handleLoadMore = useCallback(() => {
+  const handleLoadMore = () => {
     dispatch(loadMoreItems())
-  }, [dispatch])
+  }
 
-  const handleRetry = useCallback(() => {
+  const handleRetry = () => {
     handleLoadMore()
-  }, [handleLoadMore])
+  }
 
   useEffect(() => {
     const sentinel = sentinelRef.current
