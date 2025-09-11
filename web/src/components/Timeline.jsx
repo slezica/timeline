@@ -29,13 +29,12 @@ export default function Timeline() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && canLoadMore) {
-            handleLoadMore()
-          }
-        })
+        if (!canLoadMore) return
+        for (let entry of entries) {
+          if (entry.isIntersecting) { handleLoadMore() }
+        }
       },
-      { rootMargin: '512px' }
+      { rootMargin: '1024px' }
     )
 
     observer.observe(sentinel)
