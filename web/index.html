@@ -6,66 +6,13 @@
     <title>Timeline Garden</title>
     <style>
       body {
-        font-family: system-ui, sans-serif;
         margin: 0;
-        padding: 20px;
-        background-color: #fafafa;
-      }
-      
-      #timeline {
-        max-width: 800px;
-        margin: 0 auto;
-      }
-      
-      .item {
-        background: white;
-        margin-bottom: 10px;
-        padding: 15px;
-        border-radius: 6px;
-        border: 1px solid #e1e4e8;
-      }
-      
-      .item pre {
-        margin: 0;
-        white-space: pre-wrap;
-        font-size: 12px;
-        color: #586069;
-      }
-      
-      #loading-sentinel {
-        text-align: center;
-        padding: 20px;
-        color: #666;
-      }
-      
-      #end-message {
-        text-align: center;
-        padding: 20px;
-        color: #999;
-        font-style: italic;
-      }
-      
-      .loading-spinner {
-        display: inline-block;
-        animation: spin 1s linear infinite;
-      }
-      
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        padding: 0;
       }
     </style>
   </head>
   <body>
-    <div id="timeline">
-      <h1>Timeline Garden</h1>
-      <div id="items-container"></div>
-      <div id="loading-sentinel">
-        <div class="loading-spinner">⟳</div>
-        Loading...
-      </div>
-      <div id="end-message" style="display: none">No more items</div>
-    </div>
+    <app-main></app-main>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
