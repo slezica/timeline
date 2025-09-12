@@ -5,7 +5,7 @@ function NoteItem({ item }) {
     <article className="item note">
       <header>
         <h3>{item.title || 'Untitled'}</h3>
-        <small>{new Date(item.datetime).toLocaleString()}</small>
+        <small>{new Date(item.timestamp).toLocaleString()}</small>
       </header>
       <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
       <footer>
@@ -22,7 +22,7 @@ function TaskItem({ item }) {
         <h3>
           <input type="checkbox" disabled /> {item.title || 'Untitled'}
         </h3>
-        <small>{new Date(item.datetime).toLocaleString()}</small>
+        <small>{new Date(item.timestamp).toLocaleString()}</small>
       </header>
       <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
       <footer>

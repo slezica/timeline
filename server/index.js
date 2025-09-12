@@ -71,18 +71,18 @@ app.get('/api/items', (req, res) => {
       COALESCE(
         (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = ? LIMIT 1),
         (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1)
-      ) as datetime
+      ) as timestamp
     FROM items
   `
   
   const params = [sort]
 
   if (start != null) {
-    query += ` WHERE datetime ${order == 'asc' ? '>=' : '<='} ?`
+    query += ` WHERE timestamp ${order == 'asc' ? '>=' : '<='} ?`
     params.push(start)
   }
 
-  query += ` ORDER BY datetime ${order}, items.id ${order} LIMIT ?`
+  query += ` ORDER BY timestamp ${order}, items.id ${order} LIMIT ?`
   params.push(limit)
   
   try {
