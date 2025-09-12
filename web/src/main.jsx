@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import '@picocss/pico'
 import App from './components/App'
 
-const container = document.getElementById('root')
+const container = document.body
 if (!container) {
   throw new Error('Root element not found')
 }
