@@ -33,12 +33,12 @@ const createActionSlice = (set) => ({
 const createCreateItemSlice = (set, get) => ({
   ...createActionSlice(set),
 
-  run: async ({ title }) => {
+  run: async ({ title, kind }) => {
     if (get().loading) { return }
     get().setLoading()
 
     try {
-      const { item } = await api.createItem(title)
+      const { item } = await api.createItem({ title, kind })
       get().setSuccess(item)
 
     } catch (error) {
@@ -85,9 +85,9 @@ const createTimelineSlice = (set, get) => ({
     }
 
     const items = 
-      mode == 'prepend' ? [...get().items, ...data.items] :
+      mode == 'prepend' ? [...data.items, ...get().items] :
       mode == 'replace' ? data.items :
-     [...data.items, ...get().items]
+      [...get().items, ...data.items]     
 
     set({ items })
   },

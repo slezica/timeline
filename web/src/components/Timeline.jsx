@@ -43,7 +43,7 @@ export default function Timeline() {
   }, [timeline.items.length, timeline.loading, handleLoadMore])
 
   return (
-    <section class="timeline">
+    <section className="timeline">
       {timeline.items.map((item, index) => (
         <TimelineItem key={`${item.id}-${index}`} item={item} />
       ))}

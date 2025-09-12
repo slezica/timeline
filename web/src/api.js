@@ -42,9 +42,9 @@ export async function fetchItems(
   return apiRequest(`/api/items?${params}`)
 }
 
-export async function createItem(title) {
+export async function createItem({ title, kind }) {
   return apiRequest('/api/items', {
     method: 'POST',
-    body: JSON.stringify({ title })
+    body: JSON.stringify({ title, kind })
   })
 }

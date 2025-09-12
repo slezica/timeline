@@ -2,9 +2,11 @@ import React, { useState } from 'react'
 import { useStore } from '../store'
 
 export default function CreateItemForm() {
-  const [title, setTitle] = useState('')
   const createItem = useStore(state => state.createItem)
   const timeline = useStore(state => state.timeline)
+
+  const [title, setTitle] = useState('')
+  const [kind, setKind] = useState('note')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -14,7 +16,7 @@ export default function CreateItemForm() {
     const optimisticItem = {
       id: `temp-${Date.now()}`,
       title: title.trim(),
-      kind: 'item',
+      kind: kind,
       datetime: new Date().toISOString()
     }
 
@@ -22,7 +24,7 @@ export default function CreateItemForm() {
     timeline.addItems({ items: [optimisticItem] }, 'prepend')
 
     try {
-      await createItem.run({ title: title.trim() })
+      await createItem.run({ title: title.trim(), kind: kind })
       setTitle('')
     } catch (error) {
       timeline.removeItem(optimisticItem.id)
@@ -31,7 +33,15 @@ export default function CreateItemForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <fieldset class="inline">
+      <fieldset className="inline">
+        <select
+          value={kind}
+          onChange={(e) => setKind(e.target.value)}
+          disabled={createItem.loading}
+        >
+          <option value="note">Note</option>
+          <option value="task">Task</option>
+        </select>
         <input
           type="text"
           value={title}

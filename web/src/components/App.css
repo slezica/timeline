@@ -15,6 +15,12 @@ form fieldset.inline {
   align-items: flex-start;
 }
 
+form fieldset.inline select {
+  flex: 0;
+  margin-bottom: 0;
+  min-width: 80px;
+}
+
 form fieldset.inline input {
   flex: 1;
   margin-bottom: 0;
@@ -24,4 +30,23 @@ form fieldset.inline button {
   flex: 0;
   margin-bottom: 0;
   white-space: nowrap;
+}
+
+/* Item type styling */
+.item.note {
+  border-left: 3px solid var(--pico-primary);
+}
+
+.item.task {
+  border-left: 3px solid var(--pico-secondary);
+}
+
+.item.task h3 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.item.task input[type="checkbox"] {
+  margin: 0;
 }
