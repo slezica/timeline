@@ -96,10 +96,14 @@ app.get('/api/items', (req, res) => {
 })
 
 app.post('/api/items', (req, res) => {
-  const { title } = req.body
+  const { title, kind = 'note' } = req.body
 
   if (!title || !title.trim()) {
     return res.status(400).json({ error: 'Title is required' })
+  }
+
+  if (!['note', 'task'].includes(kind)) {
+    return res.status(400).json({ error: 'Kind must be note or task' })
   }
 
   const now = new Date().toISOString()
@@ -107,11 +111,17 @@ app.post('/api/items', (req, res) => {
   try {
     const result = db.transaction(() => {
       const insertItem = db.prepare('INSERT INTO items (kind, title) VALUES (?, ?)')
-      const itemResult = insertItem.run('item', title.trim())
+      const itemResult = insertItem.run(kind, title.trim())
       
       const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
       insertTimestamp.run(itemResult.lastInsertRowid, 'created', now)
       insertTimestamp.run(itemResult.lastInsertRowid, 'updated', now)
+      
+      // If it's a task, create the task-specific data
+      if (kind === 'task') {
+        const insertTask = db.prepare('INSERT INTO items_task (itemId) VALUES (?)')
+        insertTask.run(itemResult.lastInsertRowid)
+      }
       
       return itemResult.lastInsertRowid
     })()
