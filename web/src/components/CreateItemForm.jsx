@@ -30,27 +30,26 @@ export default function CreateItemForm() {
   }
 
   return (
-    <form className="create-item-form" onSubmit={handleSubmit}>
-      <div className="form-row">
+    <form onSubmit={handleSubmit}>
+      <fieldset class="inline">
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           placeholder="Enter item title..."
-          className="title-input"
           disabled={createItem.loading}
+          aria-busy={createItem.loading}
         />
         <button 
           type="submit" 
-          className="create-button"
           disabled={!title.trim() || createItem.loading}
         >
           {createItem.loading ? 'Creating...' : 'Create'}
         </button>
-      </div>
+      </fieldset>
 
       {createItem.error && (
-        <div className="create-error">
+        <div role="alert">
           Error: {createItem.error}
         </div>
       )}

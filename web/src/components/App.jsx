@@ -5,11 +5,9 @@ import './App.css'
 
 export default function App() {
   return (
-    <div className="app">
-      <main>
-        <CreateItemForm />
-        <Timeline />
-      </main>
-    </div>
+    <main className="container">
+      <CreateItemForm />
+      <Timeline />
+    </main>
   )
 }

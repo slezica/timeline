@@ -1,5 +1,6 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
+import '@picocss/pico'
 import App from './components/App'
 
 const container = document.getElementById('root')

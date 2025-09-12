@@ -43,34 +43,27 @@ export default function Timeline() {
   }, [timeline.items.length, timeline.loading, handleLoadMore])
 
   return (
-    <div className="timeline">
-      <div className="items-container">
-        {timeline.items.map((item, index) => (
-          <TimelineItem key={`${item.id}-${index}`} item={item} />
-        ))}
-      </div>
+    <section>
+      {timeline.items.map((item, index) => (
+        <TimelineItem key={`${item.id}-${index}`} item={item} />
+      ))}
       
-      <div ref={sentinelRef} className="loading-sentinel" />
+      <div ref={sentinelRef} />
       
       {timeline.loading && (
-        <div className="loading">
-          <span className="loading-spinner">⟳</span>
-          Loading...
-        </div>
+        <div aria-busy="true">Loading...</div>
       )}
       
       {timeline.error && (
-        <div className="error">
+        <div role="alert">
           Error: {timeline.error.message || timeline.error}
-          <button className="retry-button" onClick={handleRetry}>
-            Retry
-          </button>
+          <button onClick={handleRetry}>Retry</button>
         </div>
       )}
       
       {timeline.total !== null && timeline.items.length >= timeline.total && !timeline.loading && (
-        <div className="end-message">No more items</div>
+        <p><em>No more items</em></p>
       )}
-    </div>
+    </section>
   )
 }
