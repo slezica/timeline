@@ -27,7 +27,7 @@ export async function fetchItems(
   sort = 'created',
   order = 'desc',
   limit = 20,
-  startAfter
+  start
 ) {
   const params = new URLSearchParams({
     sort,
@@ -35,8 +35,8 @@ export async function fetchItems(
     limit: limit.toString()
   })
   
-  if (startAfter) {
-    params.append('start', startAfter)
+  if (start) {
+    params.append('start', start)
   }
   
   return apiRequest(`/api/items?${params}`)

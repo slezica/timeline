@@ -1,22 +1,13 @@
 import React, { useEffect, useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { 
-  loadMoreItems,
-  selectItems, 
-  selectLoadingState, 
-  selectCanLoadMore 
-} from '../store'
+import { useStore } from '../store'
 import TimelineItem from './TimelineItem'
 
 export default function Timeline() {
-  const dispatch = useDispatch()
-  const items = useSelector(selectItems)
-  const { loading, hasMore, error } = useSelector(selectLoadingState)
-  const canLoadMore = useSelector(selectCanLoadMore)
+  const timeline = useStore(state => state.timeline)
   const sentinelRef = useRef(null)
 
   const handleLoadMore = () => {
-    dispatch(loadMoreItems())
+    timeline.loadMore()
   }
 
   const handleRetry = () => {
@@ -29,7 +20,7 @@ export default function Timeline() {
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (!canLoadMore) return
+        if (timeline.loading) return
         for (let entry of entries) {
           if (entry.isIntersecting) { handleLoadMore() }
         }
@@ -42,42 +33,42 @@ export default function Timeline() {
     return () => {
       observer.disconnect()
     }
-  }, [canLoadMore, handleLoadMore])
+  }, [timeline.loading, handleLoadMore])
 
   // Load initial items
   useEffect(() => {
-    if (items.length === 0 && !loading) {
+    if (timeline.items.length === 0 && !timeline.loading) {
       handleLoadMore()
     }
-  }, [items.length, loading, handleLoadMore])
+  }, [timeline.items.length, timeline.loading, handleLoadMore])
 
   return (
     <div className="timeline-container">
       <div className="items-container">
-        {items.map((item, index) => (
+        {timeline.items.map((item, index) => (
           <TimelineItem key={`${item.id}-${index}`} item={item} />
         ))}
       </div>
       
       <div ref={sentinelRef} className="loading-sentinel" />
       
-      {loading && (
+      {timeline.loading && (
         <div className="loading">
           <span className="loading-spinner">⟳</span>
           Loading...
         </div>
       )}
       
-      {error && (
+      {timeline.error && (
         <div className="error">
-          Error: {error}
+          Error: {timeline.error.message || timeline.error}
           <button className="retry-button" onClick={handleRetry}>
             Retry
           </button>
         </div>
       )}
       
-      {!hasMore && !loading && (
+      {timeline.total !== null && timeline.items.length >= timeline.total && !timeline.loading && (
         <div className="end-message">No more items</div>
       )}
     </div>

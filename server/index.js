@@ -63,6 +63,8 @@ app.get('/api/items', (req, res) => {
     ? Math.min(parseInt(limit) || 100, 100)
     : 25
 
+  const total = db.prepare('SELECT count(1) FROM items').get()
+
   let query = `
     SELECT 
       items.id, items.kind, items.title,
@@ -70,7 +72,8 @@ app.get('/api/items', (req, res) => {
         (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = ? LIMIT 1),
         (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1)
       ) as datetime
-    FROM items`
+    FROM items
+  `
   
   const params = [sort]
 
@@ -84,7 +87,7 @@ app.get('/api/items', (req, res) => {
   
   try {
     const items = db.prepare(query).all(...params)
-    res.json({ items })
+    res.json({ items, total })
 
   } catch (error) {
     console.error('[api]:', error)
