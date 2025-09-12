@@ -2,6 +2,21 @@
 
 :root {
   --pico-font-size: 14px;
+
+  --black: #2a2a2b;
+  --black-light: #333333;
+  --black-lighter: #4a4a4a;
+  --white: #d7e3de;
+  --white-dark: #c9d0c8;
+  --white-darker: #75848a;
+  --red: #fe6c6c;
+  --blue: #75c4ff;
+  --yellow: #feb800;
+  --green: #7fd991;
+  --pink: #ff83cd;
+  --purple: #b0a4ff;
+  --cyan: #00bbc6;
+  --gray: #b8b8b8;
 }
 
 main.container {
@@ -34,11 +49,11 @@ form fieldset.inline button {
 
 /* Item type styling */
 .item.note {
-  border-left: 3px solid var(--pico-primary);
+  border-left: 3px solid var(--blue);
 }
 
 .item.task {
-  border-left: 3px solid var(--pico-secondary);
+  border-left: 3px solid var(--red);
 }
 
 .item.task h3 {
