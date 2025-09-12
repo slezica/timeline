@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
 import { useStore } from '../store'
 
+
 export default function CreateItemForm() {
   const createItem = useStore(state => state.createItem)
   const timeline = useStore(state => state.timeline)
 
   const [title, setTitle] = useState('')
   const [kind, setKind] = useState('note')
+  const [extras, setExtras] = useState({})
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -24,8 +26,12 @@ export default function CreateItemForm() {
     timeline.addItems({ items: [optimisticItem] }, 'prepend')
 
     try {
-      await createItem.run({ title: title.trim(), kind: kind })
+      const itemData = Object.assign(extras, { title: title.trim(), kind: kind })
+      
+      await createItem.run(itemData)
       setTitle('')
+      setExtras({})
+
     } catch (error) {
       timeline.removeItem(optimisticItem.id)
     }
@@ -58,11 +64,68 @@ export default function CreateItemForm() {
         </button>
       </fieldset>
 
+      {kind === 'task' && (
+        <TaskItemFields
+          value={extras}
+          onChange={setExtras}
+          disabled={createItem.loading}
+        />
+      )}
+
       {createItem.error && (
         <div role="alert">
           Error: {createItem.error}
         </div>
       )}
     </form>
+  )
+}
+
+
+function TaskItemFields({ value, onChange, disabled }) {
+  const [dueDate, setDueDate] = useState('')
+  const [doneDate, setDoneDate] = useState('')
+
+  const handleDueDateChange = (newDueDate) => {
+    setDueDate(newDueDate)
+    onChange(Object.assign({}, value, { dueDate: newDueDate }))
+  }
+
+  const handleDoneDateChange = (newDoneDate) => {
+    setDoneDate(newDoneDate)
+    onChange(Object.assign({}, value, { doneDate: newDoneDate }))
+  }
+
+  // Reset when parent calls reset
+  React.useEffect(() => {
+    if (!value || Object.keys(value).length === 0) {
+      setDueDate('')
+      setDoneDate('')
+    }
+  }, [value])
+
+  return (
+    <fieldset>
+      <div className="grid">
+        <div>
+          <label>Due Date</label>
+          <input
+            type="date"
+            value={dueDate}
+            onChange={(e) => handleDueDateChange(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+        <div>
+          <label>Done Date</label>
+          <input
+            type="date"
+            value={doneDate}
+            onChange={(e) => handleDoneDateChange(e.target.value)}
+            disabled={disabled}
+          />
+        </div>
+      </div>
+    </fieldset>
   )
 }

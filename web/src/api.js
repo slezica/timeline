@@ -42,9 +42,13 @@ export async function fetchItems(
   return apiRequest(`/api/items?${params}`)
 }
 
-export async function createItem({ title, kind }) {
+export async function createItem({ title, kind, dueDate, doneDate }) {
+  const body = { title, kind }
+  if (dueDate) body.dueDate = dueDate
+  if (doneDate) body.doneDate = doneDate
+  
   return apiRequest('/api/items', {
     method: 'POST',
-    body: JSON.stringify({ title, kind })
+    body: JSON.stringify(body)
   })
 }
