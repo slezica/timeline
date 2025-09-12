@@ -62,6 +62,21 @@ const migrations = [
     // Drop timestamp columns from items table (modern SQLite supports this)
     db.prepare('ALTER TABLE items DROP COLUMN createdAt').run()
     db.prepare('ALTER TABLE items DROP COLUMN updatedAt').run()
+  }],
+
+  ["Create items_task table", () => {
+    db.prepare(`
+      CREATE TABLE items_task (
+        itemId INTEGER PRIMARY KEY,
+        dueDate TEXT,
+        doneDate TEXT,
+        FOREIGN KEY (itemId) REFERENCES items (id) ON DELETE CASCADE
+      )
+    `).run()
+    
+    // Create index for due date queries
+    db.prepare(`CREATE INDEX idx_items_task_due_date ON items_task (dueDate)`).run()
+    db.prepare(`CREATE INDEX idx_items_task_done ON items_task (doneDate)`).run()
   }]
 ]
 
