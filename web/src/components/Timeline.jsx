@@ -43,7 +43,7 @@ export default function Timeline() {
   }, [timeline.items.length, timeline.loading, handleLoadMore])
 
   return (
-    <div className="timeline-container">
+    <div className="timeline">
       <div className="items-container">
         {timeline.items.map((item, index) => (
           <TimelineItem key={`${item.id}-${index}`} item={item} />

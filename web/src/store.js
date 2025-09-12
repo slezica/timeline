@@ -68,43 +68,34 @@ const createTimelineSlice = (set, get) => ({
     s.addItems(api.fetchItems(s.sort, s.order, 20, start))
   },
 
-  addItems: async (dataPromise) => {
+  addItems: async (data, mode) => {
     if (get().loading) { return }
 
-    set({ loading: true })
+    if (typeof data.then == 'function') {
+      set({ loading: true })
 
-    try {
-      const { items } = await dataPromise
-      set({ loading: false, error: null, items: [...get().items, ...items] })
+      try {
+        data = await data
+        set({ loading: false, error: null })
 
-    } catch (error) {
-      set({ loading: false, error })
+      } catch (error) {
+        set({ loading: false, error })
+        return
+      }
     }
-  },
 
-  replaceItems: async (dataPromise) => {
-    if (get().loading) { return }
+    const items = 
+      mode == 'prepend' ? [...get().items, ...data.items] :
+      mode == 'replace' ? data.items :
+     [...data.items, ...get().items]
 
-    set({ loading: true, stale: true, total: null })
-
-    try {
-      const { items, total } = await dataPromise
-      set({ loading: false, stale: false, error: null, items, total })
-
-    } catch (error) {
-      set({ loading: false, error, total: null })
-    }
+    set({ items })
   },
 
   removeItem: (itemId) => {
     const items = get().items
     set({ items: items.filter(item => item.id !== itemId) })
   },
-
-  prependItem: (item) => {
-    const items = get().items
-    set({ items: [item, ...items] })
-  }
 })
 
 

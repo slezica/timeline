@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function TimelineItem({ item }) {
   return (
-    <div className="timeline-item">
+    <article className="item">
       <div className="item-header">
         <h3 className="item-title">{item.title || 'Untitled'}</h3>
         <span className="item-datetime">
@@ -13,6 +13,6 @@ export default function TimelineItem({ item }) {
         {JSON.stringify(item, null, 2)}
       </pre>
       <div className="item-id">ID: {item.id || 'unknown'}</div>
-    </div>
+    </article>
   )
 }

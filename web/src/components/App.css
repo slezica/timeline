@@ -22,13 +22,13 @@
   font-weight: 600;
 }
 
-.timeline-wrapper {
+main {
   flex: 1;
   position: relative;
   overflow-y: auto;
 }
 
-.timeline-container {
+.timeline {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
@@ -38,7 +38,7 @@
   margin-bottom: 20px;
 }
 
-.timeline-item {
+.item {
   background: white;
   border: 1px solid #e1e4e8;
   border-radius: 6px;
@@ -142,4 +142,74 @@
   padding: 20px;
   color: #666;
   font-style: italic;
+}
+
+.create-item-form {
+  background: white;
+  border: 1px solid #e1e4e8;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.title-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #24292f;
+  background: white;
+}
+
+.title-input:focus {
+  outline: none;
+  border-color: #0969da;
+  box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.1);
+}
+
+.title-input:disabled {
+  background: #f6f8fa;
+  color: #656d76;
+}
+
+.title-input::placeholder {
+  color: #656d76;
+}
+
+.create-button {
+  background: #1f883d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.create-button:hover:not(:disabled) {
+  background: #1a7f37;
+}
+
+.create-button:disabled {
+  background: #94d3a2;
+  cursor: not-allowed;
+}
+
+.create-error {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: #ffebe9;
+  border: 1px solid #f85149;
+  border-radius: 4px;
+  color: #cf222e;
+  font-size: 12px;
 }

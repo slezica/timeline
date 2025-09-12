@@ -19,13 +19,12 @@ export default function CreateItemForm() {
     }
 
     // Add optimistically to timeline
-    timeline.prependItem(optimisticItem)
+    timeline.addItems({ items: [optimisticItem] }, 'prepend')
 
     try {
       await createItem.run({ title: title.trim() })
       setTitle('')
     } catch (error) {
-      // Remove optimistic item on failure
       timeline.removeItem(optimisticItem.id)
     }
   }
