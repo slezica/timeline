@@ -95,6 +95,42 @@ app.get('/api/items', (req, res) => {
   }
 })
 
+app.post('/api/items', (req, res) => {
+  const { title } = req.body
+
+  if (!title || !title.trim()) {
+    return res.status(400).json({ error: 'Title is required' })
+  }
+
+  const now = new Date().toISOString()
+
+  try {
+    const result = db.transaction(() => {
+      const insertItem = db.prepare('INSERT INTO items (kind, title) VALUES (?, ?)')
+      const itemResult = insertItem.run('item', title.trim())
+      
+      const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
+      insertTimestamp.run(itemResult.lastInsertRowid, 'created', now)
+      insertTimestamp.run(itemResult.lastInsertRowid, 'updated', now)
+      
+      return itemResult.lastInsertRowid
+    })()
+
+    const newItem = db.prepare(`
+      SELECT 
+        items.id, items.kind, items.title,
+        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1) as datetime
+      FROM items WHERE id = ?
+    `).get(result)
+
+    res.status(201).json({ item: newItem })
+
+  } catch (error) {
+    console.error('[api]:', error)
+    res.status(500).json({ error: error.message })
+  }
+})
+
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`)
 })

@@ -1,6 +1,5 @@
-import { fetchItems, addMs } from './api'
-
 import * as zs from 'zustand'
+import * as api from './api'
 
 
 const scope = (key, createFn) => (set, get, api) => {
@@ -19,6 +18,35 @@ const scope = (key, createFn) => (set, get, api) => {
   return { [key]: createFn(scopeSet, scopeGet, api) }
 }
 
+ 
+const createActionSlice = (set) => ({
+  value: null,
+  error: null,
+  loading: false,
+
+  setLoading: () => set({ loading: true }),
+  setSuccess: (value) => set({ value, loading: false }),
+  setFailure: (error) => set({ error, loading: false })
+})
+
+
+const createCreateItemSlice = (set, get) => ({
+  ...createActionSlice(set),
+
+  run: async ({ title }) => {
+    if (get().loading) { return }
+    get().setLoading()
+
+    try {
+      const { item } = await api.createItem(title)
+      get().setSuccess(item)
+
+    } catch (error) {
+      get().setFailure(error)
+    }
+  }
+})
+
 
 const createTimelineSlice = (set, get) => ({
   items  : [],
@@ -34,13 +62,13 @@ const createTimelineSlice = (set, get) => ({
 
     let start
     if (s.items.length > 0) {
-      start = addMs(s.items[s.items.length - 1].datetime, 1)
+      start = api.addMs(s.items[s.items.length - 1].datetime, 1) // TODO this sucks
     }
 
-    s._addItems(fetchItems(s.sort, s.order, 20, start))
+    s.addItems(api.fetchItems(s.sort, s.order, 20, start))
   },
 
-  _addItems: async (dataPromise) => {
+  addItems: async (dataPromise) => {
     if (get().loading) { return }
 
     set({ loading: true })
@@ -54,7 +82,7 @@ const createTimelineSlice = (set, get) => ({
     }
   },
 
-  _replaceItems: async (dataPromise) => {
+  replaceItems: async (dataPromise) => {
     if (get().loading) { return }
 
     set({ loading: true, stale: true, total: null })
@@ -66,10 +94,21 @@ const createTimelineSlice = (set, get) => ({
     } catch (error) {
       set({ loading: false, error, total: null })
     }
+  },
+
+  removeItem: (itemId) => {
+    const items = get().items
+    set({ items: items.filter(item => item.id !== itemId) })
+  },
+
+  prependItem: (item) => {
+    const items = get().items
+    set({ items: [item, ...items] })
   }
 })
 
 
 export const useStore = zs.create((...a) => ({
-  ...scope('timeline', createTimelineSlice)(...a)
+  ...scope('timeline', createTimelineSlice)(...a),
+  ...scope('createItem', createCreateItemSlice)(...a)
 }))

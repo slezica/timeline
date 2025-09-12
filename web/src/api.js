@@ -41,3 +41,10 @@ export async function fetchItems(
   
   return apiRequest(`/api/items?${params}`)
 }
+
+export async function createItem(title) {
+  return apiRequest('/api/items', {
+    method: 'POST',
+    body: JSON.stringify({ title })
+  })
+}
