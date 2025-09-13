@@ -43,45 +43,11 @@ const migrations = [
     `).run()
 
     db.prepare(`CREATE INDEX itemsKind ON items (kind)`).run()
+    db.prepare(`CREATE INDEX itemsCreated ON items (createdDate)`).run()
+    db.prepare(`CREATE INDEX itemsUpdated ON items (updatedDate)`).run()
   }],
 
-  ["Create date indexing table and triggers", () => {
-    db.prepare(`
-      CREATE TABLE dates (
-        itemId INTEGER NOT NULL,
-        kind TEXT NOT NULL,
-        date TEXT NOT NULL,
-
-        PRIMARY KEY (itemId, kind),
-        FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE CASCADE,
-        CHECK (date GLOB '${DATE_GLOB}')
-      )
-    `).run()
-
-    db.prepare(`CREATE INDEX datesDate ON dates (date)`).run()
-
-    db.prepare(`
-      CREATE TRIGGER itemOi AFTER INSERT ON items BEGIN
-        INSERT INTO dates(itemId, kind, date) VALUES (new.id, 'created', new.createdDate);
-        INSERT INTO dates(itemId, kind, date) VALUES (new.id, 'updated', new.updatedDate);
-      END
-    `).run()
-
-    db.prepare(`
-      CREATE TRIGGER itemCreatedOu AFTER UPDATE OF createdDate ON items BEGIN
-        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.id, 'created', new.createdDate);
-      END
-    `).run()
-
-    db.prepare(`
-      CREATE TRIGGER itemUpdatedOu AFTER UPDATE OF updatedDate ON items BEGIN
-        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.id, 'updated', new.updatedDate);
-      END
-    `).run()
-
-  }],
-
-  ["Create task tables and triggers", () => {
+  ["Create task tables", () => {
     db.prepare(`
       CREATE TABLE taskItems (
         itemId INTEGER PRIMARY KEY,
@@ -90,52 +56,26 @@ const migrations = [
 
         FOREIGN KEY (itemId) REFERENCES items (id) ON DELETE CASCADE,
         CHECK (dueDate IS NULL OR dueDate GLOB '${DATE_GLOB}'),
-        CHECK (doneDate IS NULL or doneDate GLOB '${DATE_GLOB}')
+        CHECK (doneDate IS NULL OR doneDate GLOB '${DATE_GLOB}')
       )
     `).run()
     
-    // Index dueDate when taskItems are created:
-    db.prepare(`
-      CREATE TRIGGER itemTaskDueOi AFTER INSERT ON taskItems WHEN new.dueDate IS NOT NULL BEGIN
-        INSERT INTO dates(itemId, kind, date) VALUES (new.itemId, 'due', new.dueDate);
-      END
-    `).run()
-
-    // Update indexed dueDate when updated (non-null):
-    db.prepare(`
-      CREATE TRIGGER itemsTaskDueOuNotNull AFTER UPDATE OF dueDate ON taskItems WHEN new.dueDate IS NOT NULL BEGIN
-        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.itemId, 'due', new.dueDate);
-      END
-    `).run()
-
-    // Delete indexed dueDate when updated (null):
-    db.prepare(`
-      CREATE TRIGGER itemsTaskDueOuNull AFTER UPDATE OF dueDate ON taskItems WHEN new.dueDate IS NULL BEGIN
-        DELETE FROM dates WHERE itemId=new.itemId and kind='due';
-      END
-    `).run()
-
-    // Index doneDate when taskItems are created:
-    db.prepare(`
-      CREATE TRIGGER itemTaskDoneOi AFTER INSERT ON taskItems WHEN new.doneDate IS NOT NULL BEGIN
-        INSERT INTO dates(itemId, kind, date) VALUES (new.itemId, 'done', new.doneDate);
-      END
-    `).run()
-
-    // Update indexed doneDate when updated (non-null):
-    db.prepare(`
-      CREATE TRIGGER itemsTaskDoneOuNotNull AFTER UPDATE OF doneDate ON taskItems WHEN new.doneDate IS NOT NULL BEGIN
-        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.itemId, 'done', new.doneDate);
-      END
-    `).run()
-
-    // Delete indexed doneDate when updated (null):
-    db.prepare(`
-      CREATE TRIGGER itemsTaskDoneOuNull AFTER UPDATE OF doneDate ON taskItems WHEN new.doneDate IS NULL BEGIN
-        DELETE FROM dates WHERE itemId=new.itemId and kind='done';
-      END
-    `).run()
+    db.prepare(`CREATE INDEX taskItemsDue ON taskItems (dueDate)`).run()
+    db.prepare(`CREATE INDEX taskItemsDone ON taskItems (doneDate)`).run()
   }],
+
+  ["Create dates view", () => {
+    db.prepare(`
+      CREATE VIEW dates AS
+        SELECT id AS itemId, 'created' AS kind, createdDate AS date FROM items
+        UNION ALL
+        SELECT id, 'updated', updatedDate FROM items
+        UNION ALL
+        SELECT itemId, 'due',  dueDate  FROM taskItems WHERE dueDate IS NOT NULL
+        UNION ALL
+        SELECT itemId, 'done', doneDate FROM taskItems WHERE doneDate IS NOT NULL
+    `).run()
+  }]
 ]
 
 let initialStatus
