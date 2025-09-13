@@ -2,13 +2,19 @@ import Database from 'better-sqlite3'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 
+const DATE_GLOB = '[0-9][0-9][0-9][0-9]-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z'
+
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export const db = new Database(join(__dirname, 'db.sqlite3'))
 
 db.pragma('journal_mode = WAL')
+db.pragma('foreign_keys = ON')
 
 const migrations = [
+  // Each migration will run exactly once (see runner below).
+  // If a database was already initialized, this fails quickly on the 1st migration. 
+
   ["Create status table", () => {
     db.prepare(`
       CREATE TABLE IF NOT EXISTS status (
@@ -18,7 +24,7 @@ const migrations = [
     `).run()
 
     db.prepare(`
-      INSERT INTO status (migration) VALUES(0)
+      INSERT INTO status (id, migration) VALUES(1, 0)
     `).run()
   }],
 
@@ -28,61 +34,113 @@ const migrations = [
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         kind TEXT NOT NULL,
         title TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
+        createdDate TEXT NOT NULL,
+        updatedDate TEXT NOT NULL,
+
+        CHECK (createdDate GLOB '${DATE_GLOB}'),
+        CHECK (updatedDate GLOB '${DATE_GLOB}')
       )
     `).run()
+
+    db.prepare(`CREATE INDEX itemsKind ON items (kind)`).run()
   }],
 
-  ["Create timestamps table and migrate data", () => {
-    // Create timestamps table
+  ["Create date indexing table and triggers", () => {
     db.prepare(`
-      CREATE TABLE timestamps (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item_id INTEGER NOT NULL,
+      CREATE TABLE dates (
+        itemId INTEGER NOT NULL,
         kind TEXT NOT NULL,
-        datetime TEXT NOT NULL,
-        FOREIGN KEY (item_id) REFERENCES items (id) ON DELETE CASCADE
+        date TEXT NOT NULL,
+
+        PRIMARY KEY (itemId, kind),
+        FOREIGN KEY (itemId) REFERENCES items(id) ON DELETE CASCADE,
+        CHECK (date GLOB '${DATE_GLOB}')
       )
     `).run()
 
-    // Create indexes for performance
-    db.prepare(`CREATE INDEX idx_timestamps_item_kind ON timestamps (item_id, kind)`).run()
-    db.prepare(`CREATE INDEX idx_timestamps_datetime ON timestamps (datetime)`).run()
+    db.prepare(`CREATE INDEX datesDate ON dates (date)`).run()
 
-    // Migrate existing data
-    const items = db.prepare('SELECT id, createdAt, updatedAt FROM items').all()
-    const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
-    
-    for (const item of items) {
-      insertTimestamp.run(item.id, 'created', item.createdAt)
-      insertTimestamp.run(item.id, 'updated', item.updatedAt)
-    }
+    db.prepare(`
+      CREATE TRIGGER itemOi AFTER INSERT ON items BEGIN
+        INSERT INTO dates(itemId, kind, date) VALUES (new.id, 'created', new.createdDate);
+        INSERT INTO dates(itemId, kind, date) VALUES (new.id, 'updated', new.updatedDate);
+      END
+    `).run()
 
-    // Drop timestamp columns from items table (modern SQLite supports this)
-    db.prepare('ALTER TABLE items DROP COLUMN createdAt').run()
-    db.prepare('ALTER TABLE items DROP COLUMN updatedAt').run()
+    db.prepare(`
+      CREATE TRIGGER itemCreatedOu AFTER UPDATE OF createdDate ON items BEGIN
+        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.id, 'created', new.createdDate);
+      END
+    `).run()
+
+    db.prepare(`
+      CREATE TRIGGER itemUpdatedOu AFTER UPDATE OF updatedDate ON items BEGIN
+        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.id, 'updated', new.updatedDate);
+      END
+    `).run()
+
   }],
 
-  ["Create items_task table", () => {
+  ["Create task tables and triggers", () => {
     db.prepare(`
-      CREATE TABLE items_task (
+      CREATE TABLE taskItems (
         itemId INTEGER PRIMARY KEY,
         dueDate TEXT,
         doneDate TEXT,
-        FOREIGN KEY (itemId) REFERENCES items (id) ON DELETE CASCADE
+
+        FOREIGN KEY (itemId) REFERENCES items (id) ON DELETE CASCADE,
+        CHECK (dueDate IS NULL OR dueDate GLOB '${DATE_GLOB}'),
+        CHECK (doneDate IS NULL or doneDate GLOB '${DATE_GLOB}')
       )
     `).run()
     
-    // Create index for due date queries
-    db.prepare(`CREATE INDEX idx_items_task_due_date ON items_task (dueDate)`).run()
-    db.prepare(`CREATE INDEX idx_items_task_done ON items_task (doneDate)`).run()
-  }]
+    // Index dueDate when taskItems are created:
+    db.prepare(`
+      CREATE TRIGGER itemTaskDueOi AFTER INSERT ON taskItems WHEN new.dueDate IS NOT NULL BEGIN
+        INSERT INTO dates(itemId, kind, date) VALUES (new.itemId, 'due', new.dueDate);
+      END
+    `).run()
+
+    // Update indexed dueDate when updated (non-null):
+    db.prepare(`
+      CREATE TRIGGER itemsTaskDueOuNotNull AFTER UPDATE OF dueDate ON taskItems WHEN new.dueDate IS NOT NULL BEGIN
+        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.itemId, 'due', new.dueDate);
+      END
+    `).run()
+
+    // Delete indexed dueDate when updated (null):
+    db.prepare(`
+      CREATE TRIGGER itemsTaskDueOuNull AFTER UPDATE OF dueDate ON taskItems WHEN new.dueDate IS NULL BEGIN
+        DELETE FROM dates WHERE itemId=new.itemId and kind='due';
+      END
+    `).run()
+
+    // Index doneDate when taskItems are created:
+    db.prepare(`
+      CREATE TRIGGER itemTaskDoneOi AFTER INSERT ON taskItems WHEN new.doneDate IS NOT NULL BEGIN
+        INSERT INTO dates(itemId, kind, date) VALUES (new.itemId, 'done', new.doneDate);
+      END
+    `).run()
+
+    // Update indexed doneDate when updated (non-null):
+    db.prepare(`
+      CREATE TRIGGER itemsTaskDoneOuNotNull AFTER UPDATE OF doneDate ON taskItems WHEN new.doneDate IS NOT NULL BEGIN
+        INSERT OR REPLACE INTO dates(itemId, kind, date) VALUES (new.itemId, 'done', new.doneDate);
+      END
+    `).run()
+
+    // Delete indexed doneDate when updated (null):
+    db.prepare(`
+      CREATE TRIGGER itemsTaskDoneOuNull AFTER UPDATE OF doneDate ON taskItems WHEN new.doneDate IS NULL BEGIN
+        DELETE FROM dates WHERE itemId=new.itemId and kind='done';
+      END
+    `).run()
+  }],
 ]
 
 let initialStatus
 try {
-  initialStatus = db.prepare('SELECT * FROM status').get()
+  initialStatus = db.prepare('SELECT * FROM status WHERE id=1').get()
 } catch {
   initialStatus = { migration: -1 }
 }
