@@ -1,41 +1,61 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-function NoteItem({ entry, item }) {
+function NoteItemExtras({ entry, item }) {
   return (
-    <article className="item note">
-      <header>
-        <h3>{item.title || 'Untitled'}</h3>
-        <small>{new Date(entry.date).toLocaleString()}</small>
-      </header>
+    <>
+      <h3>{item.title || 'Untitled'}</h3>
       <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
-      <footer>
-        <small>Note • ID: {item.id || 'unknown'}</small>
-      </footer>
-    </article>
+    </>
   )
 }
 
-function TaskItem({ entry, item }) {
+function TaskItemExtras({ entry, item }) {
+  const handleDueDateChange = (newDueDate) => {
+    console.log(newDueDate)
+  }
+
+  const handleDoneDateChange = (newDoneDate) => {
+    console.log(newDoneDate)
+  }
+
+  const dueDate = item.dueDate ? formatDatetime(item.dueDate) : undefined
+  const doneDate = item.doneDate ? formatDatetime(item.doneDate) : undefined
+
   return (
-    <article className="item task">
-      <header>
-        <h3>
-          <input type="checkbox" disabled /> {item.title || 'Untitled'}
-        </h3>
-        <small>{new Date(entry.date).toLocaleString()}</small>
-      </header>
-      <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
-      <footer>
-        <small>Task • ID: {item.id || 'unknown'}</small>
-      </footer>
-    </article>
+    <>
+      <form>
+        <div className="grid">
+          <div>
+            <label>Due Date</label>
+            <input type="datetime-local" value={"2017-06-01T08:30"} onChange={handleDueDateChange} />
+          </div>
+          <div>
+            <label>Done Date</label>
+            <input type="datetime-local" value={doneDate} onChange={handleDoneDateChange} />
+          </div>
+        </div>
+      </form>
+    </>
   )
 }
 
 export default function TimelineItem({ entry, item }) {
-  if (item.kind === 'task') {
-    return <TaskItem entry={entry} item={item} />
-  } else {
-    return <NoteItem entry={entry} item={item} />
-  }
+  return (
+    <article className={"item " + item.kind}>
+      <header>
+        <h4>{item.title || 'Untitled'}</h4>
+        <span className={"tag " + entry.kind}>{entry.kind}</span>
+        <span className={"tag"}>{new Date(entry.date).toLocaleString()}</span>
+      </header>
+
+      { item.kind == 'task' ? <TaskItemExtras entry={entry} item={item} /> :
+        item.kind == 'note' ? <NoteItemExtras entry={entry} item={item} /> :
+        null
+      }
+    </article>
+  )
+}
+
+function formatDatetime(str) {
+  return str.slice(0, str.lastIndexOf(':'))
 }

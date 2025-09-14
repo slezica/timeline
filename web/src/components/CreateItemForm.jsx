@@ -96,14 +96,6 @@ function TaskItemFields({ value, onChange, disabled }) {
     onChange(Object.assign({}, value, { doneDate: newDoneDate }))
   }
 
-  // Reset when parent calls reset
-  React.useEffect(() => {
-    if (!value || Object.keys(value).length === 0) {
-      setDueDate('')
-      setDoneDate('')
-    }
-  }, [value])
-
   return (
     <fieldset>
       <div className="grid">

@@ -53,21 +53,45 @@ form fieldset.inline button {
 
 .timeline {
   overflow: auto;
+  scrollbar-width: none;
+}
+
+
+.item {
+  border-left: 3px solid var(--border);
 }
 
 /* Item type styling */
 .item.note {
-  border-left: 3px solid var(--blue);
+  --border: var(--blue);
 }
 
 .item.task {
-  border-left: 3px solid var(--red);
+  --border: var(--red);
 }
 
-.item.task h3 {
+.item header {
   display: flex;
-  align-items: center;
   gap: 0.5rem;
+  justify-content: right;
+  align-items: stretch;
+}
+
+.item header * {
+  margin: 0;
+}
+
+.item header h4 {
+  flex: 1;
+}
+
+.item header .tag {
+  flex: 0;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-wrap: nowrap;
+  text-transform: uppercase;
+  background-color: var(--black-light);
 }
 
 .item.task input[type="checkbox"] {
