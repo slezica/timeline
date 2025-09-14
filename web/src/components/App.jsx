@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
-import Index from './Index'
 import './App.css'
 import { useStore } from '../store'
 

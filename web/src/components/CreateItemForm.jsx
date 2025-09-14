@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 
 
@@ -7,8 +7,22 @@ export default function CreateItemForm() {
   const timeline = useStore(state => state.timeline)
 
   const [title, setTitle] = useState('')
-  const [kind, setKind] = useState('note')
+  const [kind, setKind] = useState('task')
   const [extras, setExtras] = useState({})
+
+  const inputRef = useRef()
+
+  useEffect(() => {
+    const handleKey = (ev) =>  {
+      if (ev.key === '/' || ev.key === '+') {
+        ev.preventDefault()
+        inputRef.current?.focus()
+      }
+    }
+
+    window.addEventListener('keydown', handleKey)
+    return () => window.removeEventListener('keydown', handleKey)
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -55,6 +69,7 @@ export default function CreateItemForm() {
           placeholder="Enter item title..."
           disabled={createItem.loading}
           aria-busy={createItem.loading}
+          ref={inputRef}
         />
         <button 
           type="submit" 
