@@ -23,29 +23,24 @@ export function addMs(dateString, ms) {
   return date.toISOString()
 }
 
-export async function fetchItems(
-  sort = 'created',
-  order = 'desc',
-  limit = 20,
-  start
-) {
+export async function fetchIndex(order) {
   const params = new URLSearchParams({
-    sort,
     order,
-    limit: limit.toString()
   })
-  
-  if (start) {
-    params.append('start', start)
-  }
+
+  return apiRequest(`/api/index?${params}`)
+}
+
+export async function fetchItems(ids) {
+  const params = new URLSearchParams({
+    ids: ids.join(',')
+  })
   
   return apiRequest(`/api/items?${params}`)
 }
 
-export async function createItem({ title, kind, dueDate, doneDate }) {
-  const body = { title, kind }
-  if (dueDate) body.dueDate = dueDate
-  if (doneDate) body.doneDate = doneDate
+export async function createItem({ title, kind, ...extras }) {
+  const body = { title, kind, ...extras }
   
   return apiRequest('/api/items', {
     method: 'POST',

@@ -48,42 +48,61 @@ app.get('/', (req, res) => {
   res.json({ message: 'Hello World!' })
 })
 
-app.get('/api/items', (req, res) => {
-  let { sort, order, start, limit = '20' } = req.query
+app.get('/api/index', (req, res) => {
+  let { order } = req.query
 
-  sort = (sort != null)
-    ? sort.toString().toLowerCase()
-    : 'created'
-
-  order = (['asc', 'desc'].includes(order.toLowerCase()))
-    ? order
-    : 'desc'
-
-  limit = (limit != null)
-    ? Math.min(parseInt(limit) || 100, 100)
-    : 25
-
-  const total = db.prepare('SELECT count(1) FROM items').get()
-
-  let query = `
-    SELECT 
-      items.id, items.kind, items.title,
-      COALESCE(
-        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = ? LIMIT 1),
-        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1)
-      ) as timestamp
-    FROM items
-  `
-  
-  const params = [sort]
-
-  if (start != null) {
-    query += ` WHERE timestamp ${order == 'asc' ? '>=' : '<='} ?`
-    params.push(start)
+  if (!order || !['asc', 'desc'].includes(order)) {
+    order = 'desc'
   }
 
-  query += ` ORDER BY timestamp ${order}, items.id ${order} LIMIT ?`
-  params.push(limit)
+  const kinds = db.prepare(`
+    SELECT DISTINCT kind
+    FROM items
+  `).all().map(it => it.kind)
+
+  const entries = db.prepare(`
+    SELECT itemId, kind, date
+    FROM dates
+    ORDER BY date ${order}
+  `).all()
+
+  res.json({ kinds, entries })
+})
+
+app.get('/api/items', (req, res) => {
+  const idsParam = req.query.ids
+
+  if (!idsParam) {
+    return res.status(400).json({ error: "Param 'ids' is required" })
+  }
+
+  // Split idsParam by comma into numbers, validate as we go:
+  const ids = []
+
+  for (let idStr of idsParam.split(',')) {
+    const id = parseInt(idStr)
+    if (id > 0) {
+      ids.push(id) // positive and not NaN
+    } else {
+      return res.status(400).json({ error: `Invalid id '${idStr}'` }) 
+    }
+  }
+
+  const query = `
+    SELECT 
+      items.id, items.kind, items.title, items.createdDate, items.updatedDate,
+      CASE items.kind
+        WHEN 'task' THEN json_object(
+          'dueDate', taskItems.dueDate,
+          'doneDate', taskItems.doneDate
+        ),
+        ELSE json_object()
+      END
+    FROM items
+      JOIN taskItems on taskItems.itemId=items.id AND items.kind='task'
+    WHERE
+      items.id IN (${ids.map(it => '?').join(',')})
+  `
   
   try {
     const items = db.prepare(query).all(...params)
@@ -93,6 +112,8 @@ app.get('/api/items', (req, res) => {
     console.error('[api]:', error)
     res.status(500).json({ error: error.message })
   }
+
+  res.json({ items })
 })
 
 app.post('/api/items', (req, res) => {

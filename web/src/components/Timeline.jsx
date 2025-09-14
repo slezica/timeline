@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import TimelineItem from './TimelineItem'
 
 export default function Timeline() {
+  const index = useStore(state => state.index)
   const timeline = useStore(state => state.timeline)
   const sentinelRef = useRef(null)
 

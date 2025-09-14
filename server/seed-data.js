@@ -1,111 +1,118 @@
 import { db } from './database.js'
 
-const itemKinds = ['note', 'task', 'bookmark', 'idea', 'reminder', 'journal']
-const sampleTitles = [
-  'Morning coffee thoughts',
-  'Review quarterly metrics',
-  'Plan weekend trip',
-  'Debug authentication issue',
-  'Read about async patterns',
-  'Grocery shopping list',
-  'Call dentist for appointment',
-  'Refactor user service',
-  'Practice piano scales',
-  'Research investment options',
-  'Write blog post draft',
-  'Fix broken test suite',
-  'Organize photo library',
-  'Learn about web security',
-  'Plan birthday party',
-  'Update documentation',
-  'Exercise routine ideas',
-  'Book restaurant reservation',
-  'Code review feedback',
-  'Garden maintenance tasks',
-  'Study language lessons',
-  'Backup important files',
-  'Meeting notes compilation',
-  'Recipe experiments',
-  'Travel itinerary planning',
-  'Home improvement ideas',
-  'Budget planning session',
-  'Creative writing prompt',
-  'Technical architecture review',
-  'Personal goal setting',
-  'Family event coordination',
-  'Skill development plan',
-  'Market research findings',
-  'Health checkup scheduling',
-  'Project milestone tracking',
-  'Networking event followup',
-  'Content creation ideas',
-  'Equipment maintenance log',
-  'Learning resource curation',
-  'Time management strategies'
+const samples = [
+  [{"id":1,"kind":"task","title":"Write project proposal","createdDate":"2025-09-01T09:00:00.000Z","updatedDate":"2025-09-01T12:00:00.000Z"},{"itemId":1,"dueDate":"2025-09-05T09:00:00.000Z","doneDate":null}],
+  [{"id":2,"kind":"task","title":"Prepare presentation slides","createdDate":"2025-09-02T09:00:00.000Z","updatedDate":"2025-09-02T12:00:00.000Z"},{"itemId":2,"dueDate":"2025-09-06T09:00:00.000Z","doneDate":"2025-09-06T15:30:00.000Z"}],
+  [{"id":3,"kind":"task","title":"Team meeting notes","createdDate":"2025-09-03T09:00:00.000Z","updatedDate":"2025-09-03T12:00:00.000Z"},{"itemId":3,"dueDate":null,"doneDate":null}],
+  [{"id":4,"kind":"task","title":"Refactor authentication module","createdDate":"2025-09-04T09:00:00.000Z","updatedDate":"2025-09-04T12:00:00.000Z"},{"itemId":4,"dueDate":"2025-09-08T09:00:00.000Z","doneDate":null}],
+  [{"id":5,"kind":"task","title":"Write end-to-end tests","createdDate":"2025-09-05T09:00:00.000Z","updatedDate":"2025-09-05T12:00:00.000Z"},{"itemId":5,"dueDate":"2025-09-09T09:00:00.000Z","doneDate":"2025-09-10T15:30:00.000Z"}],
+  [{"id":6,"kind":"task","title":"Update documentation","createdDate":"2025-09-06T09:00:00.000Z","updatedDate":"2025-09-06T12:00:00.000Z"},{"itemId":6,"dueDate":null,"doneDate":null}],
+  [{"id":7,"kind":"task","title":"Code review sprint","createdDate":"2025-09-07T09:00:00.000Z","updatedDate":"2025-09-07T12:00:00.000Z"},{"itemId":7,"dueDate":"2025-09-11T09:00:00.000Z","doneDate":null}],
+  [{"id":8,"kind":"task","title":"Design new feature mockups","createdDate":"2025-09-08T09:00:00.000Z","updatedDate":"2025-09-08T12:00:00.000Z"},{"itemId":8,"dueDate":"2025-09-12T09:00:00.000Z","doneDate":null}],
+  [{"id":9,"kind":"task","title":"Fix login bug","createdDate":"2025-09-09T09:00:00.000Z","updatedDate":"2025-09-09T12:00:00.000Z"},{"itemId":9,"dueDate":null,"doneDate":"2025-09-14T15:30:00.000Z"}],
+  [{"id":10,"kind":"task","title":"Optimize database queries","createdDate":"2025-09-10T09:00:00.000Z","updatedDate":"2025-09-10T12:00:00.000Z"},{"itemId":10,"dueDate":"2025-09-14T09:00:00.000Z","doneDate":null}],
+  [{"id":11,"kind":"task","title":"Conduct user interviews","createdDate":"2025-09-11T09:00:00.000Z","updatedDate":"2025-09-11T12:00:00.000Z"},{"itemId":11,"dueDate":"2025-09-15T09:00:00.000Z","doneDate":null}],
+  [{"id":12,"kind":"task","title":"Integrate payment gateway","createdDate":"2025-09-12T09:00:00.000Z","updatedDate":"2025-09-12T12:00:00.000Z"},{"itemId":12,"dueDate":null,"doneDate":"2025-09-17T15:30:00.000Z"}],
+  [{"id":13,"kind":"task","title":"Plan sprint retrospective","createdDate":"2025-09-13T09:00:00.000Z","updatedDate":"2025-09-13T12:00:00.000Z"},{"itemId":13,"dueDate":"2025-09-17T09:00:00.000Z","doneDate":null}],
+  [{"id":14,"kind":"task","title":"Test API endpoints","createdDate":"2025-09-14T09:00:00.000Z","updatedDate":"2025-09-14T12:00:00.000Z"},{"itemId":14,"dueDate":"2025-09-18T09:00:00.000Z","doneDate":null}],
+  [{"id":15,"kind":"task","title":"Draft onboarding guide","createdDate":"2025-09-15T09:00:00.000Z","updatedDate":"2025-09-15T12:00:00.000Z"},{"itemId":15,"dueDate":null,"doneDate":"2025-09-20T15:30:00.000Z"}],
+  [{"id":16,"kind":"task","title":"Security audit","createdDate":"2025-09-16T09:00:00.000Z","updatedDate":"2025-09-16T12:00:00.000Z"},{"itemId":16,"dueDate":"2025-09-20T09:00:00.000Z","doneDate":null}],
+  [{"id":17,"kind":"task","title":"Implement caching layer","createdDate":"2025-09-17T09:00:00.000Z","updatedDate":"2025-09-17T12:00:00.000Z"},{"itemId":17,"dueDate":"2025-09-21T09:00:00.000Z","doneDate":null}],
+  [{"id":18,"kind":"task","title":"Review analytics reports","createdDate":"2025-09-18T09:00:00.000Z","updatedDate":"2025-09-18T12:00:00.000Z"},{"itemId":18,"dueDate":null,"doneDate":null}],
+  [{"id":19,"kind":"task","title":"Fix CSS layout issues","createdDate":"2025-09-19T09:00:00.000Z","updatedDate":"2025-09-19T12:00:00.000Z"},{"itemId":19,"dueDate":"2025-09-23T09:00:00.000Z","doneDate":null}],
+  [{"id":20,"kind":"task","title":"Set up monitoring alerts","createdDate":"2025-09-20T09:00:00.000Z","updatedDate":"2025-09-20T12:00:00.000Z"},{"itemId":20,"dueDate":"2025-09-24T09:00:00.000Z","doneDate":null}],
+  [{"id":21,"kind":"task","title":"Automate deployment","createdDate":"2025-09-21T09:00:00.000Z","updatedDate":"2025-09-21T12:00:00.000Z"},{"itemId":21,"dueDate":null,"doneDate":"2025-09-26T15:30:00.000Z"}],
+  [{"id":22,"kind":"task","title":"Benchmark new service","createdDate":"2025-09-22T09:00:00.000Z","updatedDate":"2025-09-22T12:00:00.000Z"},{"itemId":22,"dueDate":"2025-09-26T09:00:00.000Z","doneDate":null}],
+  [{"id":23,"kind":"task","title":"Organize team workshop","createdDate":"2025-09-23T09:00:00.000Z","updatedDate":"2025-09-23T12:00:00.000Z"},{"itemId":23,"dueDate":"2025-09-27T09:00:00.000Z","doneDate":null}],
+  [{"id":24,"kind":"task","title":"Update dependencies","createdDate":"2025-09-24T09:00:00.000Z","updatedDate":"2025-09-24T12:00:00.000Z"},{"itemId":24,"dueDate":null,"doneDate":null}],
+  [{"id":25,"kind":"task","title":"Cleanup codebase","createdDate":"2025-09-25T09:00:00.000Z","updatedDate":"2025-09-25T12:00:00.000Z"},{"itemId":25,"dueDate":"2025-09-29T09:00:00.000Z","doneDate":null}],
+  [{"id":26,"kind":"task","title":"Prepare quarterly report","createdDate":"2025-09-26T09:00:00.000Z","updatedDate":"2025-09-26T12:00:00.000Z"},{"itemId":26,"dueDate":"2025-09-30T09:00:00.000Z","doneDate":null}],
+  [{"id":27,"kind":"task","title":"Write unit tests","createdDate":"2025-09-27T09:00:00.000Z","updatedDate":"2025-09-27T12:00:00.000Z"},{"itemId":27,"dueDate":null,"doneDate":"2025-10-02T15:30:00.000Z"}],
+  [{"id":28,"kind":"task","title":"Refine UX design","createdDate":"2025-09-28T09:00:00.000Z","updatedDate":"2025-09-28T12:00:00.000Z"},{"itemId":28,"dueDate":"2025-10-02T09:00:00.000Z","doneDate":null}],
+  [{"id":29,"kind":"task","title":"Audit error logs","createdDate":"2025-09-29T09:00:00.000Z","updatedDate":"2025-09-29T12:00:00.000Z"},{"itemId":29,"dueDate":"2025-10-03T09:00:00.000Z","doneDate":null}],
+  [{"id":30,"kind":"task","title":"Implement search feature","createdDate":"2025-09-30T09:00:00.000Z","updatedDate":"2025-09-30T12:00:00.000Z"},{"itemId":30,"dueDate":null,"doneDate":null}],
+  [{"id":31,"kind":"task","title":"Conduct load testing","createdDate":"2025-10-01T09:00:00.000Z","updatedDate":"2025-10-01T12:00:00.000Z"},{"itemId":31,"dueDate":null,"doneDate":"2025-10-05T15:30:00.000Z"}],
+  [{"id":32,"kind":"task","title":"Draft release notes","createdDate":"2025-10-02T09:00:00.000Z","updatedDate":"2025-10-02T12:00:00.000Z"},{"itemId":32,"dueDate":"2025-10-08T09:00:00.000Z","doneDate":"2025-10-09T15:30:00.000Z"}],
+  [{"id":33,"kind":"task","title":"Fix broken builds","createdDate":"2025-10-03T09:00:00.000Z","updatedDate":"2025-10-03T12:00:00.000Z"},{"itemId":33,"dueDate":"2025-10-07T09:00:00.000Z","doneDate":null}],
+  [{"id":34,"kind":"task","title":"Plan marketing campaign","createdDate":"2025-10-04T09:00:00.000Z","updatedDate":"2025-10-04T12:00:00.000Z"},{"itemId":34,"dueDate":"2025-10-10T09:00:00.000Z","doneDate":null}],
+  [{"id":35,"kind":"task","title":"Review pull requests","createdDate":"2025-10-05T09:00:00.000Z","updatedDate":"2025-10-05T12:00:00.000Z"},{"itemId":35,"dueDate":"2025-10-11T09:00:00.000Z","doneDate":"2025-10-12T15:30:00.000Z"}],
+  [{"id":36,"kind":"task","title":"Optimize image assets","createdDate":"2025-10-06T09:00:00.000Z","updatedDate":"2025-10-06T12:00:00.000Z"},{"itemId":36,"dueDate":null,"doneDate":"2025-10-10T15:30:00.000Z"}],
+  [{"id":37,"kind":"task","title":"Run security scans","createdDate":"2025-10-07T09:00:00.000Z","updatedDate":"2025-10-07T12:00:00.000Z"},{"itemId":37,"dueDate":"2025-10-11T09:00:00.000Z","doneDate":null}],
+  [{"id":38,"kind":"task","title":"Update style guide","createdDate":"2025-10-08T09:00:00.000Z","updatedDate":"2025-10-08T12:00:00.000Z"},{"itemId":38,"dueDate":"2025-10-14T09:00:00.000Z","doneDate":null}],
+  [{"id":39,"kind":"task","title":"Host stakeholder meeting","createdDate":"2025-10-09T09:00:00.000Z","updatedDate":"2025-10-09T12:00:00.000Z"},{"itemId":39,"dueDate":null,"doneDate":"2025-10-13T15:30:00.000Z"}],
+  [{"id":40,"kind":"task","title":"Write migration scripts","createdDate":"2025-10-10T09:00:00.000Z","updatedDate":"2025-10-10T12:00:00.000Z"},{"itemId":40,"dueDate":"2025-10-16T09:00:00.000Z","doneDate":"2025-10-17T15:30:00.000Z"}],
+  [{"id":41,"kind":"task","title":"Setup staging server","createdDate":"2025-10-11T09:00:00.000Z","updatedDate":"2025-10-11T12:00:00.000Z"},{"itemId":41,"dueDate":null,"doneDate":"2025-10-15T15:30:00.000Z"}],
+  [{"id":42,"kind":"task","title":"Validate data models","createdDate":"2025-10-12T09:00:00.000Z","updatedDate":"2025-10-12T12:00:00.000Z"},{"itemId":42,"dueDate":"2025-10-16T09:00:00.000Z","doneDate":null}],
+  [{"id":43,"kind":"task","title":"Improve error handling","createdDate":"2025-10-13T09:00:00.000Z","updatedDate":"2025-10-13T12:00:00.000Z"},{"itemId":43,"dueDate":"2025-10-19T09:00:00.000Z","doneDate":null}],
+  [{"id":44,"kind":"task","title":"Conduct competitor analysis","createdDate":"2025-10-14T09:00:00.000Z","updatedDate":"2025-10-14T12:00:00.000Z"},{"itemId":44,"dueDate":"2025-10-18T09:00:00.000Z","doneDate":null}],
+  [{"id":45,"kind":"task","title":"Polish UI components","createdDate":"2025-10-15T09:00:00.000Z","updatedDate":"2025-10-15T12:00:00.000Z"},{"itemId":45,"dueDate":"2025-10-21T09:00:00.000Z","doneDate":"2025-10-22T15:30:00.000Z"}],
+  [{"id":46,"kind":"task","title":"Review legal compliance","createdDate":"2025-10-16T09:00:00.000Z","updatedDate":"2025-10-16T12:00:00.000Z"},{"itemId":46,"dueDate":"2025-10-22T09:00:00.000Z","doneDate":"2025-10-23T15:30:00.000Z"}],
+  [{"id":47,"kind":"task","title":"Fix memory leaks","createdDate":"2025-10-17T09:00:00.000Z","updatedDate":"2025-10-17T12:00:00.000Z"},{"itemId":47,"dueDate":null,"doneDate":"2025-10-21T15:30:00.000Z"}],
+  [{"id":48,"kind":"task","title":"Train new hires","createdDate":"2025-10-18T09:00:00.000Z","updatedDate":"2025-10-18T12:00:00.000Z"},{"itemId":48,"dueDate":"2025-10-24T09:00:00.000Z","doneDate":"2025-10-25T15:30:00.000Z"}],
+  [{"id":49,"kind":"task","title":"Design landing page","createdDate":"2025-10-19T09:00:00.000Z","updatedDate":"2025-10-19T12:00:00.000Z"},{"itemId":49,"dueDate":"2025-10-25T09:00:00.000Z","doneDate":null}],
+  [{"id":50,"kind":"task","title":"Collect customer feedback","createdDate":"2025-10-20T09:00:00.000Z","updatedDate":"2025-10-20T12:00:00.000Z"},{"itemId":50,"dueDate":"2025-10-26T09:00:00.000Z","doneDate":"2025-10-27T15:30:00.000Z"}],
+  [{"id":51,"kind":"task","title":"Refactor notification service","createdDate":"2025-10-21T09:00:00.000Z","updatedDate":"2025-10-21T12:00:00.000Z"},{"itemId":51,"dueDate":null,"doneDate":"2025-10-25T15:30:00.000Z"}],
+  [{"id":52,"kind":"task","title":"A/B test homepage","createdDate":"2025-10-22T09:00:00.000Z","updatedDate":"2025-10-22T12:00:00.000Z"},{"itemId":52,"dueDate":"2025-10-28T09:00:00.000Z","doneDate":"2025-10-29T15:30:00.000Z"}],
+  [{"id":53,"kind":"task","title":"Migrate logs to ELK","createdDate":"2025-10-23T09:00:00.000Z","updatedDate":"2025-10-23T12:00:00.000Z"},{"itemId":53,"dueDate":"2025-10-27T09:00:00.000Z","doneDate":null}],
+  [{"id":54,"kind":"task","title":"Write data retention policy","createdDate":"2025-10-24T09:00:00.000Z","updatedDate":"2025-10-24T12:00:00.000Z"},{"itemId":54,"dueDate":"2025-10-30T09:00:00.000Z","doneDate":null}],
+  [{"id":55,"kind":"task","title":"Localize onboarding flow","createdDate":"2025-10-25T09:00:00.000Z","updatedDate":"2025-10-25T12:00:00.000Z"},{"itemId":55,"dueDate":"2025-10-31T09:00:00.000Z","doneDate":"2025-11-01T15:30:00.000Z"}],
+  [{"id":56,"kind":"task","title":"Backfill analytics events","createdDate":"2025-10-26T09:00:00.000Z","updatedDate":"2025-10-26T12:00:00.000Z"},{"itemId":56,"dueDate":null,"doneDate":"2025-10-30T15:30:00.000Z"}],
+  [{"id":57,"kind":"task","title":"Reduce bundle size","createdDate":"2025-10-27T09:00:00.000Z","updatedDate":"2025-10-27T12:00:00.000Z"},{"itemId":57,"dueDate":"2025-10-31T09:00:00.000Z","doneDate":null}],
+  [{"id":58,"kind":"task","title":"Enable HTTP/3","createdDate":"2025-10-28T09:00:00.000Z","updatedDate":"2025-10-28T12:00:00.000Z"},{"itemId":58,"dueDate":"2025-11-03T09:00:00.000Z","doneDate":"2025-11-04T15:30:00.000Z"}],
+  [{"id":59,"kind":"task","title":"Purge deprecated endpoints","createdDate":"2025-10-29T09:00:00.000Z","updatedDate":"2025-10-29T12:00:00.000Z"},{"itemId":59,"dueDate":null,"doneDate":"2025-11-02T15:30:00.000Z"}],
+  [{"id":60,"kind":"task","title":"Tune Postgres autovacuum","createdDate":"2025-10-30T09:00:00.000Z","updatedDate":"2025-10-30T12:00:00.000Z"},{"itemId":60,"dueDate":"2025-11-05T09:00:00.000Z","doneDate":"2025-11-06T15:30:00.000Z"}],
+  [{"id":61,"kind":"task","title":"Harden CSP headers","createdDate":"2025-10-31T09:00:00.000Z","updatedDate":"2025-10-31T12:00:00.000Z"},{"itemId":61,"dueDate":null,"doneDate":"2025-11-04T15:30:00.000Z"}],
+  [{"id":62,"kind":"task","title":"Archive stale branches","createdDate":"2025-11-01T09:00:00.000Z","updatedDate":"2025-11-01T12:00:00.000Z"},{"itemId":62,"dueDate":"2025-11-07T09:00:00.000Z","doneDate":"2025-11-08T15:30:00.000Z"}],
+  [{"id":63,"kind":"task","title":"Document runbooks","createdDate":"2025-11-02T09:00:00.000Z","updatedDate":"2025-11-02T12:00:00.000Z"},{"itemId":63,"dueDate":"2025-11-06T09:00:00.000Z","doneDate":null}],
+  [{"id":64,"kind":"task","title":"Rotate API keys","createdDate":"2025-11-03T09:00:00.000Z","updatedDate":"2025-11-03T12:00:00.000Z"},{"itemId":64,"dueDate":"2025-11-09T09:00:00.000Z","doneDate":null}],
+  [{"id":65,"kind":"task","title":"Add 2FA enforcement","createdDate":"2025-11-04T09:00:00.000Z","updatedDate":"2025-11-04T12:00:00.000Z"},{"itemId":65,"dueDate":"2025-11-10T09:00:00.000Z","doneDate":"2025-11-11T15:30:00.000Z"}],
+  [{"id":66,"kind":"task","title":"Upgrade Kubernetes cluster","createdDate":"2025-11-05T09:00:00.000Z","updatedDate":"2025-11-05T12:00:00.000Z"},{"itemId":66,"dueDate":null,"doneDate":"2025-11-09T15:30:00.000Z"}],
+  [{"id":67,"kind":"task","title":"Consolidate feature flags","createdDate":"2025-11-06T09:00:00.000Z","updatedDate":"2025-11-06T12:00:00.000Z"},{"itemId":67,"dueDate":"2025-11-10T09:00:00.000Z","doneDate":null}],
+  [{"id":68,"kind":"task","title":"Chaos testing drill","createdDate":"2025-11-07T09:00:00.000Z","updatedDate":"2025-11-07T12:00:00.000Z"},{"itemId":68,"dueDate":"2025-11-13T09:00:00.000Z","doneDate":"2025-11-14T15:30:00.000Z"}],
+  [{"id":69,"kind":"task","title":"Migrate CI to GitHub Actions","createdDate":"2025-11-08T09:00:00.000Z","updatedDate":"2025-11-08T12:00:00.000Z"},{"itemId":69,"dueDate":null,"doneDate":"2025-11-12T15:30:00.000Z"}],
+  [{"id":70,"kind":"task","title":"Improve 404 page UX","createdDate":"2025-11-09T09:00:00.000Z","updatedDate":"2025-11-09T12:00:00.000Z"},{"itemId":70,"dueDate":"2025-11-15T09:00:00.000Z","doneDate":"2025-11-16T15:30:00.000Z"}],
+  [{"id":71,"kind":"task","title":"Introduce rate limiting","createdDate":"2025-11-10T09:00:00.000Z","updatedDate":"2025-11-10T12:00:00.000Z"},{"itemId":71,"dueDate":null,"doneDate":"2025-11-14T15:30:00.000Z"}],
+  [{"id":72,"kind":"task","title":"Rebuild Docker images","createdDate":"2025-11-11T09:00:00.000Z","updatedDate":"2025-11-11T12:00:00.000Z"},{"itemId":72,"dueDate":"2025-11-17T09:00:00.000Z","doneDate":"2025-11-18T15:30:00.000Z"}],
+  [{"id":73,"kind":"task","title":"Stress test message queue","createdDate":"2025-11-12T09:00:00.000Z","updatedDate":"2025-11-12T12:00:00.000Z"},{"itemId":73,"dueDate":"2025-11-16T09:00:00.000Z","doneDate":null}],
+  [{"id":74,"kind":"task","title":"Normalize DB schemas","createdDate":"2025-11-13T09:00:00.000Z","updatedDate":"2025-11-13T12:00:00.000Z"},{"itemId":74,"dueDate":"2025-11-19T09:00:00.000Z","doneDate":null}],
+  [{"id":75,"kind":"task","title":"Create incident postmortem","createdDate":"2025-11-14T09:00:00.000Z","updatedDate":"2025-11-14T12:00:00.000Z"},{"itemId":75,"dueDate":"2025-11-20T09:00:00.000Z","doneDate":"2025-11-21T15:30:00.000Z"}],
+  [{"id":76,"kind":"task","title":"Refine search ranking","createdDate":"2025-11-15T09:00:00.000Z","updatedDate":"2025-11-15T12:00:00.000Z"},{"itemId":76,"dueDate":null,"doneDate":"2025-11-19T15:30:00.000Z"}],
+  [{"id":77,"kind":"task","title":"Ship dark mode","createdDate":"2025-11-16T09:00:00.000Z","updatedDate":"2025-11-16T12:00:00.000Z"},{"itemId":77,"dueDate":"2025-11-20T09:00:00.000Z","doneDate":null}],
+  [{"id":78,"kind":"task","title":"Add ARIA labels","createdDate":"2025-11-17T09:00:00.000Z","updatedDate":"2025-11-17T12:00:00.000Z"},{"itemId":78,"dueDate":"2025-11-23T09:00:00.000Z","doneDate":"2025-11-24T15:30:00.000Z"}],
+  [{"id":79,"kind":"task","title":"Triage flaky tests","createdDate":"2025-11-18T09:00:00.000Z","updatedDate":"2025-11-18T12:00:00.000Z"},{"itemId":79,"dueDate":null,"doneDate":"2025-11-22T15:30:00.000Z"}],
+  [{"id":80,"kind":"task","title":"Implement soft deletes","createdDate":"2025-11-19T09:00:00.000Z","updatedDate":"2025-11-19T12:00:00.000Z"},{"itemId":80,"dueDate":"2025-11-25T09:00:00.000Z","doneDate":"2025-11-26T15:30:00.000Z"}],
+  [{"id":81,"kind":"task","title":"P95 latency review","createdDate":"2025-11-20T09:00:00.000Z","updatedDate":"2025-11-20T12:00:00.000Z"},{"itemId":81,"dueDate":null,"doneDate":"2025-11-24T15:30:00.000Z"}],
+  [{"id":82,"kind":"task","title":"Warm up cache strategy","createdDate":"2025-11-21T09:00:00.000Z","updatedDate":"2025-11-21T12:00:00.000Z"},{"itemId":82,"dueDate":"2025-11-27T09:00:00.000Z","doneDate":"2025-11-28T15:30:00.000Z"}],
+  [{"id":83,"kind":"task","title":"Consolidate NPM workspaces","createdDate":"2025-11-22T09:00:00.000Z","updatedDate":"2025-11-22T12:00:00.000Z"},{"itemId":83,"dueDate":"2025-11-26T09:00:00.000Z","doneDate":null}],
+  [{"id":84,"kind":"task","title":"Remove jQuery remnants","createdDate":"2025-11-23T09:00:00.000Z","updatedDate":"2025-11-23T12:00:00.000Z"},{"itemId":84,"dueDate":"2025-11-29T09:00:00.000Z","doneDate":null}],
+  [{"id":85,"kind":"task","title":"Set up SLO dashboards","createdDate":"2025-11-24T09:00:00.000Z","updatedDate":"2025-11-24T12:00:00.000Z"},{"itemId":85,"dueDate":"2025-11-30T09:00:00.000Z","doneDate":"2025-12-01T15:30:00.000Z"}],
+  [{"id":86,"kind":"task","title":"Encrypt S3 buckets","createdDate":"2025-11-25T09:00:00.000Z","updatedDate":"2025-11-25T12:00:00.000Z"},{"itemId":86,"dueDate":null,"doneDate":"2025-11-29T15:30:00.000Z"}],
+  [{"id":87,"kind":"task","title":"Set up blue/green deploys","createdDate":"2025-11-26T09:00:00.000Z","updatedDate":"2025-11-26T12:00:00.000Z"},{"itemId":87,"dueDate":"2025-11-30T09:00:00.000Z","doneDate":null}],
+  [{"id":88,"kind":"task","title":"Write cookie consent banner","createdDate":"2025-11-27T09:00:00.000Z","updatedDate":"2025-11-27T12:00:00.000Z"},{"itemId":88,"dueDate":"2025-12-03T09:00:00.000Z","doneDate":"2025-12-04T15:30:00.000Z"}],
+  [{"id":89,"kind":"task","title":"Segment power users","createdDate":"2025-11-28T09:00:00.000Z","updatedDate":"2025-11-28T12:00:00.000Z"},{"itemId":89,"dueDate":null,"doneDate":"2025-12-02T15:30:00.000Z"}],
+  [{"id":90,"kind":"task","title":"Decommission legacy cronjobs","createdDate":"2025-11-29T09:00:00.000Z","updatedDate":"2025-11-29T12:00:00.000Z"},{"itemId":90,"dueDate":"2025-12-05T09:00:00.000Z","doneDate":"2025-12-06T15:30:00.000Z"}],
+  [{"id":91,"kind":"task","title":"Set up feature telemetry","createdDate":"2025-11-30T09:00:00.000Z","updatedDate":"2025-11-30T12:00:00.000Z"},{"itemId":91,"dueDate":null,"doneDate":"2025-12-04T15:30:00.000Z"}],
+  [{"id":92,"kind":"task","title":"Optimize cold starts","createdDate":"2025-12-01T09:00:00.000Z","updatedDate":"2025-12-01T12:00:00.000Z"},{"itemId":92,"dueDate":"2025-12-07T09:00:00.000Z","doneDate":"2025-12-08T15:30:00.000Z"}],
+  [{"id":93,"kind":"task","title":"Instrument tracing spans","createdDate":"2025-12-02T09:00:00.000Z","updatedDate":"2025-12-02T12:00:00.000Z"},{"itemId":93,"dueDate":"2025-12-06T09:00:00.000Z","doneDate":null}],
+  [{"id":94,"kind":"task","title":"Add idempotency keys","createdDate":"2025-12-03T09:00:00.000Z","updatedDate":"2025-12-03T12:00:00.000Z"},{"itemId":94,"dueDate":"2025-12-09T09:00:00.000Z","doneDate":null}],
+  [{"id":95,"kind":"task","title":"Lint SQL queries","createdDate":"2025-12-04T09:00:00.000Z","updatedDate":"2025-12-04T12:00:00.000Z"},{"itemId":95,"dueDate":"2025-12-10T09:00:00.000Z","doneDate":"2025-12-11T15:30:00.000Z"}],
+  [{"id":96,"kind":"task","title":"Partition audit tables","createdDate":"2025-12-05T09:00:00.000Z","updatedDate":"2025-12-05T12:00:00.000Z"},{"itemId":96,"dueDate":null,"doneDate":"2025-12-09T15:30:00.000Z"}],
+  [{"id":97,"kind":"task","title":"Compress media uploads","createdDate":"2025-12-06T09:00:00.000Z","updatedDate":"2025-12-06T12:00:00.000Z"},{"itemId":97,"dueDate":"2025-12-10T09:00:00.000Z","doneDate":null}],
+  [{"id":98,"kind":"task","title":"Introduce canary releases","createdDate":"2025-12-07T09:00:00.000Z","updatedDate":"2025-12-07T12:00:00.000Z"},{"itemId":98,"dueDate":"2025-12-13T09:00:00.000Z","doneDate":"2025-12-14T15:30:00.000Z"}],
+  [{"id":99,"kind":"task","title":"Set up error budgets","createdDate":"2025-12-08T09:00:00.000Z","updatedDate":"2025-12-08T12:00:00.000Z"},{"itemId":99,"dueDate":null,"doneDate":"2025-12-12T15:30:00.000Z"}],
+  [{"id":100,"kind":"task","title":"Automate schema migrations","createdDate":"2025-12-09T09:00:00.000Z","updatedDate":"2025-12-09T12:00:00.000Z"},{"itemId":100,"dueDate":"2025-12-15T09:00:00.000Z","doneDate":"2025-12-16T15:30:00.000Z"}]
 ]
 
-// Generate random datetime within last 30 days
-function randomRecentDate() {
-  const now = new Date()
-  const thirtyDaysAgo = new Date(now.getTime() - (30 * 24 * 60 * 60 * 1000))
-  const randomTime = thirtyDaysAgo.getTime() + Math.random() * (now.getTime() - thirtyDaysAgo.getTime())
-  return new Date(randomTime).toISOString()
-}
 
-// Generate random datetime for updated (after created)
-function randomUpdatedDate(createdDate) {
-  const created = new Date(createdDate)
-  const now = new Date()
-  const randomTime = created.getTime() + Math.random() * (now.getTime() - created.getTime())
-  return new Date(randomTime).toISOString()
-}
+function insertSamples() {
+  const insertItem = db.prepare('INSERT INTO items (id, kind, title, createdDate, updatedDate) VALUES (?, ?, ?, ?, ?)')
+  const insertTaskItem = db.prepare('INSERT INTO taskItems (itemId, dueDate, doneDate) VALUES (?, ?, ?)')
 
-function seedDatabase() {
-  console.log('Seeding database with 100 random items...')
-  
-  const insertItem = db.prepare('INSERT INTO items (kind, title) VALUES (?, ?)')
-  const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
-  
-  // Generate 100 items
-  for (let i = 0; i < 100; i++) {
-    const kind = itemKinds[Math.floor(Math.random() * itemKinds.length)]
-    const title = sampleTitles[Math.floor(Math.random() * sampleTitles.length)]
-    const createdAt = randomRecentDate()
-    const updatedAt = randomUpdatedDate(createdAt)
-    
-    // Insert item
-    const result = insertItem.run(kind, title)
-    const itemId = result.lastInsertRowid
-    
-    // Insert timestamps
-    insertTimestamp.run(itemId, 'created', createdAt)
-    insertTimestamp.run(itemId, 'updated', updatedAt)
-    
-    // Randomly add some additional timestamps for variety
-    if (Math.random() < 0.3) { // 30% chance
-      const dueDate = new Date(new Date(createdAt).getTime() + Math.random() * 14 * 24 * 60 * 60 * 1000).toISOString()
-      insertTimestamp.run(itemId, 'due', dueDate)
-    }
-    
-    if (Math.random() < 0.2) { // 20% chance
-      const completedDate = randomUpdatedDate(updatedAt)
-      insertTimestamp.run(itemId, 'completed', completedDate)
-    }
-    
-    if (i % 10 === 0) {
-      console.log(`Inserted ${i + 1} items...`)
-    }
+  for (let sample of samples) {
+    const [item, taskItem] = sample
+    insertItem.run(item.id, item.kind, item.title, item.createdDate, item.updatedDate)
+    insertTaskItem.run(taskItem.itemId, taskItem.dueDate, taskItem.doneDate)
   }
-  
-  console.log('✅ Successfully seeded 100 items!')
-  
-  // Show some stats
-  const itemCount = db.prepare('SELECT COUNT(*) as count FROM items').get().count
-  const timestampCount = db.prepare('SELECT COUNT(*) as count FROM timestamps').get().count
-  
-  console.log(`Total items: ${itemCount}`)
-  console.log(`Total timestamps: ${timestampCount}`)
 }
 
-
-seedDatabase()
+insertSamples()

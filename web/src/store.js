@@ -19,30 +19,80 @@ const scope = (key, createFn) => (set, get, api) => {
 }
 
  
-const createActionSlice = (set) => ({
-  value: null,
+const createAsyncValueSlice = (initialValue) => (set, get) => ({
+  value: initialValue,
   error: null,
   loading: false,
 
   setLoading: () => set({ loading: true }),
-  setSuccess: (value) => set({ value, loading: false }),
-  setFailure: (error) => set({ error, loading: false })
+  setSuccess: (value) => set({ loading: false, error: null, value }),
+  setFailure: (error) => set({ loading: false, error }),
+})
+
+
+const createAsyncActionSlice = (fn) => (set, get) => ({
+  value: null,
+  error: null,
+  loading: false,
+
+  run: async (...args) => {
+    if (get().loading) { return }
+
+    try {
+      const value = await fn(...args)
+      set({ value, loading: false, error: null })
+
+    } catch (error) {
+      set({ value: null, loading: false, error })
+      return
+    }
+  },
 })
 
 
 const createCreateItemSlice = (set, get) => ({
-  ...createActionSlice(set),
+  ...createAsyncActionSlice(item => api.createItem(item))(set, get)
+})
 
-  run: async ({ title, kind }) => {
+
+const createIndexSlice = (set, get) => ({
+  ...createAsyncValueSlice(set, get),
+
+  fetch: async (order) => {
     if (get().loading) { return }
-    get().setLoading()
 
     try {
-      const { item } = await api.createItem({ title, kind })
-      get().setSuccess(item)
+      const value = await api.fetchIndex(order)
+      set({ value, loading: false, error: null })
 
     } catch (error) {
-      get().setFailure(error)
+      set({ loading: false, error })
+      return
+    }
+  }
+})
+
+const createItemsSlice = (set, get) => ({
+  byId: {},
+
+  fetch: async (ids) => {
+    const byId = get().byId
+
+    for (let id of ids) {
+      if (id in byId) {
+        byId[id].setLoading()
+      } else {
+        byId[id] = createAsyncValueSlice(null)(set, get)
+      }
+    }
+
+    try {
+      const value = await api.fetchIndex(order)
+      set({ value, loading: false, error: null })
+
+    } catch (error) {
+      set({ loading: false, error })
+      return
     }
   }
 })
@@ -50,22 +100,11 @@ const createCreateItemSlice = (set, get) => ({
 
 const createTimelineSlice = (set, get) => ({
   items  : [],
-  total  : null,
   error  : null,
   loading: false,
-  stale  : false,
-  sort   : 'created',
-  order  : 'desc',
 
-  loadMore: async () => {
-    const s = get()
+  fetch: async (ids) => {
 
-    let start
-    if (s.items.length > 0) {
-      start = api.addMs(s.items[s.items.length - 1].datetime, 1) // TODO this sucks
-    }
-
-    s.addItems(api.fetchItems(s.sort, s.order, 20, start))
   },
 
   addItems: async (data, mode) => {
@@ -100,6 +139,7 @@ const createTimelineSlice = (set, get) => ({
 
 
 export const useStore = zs.create((...a) => ({
+  ...scope('index', createIndexSlice)(...a),
   ...scope('timeline', createTimelineSlice)(...a),
-  ...scope('createItem', createCreateItemSlice)(...a)
+  ...scope('createItem', createCreateItemSlice)(...a),
 }))
