@@ -1,11 +1,11 @@
 import React from 'react'
 
-function NoteItem({ item }) {
+function NoteItem({ entry, item }) {
   return (
     <article className="item note">
       <header>
         <h3>{item.title || 'Untitled'}</h3>
-        <small>{new Date(item.timestamp).toLocaleString()}</small>
+        <small>{new Date(entry.date).toLocaleString()}</small>
       </header>
       <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
       <footer>
@@ -15,14 +15,14 @@ function NoteItem({ item }) {
   )
 }
 
-function TaskItem({ item }) {
+function TaskItem({ entry, item }) {
   return (
     <article className="item task">
       <header>
         <h3>
           <input type="checkbox" disabled /> {item.title || 'Untitled'}
         </h3>
-        <small>{new Date(item.timestamp).toLocaleString()}</small>
+        <small>{new Date(entry.date).toLocaleString()}</small>
       </header>
       <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
       <footer>
@@ -32,10 +32,10 @@ function TaskItem({ item }) {
   )
 }
 
-export default function TimelineItem({ item }) {
+export default function TimelineItem({ entry, item }) {
   if (item.kind === 'task') {
-    return <TaskItem item={item} />
+    return <TaskItem entry={entry} item={item} />
   } else {
-    return <NoteItem item={item} />
+    return <NoteItem entry={entry} item={item} />
   }
 }

@@ -19,17 +19,6 @@ const scope = (key, createFn) => (set, get, api) => {
 }
 
  
-const createAsyncValueSlice = (initialValue) => (set, get) => ({
-  value: initialValue,
-  error: null,
-  loading: false,
-
-  setLoading: () => set({ loading: true }),
-  setSuccess: (value) => set({ loading: false, error: null, value }),
-  setFailure: (error) => set({ loading: false, error }),
-})
-
-
 const createAsyncActionSlice = (fn) => (set, get) => ({
   value: null,
   error: null,
@@ -56,7 +45,9 @@ const createCreateItemSlice = (set, get) => ({
 
 
 const createIndexSlice = (set, get) => ({
-  ...createAsyncValueSlice(set, get),
+  value: null,
+  error: null,
+  loading: false,
 
   fetch: async (order) => {
     if (get().loading) { return }
@@ -72,74 +63,54 @@ const createIndexSlice = (set, get) => ({
   }
 })
 
-const createItemsSlice = (set, get) => ({
-  byId: {},
 
-  fetch: async (ids) => {
-    const byId = get().byId
+const createItemsSlice = (set, get) => {
+  const cache = {}
+  const pending = {}
+  let latestFetch = Promise.resolve()
 
-    for (let id of ids) {
-      if (id in byId) {
-        byId[id].setLoading()
-      } else {
-        byId[id] = createAsyncValueSlice(null)(set, get)
-      }
-    }
+  const fetchPending = async () => {
+    const batch = Object.keys(pending)
+    if (batch.length == 0) { return }
 
     try {
-      const value = await api.fetchIndex(order)
-      set({ value, loading: false, error: null })
+      const { items } = await api.fetchItems(batch)
 
-    } catch (error) {
-      set({ loading: false, error })
-      return
+      for (let item of items) {
+        cache[item.id] = item
+        delete pending[item.id]
+      }
+
+      set(cache)
+
+    } catch (err) {
+      console.error(err)
+      return new Promise(resolve => setTimeout(resolve, 1000)).then(fetchPending)
     }
   }
-})
 
-
-const createTimelineSlice = (set, get) => ({
-  items  : [],
-  error  : null,
-  loading: false,
-
-  fetch: async (ids) => {
-
-  },
-
-  addItems: async (data, mode) => {
-    if (get().loading) { return }
-
-    if (typeof data.then == 'function') {
-      set({ loading: true })
-
-      try {
-        data = await data
-        set({ loading: false, error: null })
-
-      } catch (error) {
-        set({ loading: false, error })
-        return
-      }
+  const schedulePending = (ids) => {
+    for (let id of ids) {
+      if (id in cache || id in pending) { continue }
+      pending[id] = true
     }
 
-    const items = 
-      mode == 'prepend' ? [...data.items, ...get().items] :
-      mode == 'replace' ? data.items :
-      [...get().items, ...data.items]     
+    latestFetch = latestFetch.then(fetchPending)
+  }
 
-    set({ items })
-  },
+  const slice = {}
 
-  removeItem: (itemId) => {
-    const items = get().items
-    set({ items: items.filter(item => item.id !== itemId) })
-  },
-})
+  Object.defineProperty(slice, 'fetch', {
+    enumerable: false,
+    value: (ids) => { schedulePending(ids) }
+  })
+
+  return slice
+}
 
 
 export const useStore = zs.create((...a) => ({
   ...scope('index', createIndexSlice)(...a),
-  ...scope('timeline', createTimelineSlice)(...a),
+  ...scope('items', createItemsSlice)(...a),
   ...scope('createItem', createCreateItemSlice)(...a),
 }))

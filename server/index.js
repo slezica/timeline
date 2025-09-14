@@ -95,9 +95,9 @@ app.get('/api/items', (req, res) => {
         WHEN 'task' THEN json_object(
           'dueDate', taskItems.dueDate,
           'doneDate', taskItems.doneDate
-        ),
+        )
         ELSE json_object()
-      END
+      END AS extras
     FROM items
       JOIN taskItems on taskItems.itemId=items.id AND items.kind='task'
     WHERE
@@ -105,15 +105,20 @@ app.get('/api/items', (req, res) => {
   `
   
   try {
-    const items = db.prepare(query).all(...params)
-    res.json({ items, total })
+    const items = db.prepare(query)
+      .all(...ids)
+      .map(it => {
+        Object.assign(it, JSON.parse(it.extras))
+        delete it.extras
+        return it
+      })
+
+    res.json({ items })
 
   } catch (error) {
     console.error('[api]:', error)
     res.status(500).json({ error: error.message })
   }
-
-  res.json({ items })
 })
 
 app.post('/api/items', (req, res) => {

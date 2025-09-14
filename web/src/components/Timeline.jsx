@@ -1,70 +1,88 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useInView } from "react-intersection-observer"
 import { useStore } from '../store'
 import TimelineItem from './TimelineItem'
 
+const SENTINEL_SPACING = 50
+
+
 export default function Timeline() {
   const index = useStore(state => state.index)
-  const timeline = useStore(state => state.timeline)
-  const sentinelRef = useRef(null)
+  const items = useStore(state => state.items)
 
-  const handleLoadMore = () => {
-    timeline.loadMore()
+  const handleSentinelReveal = (position) => {
+    if (!index.value) {
+      Promise.resolve().then(() => handleSentinelReveal(position))
+      return
+    }
+
+    const idToFetch = []
+    const start = Math.max(position - SENTINEL_SPACING, 0)
+    const end = Math.min(position + SENTINEL_SPACING, index.value.entries.length)
+
+    for ( let i = start; i < end; i++) {
+      idToFetch.push(index.value.entries[i].itemId)
+    }
+
+    items.fetch(idToFetch)
   }
 
-  const handleRetry = () => {
-    handleLoadMore()
-  }
+  return (
+    <section className="timeline">
+      { index.value &&
+        index.value.entries.map((entry, i) => [
+          <div className="timeline-entry" key={entry.itemId + entry.kind}>
+          { items[entry.itemId]
+            ? <TimelineItem entry={entry} item={items[entry.itemId]} />
+            : <div>placeholder</div>
+          }
+          </div>,
+
+          (i % SENTINEL_SPACING == 0) &&
+            <Sentinel position={i} onFirstReveal={handleSentinelReveal} key={"sentinel" + i} />
+        ]
+      )}
+
+      {index.loading && (
+        <div aria-busy="true">Loading...</div>
+      )}
+
+      {index.error && (
+        <div role="alert">
+        Error: {timeline.error.message || timeline.error}
+        <button onClick={handleRetry}>Retry</button>
+        </div>
+      )}
+    </section>
+  )
+}
+
+function Sentinel({ position, onFirstReveal, onReveal }) {
+  const ref = useRef()
+  const [revealedOnce, setRevealedOnce] = useState(false)
 
   useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
+    const el = ref.current
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (timeline.loading) return
         for (let entry of entries) {
-          if (entry.isIntersecting) { handleLoadMore() }
+          if (!entry.isIntersecting) { continue }
+
+          if (!revealedOnce) {
+            setRevealedOnce(true)
+            onFirstReveal?.(position)
+          }
+
+          onReveal?.(position)
+          return
         }
       },
       { rootMargin: '1024px' }
     )
 
-    observer.observe(sentinel)
+    observer.observe(el)
+  }, [])
 
-    return () => {
-      observer.disconnect()
-    }
-  }, [timeline.loading, handleLoadMore])
-
-  // Load initial items
-  useEffect(() => {
-    if (timeline.items.length === 0 && !timeline.loading) {
-      handleLoadMore()
-    }
-  }, [timeline.items.length, timeline.loading, handleLoadMore])
-
-  return (
-    <section className="timeline">
-      {timeline.items.map((item, index) => (
-        <TimelineItem key={`${item.id}-${index}`} item={item} />
-      ))}
-      
-      <div ref={sentinelRef} />
-      
-      {timeline.loading && (
-        <div aria-busy="true">Loading...</div>
-      )}
-      
-      {timeline.error && (
-        <div role="alert">
-          Error: {timeline.error.message || timeline.error}
-          <button onClick={handleRetry}>Retry</button>
-        </div>
-      )}
-      
-      {timeline.total !== null && timeline.items.length >= timeline.total && !timeline.loading && (
-        <p><em>No more items</em></p>
-      )}
-    </section>
-  )
+  return <div data-position={position} className="sentinel" ref={ref} />
 }

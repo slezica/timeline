@@ -22,6 +22,10 @@
 main.container {
   /* padding: var(--pico-spacing) 0; */
   max-width: 720px;
+  max-height: 100vh;
+  padding-bottom: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 form fieldset.inline {
@@ -45,6 +49,10 @@ form fieldset.inline button {
   flex: 0;
   margin-bottom: 0;
   white-space: nowrap;
+}
+
+.timeline {
+  overflow: auto;
 }
 
 /* Item type styling */
