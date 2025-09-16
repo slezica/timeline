@@ -4,7 +4,8 @@ import { useStore } from '../store'
 
 export default function CreateItemForm() {
   const createItem = useStore(state => state.createItem)
-  const timeline = useStore(state => state.timeline)
+  const index = useStore(state => state.index)
+  const items = useStore(state => state.items)
 
   const [title, setTitle] = useState('')
   const [kind, setKind] = useState('task')
@@ -37,7 +38,7 @@ export default function CreateItemForm() {
     }
 
     // Add optimistically to timeline
-    timeline.addItems({ items: [optimisticItem] }, 'prepend')
+    // timeline.addItems({ items: [optimisticItem] }, 'prepend')
 
     try {
       const itemData = Object.assign(extras, { title: title.trim(), kind: kind })
@@ -47,13 +48,13 @@ export default function CreateItemForm() {
       setExtras({})
 
     } catch (error) {
-      timeline.removeItem(optimisticItem.id)
+      // timeline.removeItem(optimisticItem.id)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <fieldset className="inline">
+    <form className="search-or-create" onSubmit={handleSubmit}>
+      <fieldset>
         <select
           value={kind}
           onChange={(e) => setKind(e.target.value)}
@@ -71,12 +72,6 @@ export default function CreateItemForm() {
           aria-busy={createItem.loading}
           ref={inputRef}
         />
-        <button 
-          type="submit" 
-          disabled={!title.trim() || createItem.loading}
-        >
-          {createItem.loading ? 'Creating...' : 'Create'}
-        </button>
       </fieldset>
 
       {kind === 'task' && (
@@ -86,6 +81,14 @@ export default function CreateItemForm() {
           disabled={createItem.loading}
         />
       )}
+
+      <button 
+        type="submit" 
+        disabled={!title.trim() || createItem.loading}
+        >
+          {createItem.loading ? 'Creating...' : 'Create'}
+      </button>
+
 
       {createItem.error && (
         <div role="alert">
@@ -113,25 +116,23 @@ function TaskItemFields({ value, onChange, disabled }) {
 
   return (
     <fieldset>
-      <div className="grid">
-        <div>
-          <label>Due Date</label>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => handleDueDateChange(e.target.value)}
-            disabled={disabled}
-          />
-        </div>
-        <div>
-          <label>Done Date</label>
-          <input
-            type="date"
-            value={doneDate}
-            onChange={(e) => handleDoneDateChange(e.target.value)}
-            disabled={disabled}
-          />
-        </div>
+      <div>
+        <label>Due Date</label>
+        <input
+          type="date"
+          value={dueDate}
+          onChange={(e) => handleDueDateChange(e.target.value)}
+          disabled={disabled}
+        />
+      </div>
+      <div>
+        <label>Done Date</label>
+        <input
+          type="date"
+          value={doneDate}
+          onChange={(e) => handleDoneDateChange(e.target.value)}
+          disabled={disabled}
+        />
       </div>
     </fieldset>
   )
