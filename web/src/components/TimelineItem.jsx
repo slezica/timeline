@@ -23,17 +23,13 @@ function TaskItemExtras({ entry, item }) {
 
   return (
     <>
-      <form>
-        <div className="grid">
-          <div>
-            <label>Due Date</label>
-            <input type="datetime-local" value={"2017-06-01T08:30"} onChange={handleDueDateChange} />
-          </div>
-          <div>
-            <label>Done Date</label>
-            <input type="datetime-local" value={doneDate} onChange={handleDoneDateChange} />
-          </div>
-        </div>
+      <form className="inline">
+        <fieldset className="inline">
+          <label>Due</label>
+          <input type="datetime-local" value={"2017-06-01T08:30"} onChange={handleDueDateChange} />
+          <label>Done</label>
+          <input type="datetime-local" value={doneDate} onChange={handleDoneDateChange} />
+        </fieldset>
       </form>
     </>
   )

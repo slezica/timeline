@@ -3,21 +3,58 @@
 :root {
   --pico-font-size: 14px;
 
-  --black: #2a2a2b;
-  --black-light: #333333;
-  --black-lighter: #4a4a4a;
-  --white: #d7e3de;
-  --white-dark: #c9d0c8;
-  --white-darker: #75848a;
-  --red: #fe6c6c;
-  --blue: #75c4ff;
-  --yellow: #feb800;
-  --green: #7fd991;
-  --pink: #ff83cd;
-  --purple: #b0a4ff;
-  --cyan: #00bbc6;
-  --gray: #b8b8b8;
+  /* --black: #2a2a2b; */
+  /* --black-light: #333333; */
+  /* --black-lighter: #4a4a4a; */
+  /* --white: #d7e3de; */
+  /* --white-dark: #c9d0c8; */
+  /* --white-darker: #75848a; */
+  /* --red: #fe6c6c; */
+  /* --blue: #75c4ff; */
+  /* --yellow: #feb800; */
+  /* --green: #7fd991; */
+  /* --pink: #ff83cd; */
+  /* --purple: #b0a4ff; */
+  /* --cyan: #00bbc6; */
+  /* --gray: #b8b8b8; */
+  --l-light: 80%;
+  --l-normal: 65%;
+  --l-dark: 50%;
+  --c: 55%;
+  --h-red: 30;
+  --h-green: 135;
+  --h-blue: 225;
+  --h-yellow: 85;
+  --h-purple: 315;
+
+  --red-light: oklch(var(--l-light) var(--c) var(--h-red));
+  --red: oklch(var(--l-normal) var(--c) var(--h-red));
+  --red-dark: oklch(var(--l-dark) var(--c) var(--h-red));
+
+  --green-light: oklch(var(--l-light) var(--c) var(--h-green));
+  --green: oklch(var(--l-normal) var(--c) var(--h-green));
+  --green-dark: oklch(var(--l-dark) var(--c) var(--h-green));
+
+  --blue-light: oklch(var(--l-light) var(--c) var(--h-blue));
+  --blue: oklch(var(--l-normal) var(--c) var(--h-blue));
+  --blue-dark: oklch(var(--l-dark) var(--c) var(--h-blue));
+
+  --yellow-light: oklch(var(--l-light) var(--c) var(--h-yellow));
+  --yellow: oklch(var(--l-normal) var(--c) var(--h-yellow));
+  --yellow-dark: oklch(var(--l-dark) var(--c) var(--h-yellow));
+
+  --purple-light: oklch(var(--l-light) var(--c) var(--h-purple));
+  --purple: oklch(var(--l-normal) var(--c) var(--h-purple));
+  --purple-dark: oklch(var(--l-dark) var(--c) var(--h-purple));
+
+  --black: oklch(20% 2% 270);
+  --white: #fafafa;
 }
+
+html {
+  background-color: var(--black);
+}
+
 
 main.container {
   /* padding: var(--pico-spacing) 0; */
@@ -31,23 +68,23 @@ main.container {
 form fieldset.inline {
   display: flex;
   gap: var(--pico-spacing);
-  align-items: flex-start;
+  align-items: center;
+}
+
+form fieldset.inline * {
+  flex: 0;
+  margin-bottom: 0;
 }
 
 form fieldset.inline select {
-  flex: 0;
-  margin-bottom: 0;
-  min-width: 80px;
+  min-width: 6em;
 }
 
-form fieldset.inline input {
+form fieldset.inline input[type=text] {
   flex: 1;
-  margin-bottom: 0;
 }
 
 form fieldset.inline button {
-  flex: 0;
-  margin-bottom: 0;
   white-space: nowrap;
 }
 
@@ -56,9 +93,26 @@ form fieldset.inline button {
   scrollbar-width: none;
 }
 
+.timeline-entry {
+  /* max-width: 90%; */
+  /* margin-left: auto; */
+  /* margin-right: auto; */
+  /* transform: scale(1); */
+  /* transition: transform 0.1s ease-out; */
+}
+
+.timeline-entry:hover {
+  /* transform: scale(1.1); */
+}
 
 .item {
   border-left: 3px solid var(--border);
+}
+
+.item input {
+  margin: 0;
+  padding: 0.5rem;
+  height: 2.4em;
 }
 
 /* Item type styling */
@@ -97,3 +151,4 @@ form fieldset.inline button {
 .item.task input[type="checkbox"] {
   margin: 0;
 }
+
