@@ -15,6 +15,7 @@ export default function App() {
     <main className="container">
       <CreateItemForm />
       <Timeline />
+      <div class="pinned"></div>
     </main>
   )
 }

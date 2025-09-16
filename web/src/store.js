@@ -58,8 +58,18 @@ const createIndexSlice = (set, get) => ({
 
     } catch (error) {
       set({ loading: false, error })
-      return
+      returx
     }
+  },
+
+  optimisticPrepend(item) {
+    const entry = {
+      itemId: item.id,
+      kind: item.kind,
+      date: item.createdDate
+    } 
+
+    this.set([ entry, ...this.value ])
   }
 })
 
@@ -98,7 +108,14 @@ const createItemsSlice = (set, get) => {
     latestFetch = latestFetch.then(fetchPending)
   }
 
-  const slice = {}
+  const optimisticSet = (item) => {
+    cache[item.id] = item
+    this.set({ [item.id]: item })
+  }
+
+  const slice = {
+    optimisticSet
+  }
 
   Object.defineProperty(slice, 'fetch', {
     enumerable: false,
