@@ -3,7 +3,6 @@ import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
 import './App.css'
 import { useStore } from '../store'
-import { PouchTest } from './PouchTest'
 
 export default function App() {
   const store = useStore()
