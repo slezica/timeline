@@ -39,8 +39,8 @@ export async function fetchItems(ids) {
   return apiRequest(`/api/items?${params}`)
 }
 
-export async function createItem({ title, kind, ...extras }) {
-  const body = { title, kind, ...extras }
+export async function createItem({ title, kind, createdAt, ...extras }) {
+  const body = { title, kind, createdAt, ...extras }
   
   return apiRequest('/api/items', {
     method: 'POST',

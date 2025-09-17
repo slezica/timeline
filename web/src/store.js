@@ -32,7 +32,7 @@ const createAsyncActionSlice = (fn) => (set, get) => ({
       set({ value, loading: false, error: null })
 
     } catch (error) {
-      set({ value: null, loading: false, error })
+      set({ value: null, loading: false, error: error.message })
       return
     }
   },
@@ -58,18 +58,36 @@ const createIndexSlice = (set, get) => ({
 
     } catch (error) {
       set({ loading: false, error })
-      returx
     }
   },
 
-  optimisticPrepend(item) {
+  add(item) {
     const entry = {
       itemId: item.id,
       kind: item.kind,
       date: item.createdDate
-    } 
+    }
+    
+    set(prev => ({
+      value: { ...prev.value, entries: [entry, ...prev.value.entries] }
+    }))
+  },
 
-    this.set([ entry, ...this.value ])
+  remove(item) {
+    set(prev => ({
+      value: { ...prev.value, entries: prev.value.entries.filter(it => it.itemId != item.id) }
+    }))
+  },
+
+  replace(item, newItem) {
+    set(prev => {
+      const entries = prev.value.entries.filter(it => it.itemId != item.id)
+      entries.unshift(newItem)
+
+      return {
+        value: {...prev.value, entries },
+      }
+    })
   }
 })
 
@@ -99,30 +117,33 @@ const createItemsSlice = (set, get) => {
     }
   }
 
-  const schedulePending = (ids) => {
-    for (let id of ids) {
-      if (id in cache || id in pending) { continue }
-      pending[id] = true
+  return {
+    fetch: (ids) => {
+      for (let id of ids) {
+        if (id in cache || id in pending) { continue }
+        pending[id] = true
+      }
+
+      latestFetch = latestFetch.then(fetchPending)
+    },
+
+    add: (item) => {
+      cache[item.id] = item
+      set({ [item.id]: item })
+    },
+
+    remove: (item) => {
+      set({ [item.id]: null })
+      delete cache[item.id]
+    },
+
+    replace: (item, newItem) => {
+      cache[newItem.id] = newItem
+      delete cache[item.id]
+
+      set({ [item.id]: null, [newItem.id]: newItem })
     }
-
-    latestFetch = latestFetch.then(fetchPending)
   }
-
-  const optimisticSet = (item) => {
-    cache[item.id] = item
-    this.set({ [item.id]: item })
-  }
-
-  const slice = {
-    optimisticSet
-  }
-
-  Object.defineProperty(slice, 'fetch', {
-    enumerable: false,
-    value: (ids) => { schedulePending(ids) }
-  })
-
-  return slice
 }
 
 

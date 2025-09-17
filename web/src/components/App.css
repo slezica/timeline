@@ -42,6 +42,11 @@ main.container {
   gap: 1rem;
 }
 
+.create-item,
+.pinned {
+  width: 300px;
+}
+
 @media(min-width: 1300px) {
   main.container {
     flex-direction: row;
@@ -49,17 +54,12 @@ main.container {
   }
 }
 
-.search-or-create,
-.pinned {
-  width: 300px;
-}
-
 @media(max-width: 1300px) {
   main.container {
     flex-direction: column;
   }
 
-  .search-or-create {
+  .create-item {
     fieldset {
       display: flex;
       gap: var(--pico-spacing);
@@ -82,10 +82,9 @@ main.container {
   }
 }
 
-
-
 .timeline {
   flex: 1;
+  max-width: 770px;
 }
 
 .timeline-entry {

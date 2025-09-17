@@ -8,7 +8,7 @@ export default function CreateItemForm() {
   const items = useStore(state => state.items)
 
   const [title, setTitle] = useState('')
-  const [kind, setKind] = useState('task')
+  const [kind, setKind] = useState('note')
   const [extras, setExtras] = useState({})
 
   const inputRef = useRef()
@@ -29,31 +29,35 @@ export default function CreateItemForm() {
     e.preventDefault()
     if (!title.trim()) return
 
-    // Create optimistic item
-    const optimisticItem = {
-      id: `temp-${Date.now()}`,
+    const tempId =  `temp-${Date.now()}`
+
+    const newItem = Object.assign(extras, {
+      id: tempId,
       title: title.trim(),
       kind: kind,
-      datetime: new Date().toISOString()
-    }
+      createdDate: new Date().toISOString()
+    })
 
-    // Add optimistically to timeline
-    // timeline.addItems({ items: [optimisticItem] }, 'prepend')
+    items.add(newItem)
+    index.add(newItem)
 
     try {
-      const itemData = Object.assign(extras, { title: title.trim(), kind: kind })
-      
-      await createItem.run(itemData)
+      const realItem = await createItem.run(newItem)
+      // items.replace(newItem, realItem)
+      // index.replace(newItem, realItem)
+
       setTitle('')
       setExtras({})
 
     } catch (error) {
-      // timeline.removeItem(optimisticItem.id)
+      console.error(error)
+      items.remove(newItem)
+      index.remove(newItem)
     }
   }
 
   return (
-    <form className="search-or-create" onSubmit={handleSubmit}>
+    <form className="create-item" onSubmit={handleSubmit}>
       <fieldset>
         <select
           value={kind}

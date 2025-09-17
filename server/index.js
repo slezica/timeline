@@ -99,7 +99,7 @@ app.get('/api/items', (req, res) => {
         ELSE json_object()
       END AS extras
     FROM items
-      JOIN taskItems on taskItems.itemId=items.id AND items.kind='task'
+      LEFT JOIN taskItems on taskItems.itemId=items.id AND items.kind='task'
     WHERE
       items.id IN (${ids.map(it => '?').join(',')})
   `
@@ -122,7 +122,7 @@ app.get('/api/items', (req, res) => {
 })
 
 app.post('/api/items', (req, res) => {
-  const { title, kind = 'note' } = req.body
+  const { title, kind = 'note', createdDate, ...extras } = req.body
 
   if (!title || !title.trim()) {
     return res.status(400).json({ error: 'Title is required' })
@@ -135,31 +135,24 @@ app.post('/api/items', (req, res) => {
   const now = new Date().toISOString()
 
   try {
-    const result = db.transaction(() => {
-      const insertItem = db.prepare('INSERT INTO items (kind, title) VALUES (?, ?)')
-      const itemResult = insertItem.run(kind, title.trim())
-      
-      const insertTimestamp = db.prepare('INSERT INTO timestamps (item_id, kind, datetime) VALUES (?, ?, ?)')
-      insertTimestamp.run(itemResult.lastInsertRowid, 'created', now)
-      insertTimestamp.run(itemResult.lastInsertRowid, 'updated', now)
-      
+    const newId = db.transaction(() => {
+      const itemInsert = db.prepare(`
+        INSERT INTO items (kind, title, createdDate, updatedDate) VALUES (?, ?, ?, ?)
+      `).run(kind, title.trim(), createdDate, now)
+
       // If it's a task, create the task-specific data
       if (kind === 'task') {
-        const insertTask = db.prepare('INSERT INTO items_task (itemId) VALUES (?)')
-        insertTask.run(itemResult.lastInsertRowid)
+        const { dueDate, doneDate } = extras
+
+        db.prepare(`
+          INSERT INTO taskItems (itemId, dueDate, doneDate) VALUES (?, ?, ?)
+        `).run(itemInsert.lastInsertRowid, dueDate, doneDate)
       }
       
-      return itemResult.lastInsertRowid
+      return itemInsert.lastInsertRowid
     })()
 
-    const newItem = db.prepare(`
-      SELECT 
-        items.id, items.kind, items.title,
-        (SELECT datetime FROM timestamps WHERE item_id = items.id AND kind = 'created' LIMIT 1) as datetime
-      FROM items WHERE id = ?
-    `).get(result)
-
-    res.status(201).json({ item: newItem })
+    res.status(201).json({ item: {id: newId} })
 
   } catch (error) {
     console.error('[api]:', error)
