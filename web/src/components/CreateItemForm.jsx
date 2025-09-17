@@ -108,12 +108,14 @@ function TaskItemFields({ value, onChange, disabled }) {
   const [dueDate, setDueDate] = useState('')
   const [doneDate, setDoneDate] = useState('')
 
-  const handleDueDateChange = (newDueDate) => {
+  const handleDueDateChange = (ev) => {
+    const newDueDate = ev.target.value ? new Date(ev.target.value).toISOString() : ''
     setDueDate(newDueDate)
     onChange(Object.assign({}, value, { dueDate: newDueDate }))
   }
 
-  const handleDoneDateChange = (newDoneDate) => {
+  const handleDoneDateChange = (ev) => {
+    const newDoneDate = ev.target.value ? new Date(ev.target.value).toISOString() : ''
     setDoneDate(newDoneDate)
     onChange(Object.assign({}, value, { doneDate: newDoneDate }))
   }
@@ -124,8 +126,8 @@ function TaskItemFields({ value, onChange, disabled }) {
         <label>Due Date</label>
         <input
           type="date"
-          value={dueDate}
-          onChange={(e) => handleDueDateChange(e.target.value)}
+          value={dueDate.split('T')[0]}
+          onChange={handleDueDateChange}
           disabled={disabled}
         />
       </div>
@@ -133,8 +135,8 @@ function TaskItemFields({ value, onChange, disabled }) {
         <label>Done Date</label>
         <input
           type="date"
-          value={doneDate}
-          onChange={(e) => handleDoneDateChange(e.target.value)}
+          value={doneDate.split('T')[0]}
+          onChange={handleDoneDateChange}
           disabled={disabled}
         />
       </div>
