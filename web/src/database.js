@@ -3,23 +3,6 @@ import PouchDB from 'pouchdb'
 export const db = new PouchDB('test')
 window.db = db
 
-  // const changes = db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
-  //
-  // changes.on('change', ch => {
-  //   const d = ch.doc
-  //   if (!d || d.type !== docType) return
-  //
-  //   const next = { ...s.todos }
-  //   if (d._deleted) delete next[d._id]
-  //   else next[d._id] = d
-  //   return { todos: next }
-  //
-  //
-  //
-  // })
-  //
-  //
-
 let emit // shut up, linter
 
 const migrations = [
@@ -32,11 +15,10 @@ const migrations = [
 
     function mapLatestDate(doc) {
       if (doc.type != 'item') { return }
-      let latestDate = doc.createdDate
 
       for (let key in doc) {
         if (key.endsWith('Date') && doc[key] != null) {
-          emit(latestDate, { id: doc._id, kind: doc.kind, dateKind: key, date: doc[key] })
+          emit(doc[key], { id: doc._id, kind: doc.kind, dateKind: key, date: doc[key] })
         }
       }
 

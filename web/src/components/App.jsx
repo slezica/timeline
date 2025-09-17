@@ -19,7 +19,7 @@ export default function App() {
 
   return (
     <main className="container">
-      {/* <CreateItemForm /> */}
+      <CreateItemForm />
       <div className="pinned-items">
         Pinned
       </div>

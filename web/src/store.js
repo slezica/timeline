@@ -75,9 +75,12 @@ export const useStore = zs.create((set, get) => ({
 
       try {
         item._id = crypto.randomUUID()
+        item.type = 'item'
+
         const putQ = await db.put(item) // TODO actually check `.ok`
         item._rev = putQ.rev
 
+        console.log(putQ, item)
         set({
           createItem: { result: item, error: null, loading: false }
         })

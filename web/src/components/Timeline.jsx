@@ -10,7 +10,7 @@ export default function Timeline({ index, items }) {
   return (
     <section className="timeline">
       { index.ready &&
-        index.list.map((entry, i) => console.log(entry) || [
+        index.list.map((entry, i) => [
           <div className="timeline-entry" key={entry.id}>
           { items.dict[entry.id]
             ? <TimelineItem entry={entry} item={items.dict[entry.id]} />

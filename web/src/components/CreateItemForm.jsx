@@ -29,31 +29,21 @@ export default function CreateItemForm() {
     e.preventDefault()
     if (!title.trim()) return
 
-    const tempId =  `temp-${Date.now()}`
-
     const newItem = {
       ...extras,
-      id: tempId,
       title: title.trim(),
       kind: kind,
       createdDate: new Date().toISOString()
     }
 
-    items.add(newItem)
-    index.add(newItem)
 
     try {
-      const realItem = await createItem.run(newItem)
-      // items.replace(newItem, realItem)
-      // index.replace(newItem, realItem)
-
+      await createItem.run(newItem)
       setTitle('')
       setExtras({})
 
     } catch (error) {
       console.error(error)
-      items.remove(newItem)
-      index.remove(newItem)
     }
   }
 
