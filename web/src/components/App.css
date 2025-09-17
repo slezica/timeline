@@ -22,6 +22,7 @@
   --white: #fafafa;
 
   --main-width: 720px;
+  --side-width: 300px;
 }
 
 * {
@@ -35,16 +36,25 @@ html {
 main.container {
   position: relative;
   /* padding: var(--pico-spacing) 0; */
-  max-width: 1400px;
-  max-height: 100vh;
-  padding-bottom: 0;
-  display: flex;
-  gap: 1rem;
+  width: var(--main-width);
 }
 
 .create-item,
 .pinned {
   width: 300px;
+  position: absolute;
+}
+
+main .create-item {
+  position: absolute;
+  width: var(--side-width);
+  left: calc(-1 * var(--side-width) - 12px);
+}
+
+main .pinned-items {
+  position: absolute;
+  width: var(--side-width);
+  left: calc(var(--main-width) + 12px);
 }
 
 @media(min-width: 1300px) {
@@ -85,6 +95,8 @@ main.container {
 .timeline {
   flex: 1;
   max-width: 770px;
+  max-height: 100vw;
+  overflow: scroll;
 }
 
 .timeline-entry {

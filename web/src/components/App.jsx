@@ -14,10 +14,10 @@ export default function App() {
   return (
     <main className="container">
       <CreateItemForm />
-      <Timeline />
-      <div className="pinned">
+      <div className="pinned-items">
         Pinned
       </div>
+      <Timeline />
     </main>
   )
 }
