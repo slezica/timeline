@@ -23,6 +23,8 @@
   "description": "",
   "dependencies": {
     "@picocss/pico": "^2.1.1",
+    "events": "^3.3.0",
+    "pouchdb": "^9.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-intersection-observer": "^9.16.0",
