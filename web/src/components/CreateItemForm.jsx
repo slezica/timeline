@@ -31,12 +31,13 @@ export default function CreateItemForm() {
 
     const tempId =  `temp-${Date.now()}`
 
-    const newItem = Object.assign(extras, {
+    const newItem = {
+      ...extras,
       id: tempId,
       title: title.trim(),
       kind: kind,
       createdDate: new Date().toISOString()
-    })
+    }
 
     items.add(newItem)
     index.add(newItem)
@@ -111,13 +112,13 @@ function TaskItemFields({ value, onChange, disabled }) {
   const handleDueDateChange = (ev) => {
     const newDueDate = ev.target.value ? new Date(ev.target.value).toISOString() : ''
     setDueDate(newDueDate)
-    onChange(Object.assign({}, value, { dueDate: newDueDate }))
+    onChange({ ...value, dueDate: newDueDate })
   }
 
   const handleDoneDateChange = (ev) => {
     const newDoneDate = ev.target.value ? new Date(ev.target.value).toISOString() : ''
     setDoneDate(newDoneDate)
-    onChange(Object.assign({}, value, { doneDate: newDoneDate }))
+    onChange({ ...value, doneDate: newDoneDate })
   }
 
   return (
