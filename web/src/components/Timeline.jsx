@@ -6,40 +6,17 @@ import TimelineItem from './TimelineItem'
 const SENTINEL_SPACING = 50
 
 
-export default function Timeline() {
-  const index = useStore(state => state.index)
-  const items = useStore(state => state.items)
-
-  const handleSentinelReveal = (position) => {
-    if (!index.value) {
-      Promise.resolve().then(() => handleSentinelReveal(position))
-      return
-    }
-
-    const idToFetch = []
-    const start = Math.max(position - SENTINEL_SPACING, 0)
-    const end = Math.min(position + SENTINEL_SPACING, index.value.entries.length)
-
-    for ( let i = start; i < end; i++) {
-      idToFetch.push(index.value.entries[i].itemId)
-    }
-
-    items.fetch(idToFetch)
-  }
-
+export default function Timeline({ index, items }) {
   return (
     <section className="timeline">
-      { index.value &&
-        index.value.entries.map((entry, i) => [
-          <div className="timeline-entry" key={entry.itemId + entry.kind}>
-          { items[entry.itemId]
-            ? <TimelineItem entry={entry} item={items[entry.itemId]} />
+      { index.ready &&
+        index.list.map((entry, i) => console.log(entry) || [
+          <div className="timeline-entry" key={entry.id}>
+          { items.dict[entry.id]
+            ? <TimelineItem entry={entry} item={items.dict[entry.id]} />
             : <div>placeholder</div>
           }
           </div>,
-
-          (i % SENTINEL_SPACING == 0) &&
-            <Sentinel position={i} onFirstReveal={handleSentinelReveal} key={"sentinel" + i} />
         ]
       )}
 
@@ -49,8 +26,7 @@ export default function Timeline() {
 
       {index.error && (
         <div role="alert">
-        Error: {timeline.error.message || timeline.error}
-        <button onClick={handleRetry}>Retry</button>
+        Error: {index.error}
         </div>
       )}
     </section>

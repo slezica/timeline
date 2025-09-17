@@ -3,21 +3,30 @@ import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
 import './App.css'
 import { useStore } from '../store'
+import { PouchTest } from './PouchTest'
 
 export default function App() {
+  const store = useStore()
   const index = useStore(state => state.index)
+  const items = useStore(state => state.items)
 
   useEffect(() => {
-    index.fetch()
+    store.initialize()
+      .then(() => {
+        index.fetch()
+        items.fetch()
+      })
   }, [])
 
   return (
     <main className="container">
-      <CreateItemForm />
+      {/* <CreateItemForm /> */}
       <div className="pinned-items">
         Pinned
       </div>
-      <Timeline />
+
+      <Timeline index={index} items={items} />
     </main>
   )
 }
+

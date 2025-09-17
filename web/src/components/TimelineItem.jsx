@@ -44,8 +44,11 @@ export default function TimelineItem({ entry, item }) {
         <span className={"tag"}>{new Date(entry.date).toLocaleString()}</span>
       </header>
 
-      { item.kind == 'task' ? <TaskItemExtras entry={entry} item={item} /> :
-        item.kind == 'note' ? <NoteItemExtras entry={entry} item={item} /> :
+      <pre>{JSON.stringify(entry, null, 2)}</pre>
+      <pre>{JSON.stringify(item, null, 2)}</pre>
+
+      { item.kind == 'atask' ? <TaskItemExtras entry={entry} item={item} /> :
+        item.kind == 'anote' ? <NoteItemExtras entry={entry} item={item} /> :
         null
       }
     </article>
