@@ -16,7 +16,6 @@ export const useStore = zs.create((set, get) => ({
 
       try {
         const latestDateQ = await db.query('index/byLatestDate')
-        console.log(latestDateQ.rows)
         const ids = latestDateQ.rows.map(it => it.value)
 
         set({
@@ -24,8 +23,9 @@ export const useStore = zs.create((set, get) => ({
         })
 
       } catch (err) {
+        console.error(err)
         set(s => ({
-          index: { ...s.index, error: err.message, loading: false }
+          index: { ...s.index, error: JSON.stringify(err), loading: false }
         }))
       } 
     }
@@ -55,10 +55,39 @@ export const useStore = zs.create((set, get) => ({
         })
 
       } catch (err) {
+        console.error(err)
         set(s => ({
           index: { ...s.index, error: JSON.stringify(err), loading: false }
         }))
       } 
+    }
+  },
+
+  createItem: {
+    error: null,
+    loading: false,
+    result: null,
+
+    run: async (item) => {
+      set({
+        createItem: { result: null, error: null, loading: true }
+      })
+
+      try {
+        item._id = crypto.randomUUID()
+        const putQ = await db.put(item) // TODO actually check `.ok`
+        item._rev = putQ.rev
+
+        set({
+          createItem: { result: item, error: null, loading: false }
+        })
+
+      } catch (err) {
+        console.error(err)
+        set({
+          createItem: { result: item, error: JSON.stringify(err), loading: false }
+        })
+      }
     }
   },
 
