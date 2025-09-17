@@ -1,154 +1,70 @@
 import * as zs from 'zustand'
-import * as api from './api'
+import { db, initializeDb } from './database'
 
 
-const scope = (key, createFn) => (set, get, api) => {
-  // Get a scoped field:
-  const scopeGet = () => get()[key]
+export const useStore = zs.create((set, get) => ({
+  index: {
+    list: [],
+    error: null,
+    ready: false,
+    loading: false,
 
-  // Set a scoped field:
-  const scopeSet = (partial, replace) => set(parent => {
-    const prev = parent[key]
-    const next = (typeof partial === 'function') ? partial(prev) : partial
-    const comb = replace ? next : { ...prev, ...next }
+    fetch: async () => {
+      set(s => ({
+        index: { ...s.index, loading: true }
+      }))
 
-    return { [key]: comb }
-  })
+      try {
+        const latestDateQ = await db.query('index/byLatestDate')
+        console.log(latestDateQ.rows)
+        const ids = latestDateQ.rows.map(it => it.value)
 
-  return { [key]: createFn(scopeSet, scopeGet, api) }
-}
+        set({
+          index: { list: ids, error: null, ready: true, loading: false }
+        })
 
- 
-const createAsyncActionSlice = (fn) => (set, get) => ({
-  value: null,
-  error: null,
-  loading: false,
-
-  run: async (...args) => {
-    if (get().loading) { return }
-
-    try {
-      const value = await fn(...args)
-      set({ value, loading: false, error: null })
-
-    } catch (error) {
-      set({ value: null, loading: false, error: error.message })
-      return
-    }
-  },
-})
-
-
-const createCreateItemSlice = (set, get) => ({
-  ...createAsyncActionSlice(item => api.createItem(item))(set, get)
-})
-
-
-const createIndexSlice = (set, get) => ({
-  value: null,
-  error: null,
-  loading: false,
-
-  fetch: async (order) => {
-    if (get().loading) { return }
-
-    try {
-      const value = await api.fetchIndex(order)
-      set({ value, loading: false, error: null })
-
-    } catch (error) {
-      set({ loading: false, error })
+      } catch (err) {
+        set(s => ({
+          index: { ...s.index, error: err.message, loading: false }
+        }))
+      } 
     }
   },
 
-  add(item) {
-    const entry = {
-      itemId: item.id,
-      kind: item.kind,
-      date: item.createdDate
+  items: {
+    dict: {},
+    error: null,
+    ready: false,
+    loading: false,
+
+    fetch: async () => {
+      set(s => ({
+        items: { ...s.items, loading: true }
+      }))
+
+      try {
+        const latestDateQ = await db.query('index/byLatestDate', { include_docs: true })
+
+        const dict = {}
+        for (let row of latestDateQ.rows) {
+          dict[row.doc._id] = row.doc
+        }
+
+        set({
+          items: { dict, error: null, ready: true, loading: false }
+        })
+
+      } catch (err) {
+        set(s => ({
+          index: { ...s.index, error: JSON.stringify(err), loading: false }
+        }))
+      } 
     }
-    
-    set(prev => ({
-      value: { ...prev.value, entries: [entry, ...prev.value.entries] }
-    }))
   },
 
-  remove(item) {
-    set(prev => ({
-      value: { ...prev.value, entries: prev.value.entries.filter(it => it.itemId != item.id) }
-    }))
+  initialize: async () => {
+    await initializeDb()
+    // TODO: changes stream
   },
 
-  replace(item, newItem) {
-    set(prev => {
-      const entries = prev.value.entries.filter(it => it.itemId != item.id)
-      entries.unshift(newItem)
-
-      return {
-        value: {...prev.value, entries },
-      }
-    })
-  }
-})
-
-
-const createItemsSlice = (set, get) => {
-  const cache = {}
-  const pending = {}
-  let latestFetch = Promise.resolve()
-
-  const fetchPending = async () => {
-    const batch = Object.keys(pending)
-    if (batch.length == 0) { return }
-
-    try {
-      const { items } = await api.fetchItems(batch)
-
-      for (let item of items) {
-        cache[item.id] = item
-        delete pending[item.id]
-      }
-
-      set(cache)
-
-    } catch (err) {
-      console.error(err)
-      return new Promise(resolve => setTimeout(resolve, 1000)).then(fetchPending)
-    }
-  }
-
-  return {
-    fetch: (ids) => {
-      for (let id of ids) {
-        if (id in cache || id in pending) { continue }
-        pending[id] = true
-      }
-
-      latestFetch = latestFetch.then(fetchPending)
-    },
-
-    add: (item) => {
-      cache[item.id] = item
-      set({ [item.id]: item })
-    },
-
-    remove: (item) => {
-      set({ [item.id]: null })
-      delete cache[item.id]
-    },
-
-    replace: (item, newItem) => {
-      cache[newItem.id] = newItem
-      delete cache[item.id]
-
-      set({ [item.id]: null, [newItem.id]: newItem })
-    }
-  }
-}
-
-
-export const useStore = zs.create((...a) => ({
-  ...scope('index', createIndexSlice)(...a),
-  ...scope('items', createItemsSlice)(...a),
-  ...scope('createItem', createCreateItemSlice)(...a),
 }))
