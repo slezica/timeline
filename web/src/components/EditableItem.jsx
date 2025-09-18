@@ -72,7 +72,7 @@ export default function EditableItem({ item, onSave, onCancel }) {
   }
 
   return (
-    <article className={"item " + item.kind}>
+    <article className={"item editable " + item.kind}>
       <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
         {/* Header */}
         <label>

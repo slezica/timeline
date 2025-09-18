@@ -41,7 +41,7 @@ export default function SmallItem({ item, onClick }) {
 
   return (
     <div
-      className="shelf-item"
+      className={"item small " + item.kind + " shelf-item"}
       onClick={handleClick}
       style={{ cursor: 'pointer' }}
     >
