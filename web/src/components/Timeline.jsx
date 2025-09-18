@@ -32,7 +32,10 @@ export default function Timeline({ index }) {
       }
     }
 
-    mostRecentEntry.isMostRecent = true
+    if (mostRecentEntry) {
+      mostRecentEntry.isMostRecent = true
+    }
+
     setGroups(groups)
 
   }, [index])
