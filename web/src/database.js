@@ -13,7 +13,7 @@ const migrations = [
       emit(doc.kind, doc._id)
     }
 
-    function mapLatestDate(doc) {
+    function mapDate(doc) {
       if (doc.type != 'item') { return }
 
       for (let key in doc) {
@@ -31,8 +31,8 @@ const migrations = [
           map: mapKind.toString()
         },
 
-        byLatestDate: {
-          map: mapLatestDate.toString()
+        byDate: {
+          map: mapDate.toString()
         }
       }
     }
