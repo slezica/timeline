@@ -21,7 +21,6 @@ const migrations = [
           emit(doc[key], { id: doc._id, kind: doc.kind, dateKind: key, date: doc[key] })
         }
       }
-
     }
 
     const index = {
@@ -38,6 +37,19 @@ const migrations = [
     }
 
     await db.put(index)
+  }],
+
+  ["Add body to items", async () => {
+    const allDocsQ = await db.allDocs({ include_docs: true })
+
+    const docs = []
+    for (let row of allDocsQ.rows) {
+      if (row?.doc?.type != 'item') { continue }
+      row.doc.body ??= ''
+      docs.push(row.doc)
+    }
+
+    await db.bulkDocs(docs)
   }]
 ]
 
