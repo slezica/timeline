@@ -7,14 +7,9 @@ import { useStore } from '../store'
 export default function App() {
   const store = useStore()
   const index = useStore(state => state.index)
-  const items = useStore(state => state.items)
 
   useEffect(() => {
     store.initialize()
-      .then(() => {
-        index.fetch()
-        items.fetch()
-      })
   }, [])
 
   return (
@@ -24,7 +19,7 @@ export default function App() {
         Pinned
       </div>
 
-      <Timeline index={index} items={items} />
+      <Timeline index={index} />
     </main>
   )
 }

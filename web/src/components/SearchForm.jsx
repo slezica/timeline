@@ -2,20 +2,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 
 
-export default function CreateItemForm() {
-  const createItem = useStore(state => state.createItem)
+export default function SearchForm() {
   const index = useStore(state => state.index)
-  const items = useStore(state => state.items)
 
-  const [title, setTitle] = useState('')
-  const [kind, setKind] = useState('note')
-  const [extras, setExtras] = useState({})
+  const [query, setQuery] = useState('')
 
   const inputRef = useRef()
 
   useEffect(() => {
     const handleKey = (ev) =>  {
-      if (ev.key === '+') {
+      if (ev.key === '/') {
         ev.preventDefault()
         inputRef.current?.focus()
       }
@@ -27,7 +23,7 @@ export default function CreateItemForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!title.trim()) return
+    if (!query.trim()) return
 
     const newItem = {
       ...extras,
@@ -48,7 +44,7 @@ export default function CreateItemForm() {
   }
 
   return (
-    <form className="create-item" onSubmit={handleSubmit}>
+    <form className="search" onSubmit={handleSubmit}>
       <fieldset>
         <select
           value={kind}
