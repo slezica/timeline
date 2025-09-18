@@ -29,6 +29,16 @@ export const useStore = zs.create((set, get) => {
       search: searchIndex
     },
 
+    shelf: {
+      inOrder: [],
+      ready: false,
+      error: null,
+      loading: false,
+
+      fetch: fetchShelf,
+      replace: replaceShelf
+    },
+
     createItem: {
       result: null,
       error: null,
@@ -99,6 +109,34 @@ export const useStore = zs.create((set, get) => {
     } else {
       return get().index.inOrder
     }
+  }
+
+  const fetchShelf = async () => {
+    set(s => ({
+      shelf: { ...s.shelf, loading: true }
+    }))
+
+    try {
+      const shelf = await db.get('shelf')
+
+      set(s => ({
+        shelf: { ...s.shelf, inOrder: shelf.refs, ready: true, loading: false }
+      }))
+
+    } catch (err) {
+      console.error(err)
+      set(s => ({
+        shelf: { ...s.shelf, error: JSON.stringify(err), loading: false }
+      }))
+    }
+  }
+
+  const replaceShelf = async (inOrder) => {
+    set(s => ({
+      shelf: { ...s.shelf, inOrder }
+    }))
+
+    await db.put({ _id: 'shelf', ...get().shelf })
   }
 
   const createItem = async (item) => {
