@@ -1,145 +1,102 @@
 import * as zs from 'zustand'
 import { db, initializeDb } from './database'
-import { throttle } from './utils'
+import { scheduled } from './utils'
 
 
-export const useStore = zs.create((set, get) => ({
-  index: {
-    list: [],
-    error: null,
-    ready: false,
-    loading: false,
-    pending: false,
+export const useStore = zs.create((set, get) => {
+  // Store factory (member functions defined below):
+  const createStore = () => ({
+    initialize: initializeStore,
 
-    fetch: async () => {
-      set(s => ({
-        index: { ...s.index, loading: true }
-      }))
+    index: {
+      inOrder: [],
+      byId: {},
+      ready: false,
+      error: null,
+      loading: false,
 
-      try {
-        const latestDateQ = await db.query('index/byDate')
-        const ids = latestDateQ.rows.map(it => it.value)
-        ids.reverse()
-
-        set(s => ({
-          index: { ...s.index, list: ids, error: null, ready: true, loading: false }
-        }))
-
-      } catch (err) {
-        console.error(err)
-        set(s => ({
-          index: { ...s.index, error: JSON.stringify(err), loading: false }
-        }))
-      } 
+      fetch: fetchIndex,
+      search: searchIndex
     },
 
-    async startFetcher() {
-      while (true) {
-        if (get().index.pending) {
-          set(s => ({
-            index: { ...s.index, pending: false },
-          }))
+    createItem: {
+      result: null,
+      error: null,
+      loading: false,
+      run: createItem
+    },
+  })
 
-          console.log(get())
-          await get().index.fetch()
-        }
-
-        await new Promise(r => setTimeout(r, 50))
-      }
-    }
-  },
-
-  items: {
-    dict: {},
-    error: null,
-    ready: false,
-    loading: false,
-
-    fetch: throttle(async () => {
-      set(s => ({
-        items: { ...s.items, loading: true }
-      }))
-
-      try {
-        const latestDateQ = await db.query('index/byDate', { include_docs: true })
-
-        const dict = {}
-        for (let row of latestDateQ.rows) {
-          dict[row.doc._id] = row.doc
-        }
-
-        set(s => ({
-          items: { ...s.items, dict, error: null, ready: true, loading: false }
-        }))
-
-      } catch (err) {
-        console.error(err)
-        set(s => ({
-          index: { ...s.index, error: JSON.stringify(err), loading: false }
-        }))
-      } 
-    }, 100)
-  },
-
-  createItem: {
-    result: null,
-    error: null,
-    loading: false,
-
-    run: async (item) => {
-      set(s => ({
-        createItem: { ...s.createItem, result: null, error: null, loading: true }
-      }))
-
-      try {
-        item._id = crypto.randomUUID()
-        item.type = 'item'
-
-        const putQ = await db.put(item) // TODO actually check `.ok`
-        item._rev = putQ.rev
-
-        set(s => ({
-          createItem: { ...s.createItem, result: item, error: null, loading: false }
-        }))
-
-        get().index.fetch()
-
-      } catch (err) {
-        console.error(err)
-        set(s => ({
-          createItem: { ...s.createItem, result: item, error: JSON.stringify(err), loading: false }
-        }))
-      }
-    }
-  },
-
-  initialize: async () => {
+  const initializeStore = async () => {
     await initializeDb()
 
-    get().index.startFetcher()
-    const changes = db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
+    db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
+      .on('change', fetchIndex) // scheduled
 
-    changes.on('change', ch => {
-      const doc = ch.doc
-      if (!doc || doc.type != 'item') return
-      // TODO batch?
+    fetchIndex()
+  }
 
-      set(s => {
-        const item = doc
-        const next = { ...s.items.dict }
+  const fetchIndex = scheduled(async () => {
+    set(s => ({
+      index: { ...s.index, loading: true }
+    }))
 
-        if (item._deleted) {
-          delete next[item._id]
-        } else {
-          next[item._id] = item
-        }
+    try {
+      const byDateQ = await db.query('index/byDate', { include_docs: true })
 
-        return {
-          index: { ...s.index, pending: true },
-          items: { ...s.items, dict: next },
-        }
-      })
-    })
-  },
+      const inOrder = []
+      const byId = {}
 
-}))
+      for (let row of byDateQ.rows) {
+        const doc = { id: row.doc._id, ...row.doc }
+        const entry = { id: row.doc._id, kind: row.doc.kind, date: row.key }
+
+        // Sorted index:
+        inOrder.push(entry)
+
+        // ID Lookup:
+        byId[doc.id] = doc
+      }
+
+      inOrder.reverse() // TODO query desc or sort in-place
+
+      set(s => ({
+        index: { ...s.index, inOrder, byId, error: null, ready: true, loading: false }
+      }))
+
+    } catch (err) {
+      console.error(err)
+      set(s => ({
+        index: { ...s.index, error: JSON.stringify(err), loading: false }
+      }))
+    } 
+  })
+
+  const createItem = async (item) => {
+    set(s => ({
+      createItem: { ...s.createItem, result: null, error: null, loading: true }
+    }))
+
+    try {
+      item._id = crypto.randomUUID()
+      item.type = 'item'
+
+      const putQ = await db.put(item) // TODO actually check `.ok`
+      item._rev = putQ.rev
+
+      set(s => ({
+        createItem: { ...s.createItem, result: item, error: null, loading: false }
+      }))
+
+      await fetchIndex()
+
+    } catch (err) {
+      console.error(err)
+      set(s => ({
+        createItem: { ...s.createItem, result: item, error: JSON.stringify(err), loading: false }
+      }))
+    }
+  }
+
+  return createStore()
+})
