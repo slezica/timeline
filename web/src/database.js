@@ -1,7 +1,9 @@
 import PouchDB from 'pouchdb'
 
 export const db = new PouchDB('test')
+export const remoteDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
 window.db = db
+
 
 let emit // shut up, linter
 
@@ -84,6 +86,9 @@ export async function initializeDb() {
     const statusUpdated = await db.put(status)
     status._rev = statusUpdated.rev
   }
+
+  console.log('[db]', "Starting sync")
+  db.sync(remoteDb, { live: true, retry: true })
 
   console.log('[db]', "Initialized")
 }
