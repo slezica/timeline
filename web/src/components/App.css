@@ -178,6 +178,53 @@ input:last-child {
   margin: 0.5rem 0;
 }
 
+.item-refs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-height: 60px;
+  padding: 0.25rem 0;
+  margin-top: 0.5rem;
+  scrollbar-width: thin;
+}
+
+.item-refs::-webkit-scrollbar {
+  height: 4px;
+}
+
+.item-refs::-webkit-scrollbar-track {
+  background: var(--black-light);
+  border-radius: 2px;
+}
+
+.item-refs::-webkit-scrollbar-thumb {
+  background: var(--white-darker);
+  border-radius: 2px;
+}
+
+.item-refs .item {
+  flex-shrink: 0;
+  min-width: 150px;
+  max-width: 200px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.item-refs .item strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.item-refs .item small {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Drag and Drop Styles */
 

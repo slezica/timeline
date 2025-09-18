@@ -67,6 +67,7 @@ export default function Timeline({ index, onItemClick }) {
                   group = { group }
                   item  = { index.byId[entry.id] }
                   onClick = { onItemClick }
+                  index = { index }
                 />
               : <div>placeholder</div>
             }
