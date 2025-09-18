@@ -7,13 +7,34 @@ const SENTINEL_SPACING = 50
 
 
 export default function Timeline({ index }) {
+  const [ groups, setGroups ] = useState([])
+
+  useEffect(() => {
+    if (!index.ready) { return }
+
+    // Merge consecutive same-ID entries:
+    const groups = []
+
+    for (let entry of index.inOrder) {
+      const lastGroup = groups[groups.length - 1]
+
+      if (lastGroup && entry.id == lastGroup[0].id) {
+        lastGroup.push(entry)
+      } else {
+        groups.push([entry])
+      }
+    }
+
+    setGroups(groups)
+  }, [index])
+
+
   return (
     <section className="timeline">
-      { index.ready &&
-        index.inOrder.map(entry => [
-          <div className="timeline-entry" key={entry.id}>
-          { index.byId[entry.id]
-            ? <TimelineEntry entry={entry} item={index.byId[entry.id]} />
+      { groups.map(group => [
+          <div className="timeline-entry" key={group[0].id}>
+          { index.byId[group[0].id]
+            ? <TimelineEntry group={group} item={index.byId[group[0].id]} />
             : <div>placeholder</div>
           }
           </div>,

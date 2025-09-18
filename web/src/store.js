@@ -59,7 +59,7 @@ export const useStore = zs.create((set, get) => {
 
       for (let row of byDateQ.rows) {
         const doc = { id: row.doc._id, ...row.doc }
-        const entry = { id: row.doc._id, kind: row.doc.kind, date: row.key }
+        const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
 
         // Sorted index:
         inOrder.push(entry)

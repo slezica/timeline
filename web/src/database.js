@@ -20,7 +20,7 @@ const migrations = [
 
       for (let key in doc) {
         if (key.endsWith('Date') && doc[key] != null) {
-          emit(doc[key], { id: doc._id, kind: doc.kind, dateKind: key, date: doc[key] })
+          emit(doc[key], { id: doc._id, kind: doc.kind, event: key.slice(0, -4), date: doc[key] })
         }
       }
     }

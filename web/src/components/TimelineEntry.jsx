@@ -35,17 +35,24 @@ function TaskItemExtras({ entry, item }) {
   )
 }
 
-export default function TimelineItem({ entry, item }) {
+export default function TimelineEntry({ group, item }) {
   return (
     <article className={"item " + item.kind}>
       <header>
         <h4>{item.title || 'Untitled'}</h4>
-        <span className={"tag " + entry.kind}>{entry.kind}</span>
-        <span className={"tag"}>{new Date(entry.date).toLocaleString()}</span>
+
+        {group.map(entry =>
+          <span className="tags">
+            <span key={entry.dateKind} className={"tag " + entry.event}>{entry.event}</span>
+          </span>
+        )}
       </header>
 
-      <pre>{JSON.stringify(entry, null, 2)}</pre>
+
       <pre>{JSON.stringify(item, null, 2)}</pre>
+      {group.map(entry =>
+        <pre>{JSON.stringify(entry, null, 2)}</pre>
+      )}
 
       { item.kind == 'atask' ? <TaskItemExtras entry={entry} item={item} /> :
         item.kind == 'anote' ? <NoteItemExtras entry={entry} item={item} /> :
