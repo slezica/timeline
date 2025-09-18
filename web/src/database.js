@@ -82,7 +82,7 @@ const migrations = [
     const shelf = {
       _id: 'shelf',
       type: 'shelf',
-      inOrder: []
+      refs: []
     }
 
     await db.put(shelf)

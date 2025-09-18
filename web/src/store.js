@@ -137,7 +137,9 @@ export const useStore = zs.create((set, get) => {
       shelf: { ...s.shelf, inOrder }
     }))
 
-    await db.put({ _id: 'shelf', ...get().shelf })
+    const shelf = await db.get('shelf')
+    shelf.refs = inOrder
+    await db.put(shelf)
   }
 
   const createItem = async (item) => {
