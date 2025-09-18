@@ -17,49 +17,29 @@ function TaskItemExtras({ item, formData, setFormData }) {
   const doneDate = formData.doneDate ? formatDatetime(formData.doneDate) : ''
 
   return (
-    <>
+    <fieldset className="inline">
       <label>
-        Body
-        <textarea
-          value={formData.body || ''}
-          onChange={(e) => setFormData(prev => ({ ...prev, body: e.target.value }))}
-          rows={3}
+        Due Date
+        <input
+          type="datetime-local"
+          value={dueDate}
+          onChange={handleDueDateChange}
         />
       </label>
-
-      <fieldset className="inline">
-        <label>
-          Due Date
-          <input
-            type="datetime-local"
-            value={dueDate}
-            onChange={handleDueDateChange}
-          />
-        </label>
-        <label>
-          Done Date
-          <input
-            type="datetime-local"
-            value={doneDate}
-            onChange={handleDoneDateChange}
-          />
-        </label>
-      </fieldset>
-    </>
+      <label>
+        Done Date
+        <input
+          type="datetime-local"
+          value={doneDate}
+          onChange={handleDoneDateChange}
+        />
+      </label>
+    </fieldset>
   )
 }
 
 function NoteItemExtras({ item, formData, setFormData }) {
-  return (
-    <label>
-      Body
-      <textarea
-        value={formData.body || ''}
-        onChange={(e) => setFormData(prev => ({ ...prev, body: e.target.value }))}
-        rows={5}
-      />
-    </label>
-  )
+  return null
 }
 
 export default function EditableItem({ item, onSave, onCancel }) {
@@ -94,6 +74,7 @@ export default function EditableItem({ item, onSave, onCancel }) {
   return (
     <article className={"item " + item.kind}>
       <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        {/* Header */}
         <label>
           Title
           <input
@@ -115,8 +96,20 @@ export default function EditableItem({ item, onSave, onCancel }) {
           </select>
         </label>
 
+        {/* Type-specific extras */}
         {renderItemExtras()}
 
+        {/* Universal body field */}
+        <label>
+          Body
+          <textarea
+            value={formData.body || ''}
+            onChange={(e) => setFormData(prev => ({ ...prev, body: e.target.value }))}
+            rows={4}
+          />
+        </label>
+
+        {/* Footer with buttons */}
         <fieldset className="inline">
           <button type="button" onClick={onCancel}>Cancel</button>
           <button type="submit">Save</button>
