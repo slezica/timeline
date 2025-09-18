@@ -36,8 +36,23 @@ function TaskItemExtras({ entry, item }) {
 }
 
 export default function TimelineEntry({ group, item }) {
+  const handleDragStart = (e) => {
+    e.dataTransfer.setData('text/plain', item.id)
+    e.dataTransfer.effectAllowed = 'copy'
+    e.currentTarget.classList.add('dragging')
+  }
+
+  const handleDragEnd = (e) => {
+    e.currentTarget.classList.remove('dragging')
+  }
+
   return (
-    <article className={"item " + item.kind}>
+    <article
+      className={"item " + item.kind}
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+    >
       <header>
         <h4>{item.title || 'Untitled'}</h4>
 
