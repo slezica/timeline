@@ -61,6 +61,7 @@ export default function LargeItem({ group, item, onClick }) {
   return (
     <article
       className={"item large " + item.kind}
+      data-id={item.id}
       draggable={true}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
