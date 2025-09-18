@@ -41,24 +41,21 @@ export default function Shelf({ onItemClick }) {
   }
 
   return (
-    <section
-      className={`shelf ${draggingOver ? 'drag-over' : ''}`}
-      onDragOver={handleDragOver}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      <h3>Shelf</h3>
-      {draggingOver && <p>Drop item here</p>}
-      {!draggingOver && shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
-      { shelf.inOrder.map(id => {
-        const item = index.byId[id]
-        if (!item) { return null }
+      <section
+        className={`shelf ${draggingOver ? 'drag-over' : ''}`}
+        onDragOver={handleDragOver}
+        onDragEnter={handleDragEnter}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        {!draggingOver && shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
 
-        return (
-          <SmallItem key={id} item={item} onClick={onItemClick} />
-        )
-      }) }
+        {shelf.inOrder.map(id =>
+          index.byId[id]
+            ? <SmallItem key={id} item={index.byId[id]} onClick={onItemClick} /> 
+            : <div class="placeholder">placeholder</div>
+        )}
+    ) 
     </section>
   )
 }
