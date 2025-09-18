@@ -44,7 +44,7 @@ function NoteItemExtras({ item }) {
   )
 }
 
-export default function LargeItem({ group, item }) {
+export default function LargeItem({ group, item, onClick }) {
   const handleDragStart = (e) => {
     e.dataTransfer.setData('text/plain', item.id)
     e.dataTransfer.effectAllowed = 'copy'
@@ -66,12 +66,20 @@ export default function LargeItem({ group, item }) {
     }
   }
 
+  const handleClick = (e) => {
+    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
+      onClick?.(item)
+    }
+  }
+
   return (
     <article
       className={"item " + item.kind}
       draggable={true}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
     >
       <header>
         <h4>{item.title || 'Untitled'}</h4>

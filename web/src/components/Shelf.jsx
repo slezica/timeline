@@ -3,7 +3,7 @@ import { useStore } from '../store'
 import SmallItem from './SmallItem'
 
 
-export default function Shelf() {
+export default function Shelf({ onItemClick }) {
   const shelf = useStore(state => state.shelf)
   const index = useStore(state => state.index)
   const [draggingOver, setDraggingOver] = useState(false)
@@ -55,7 +55,7 @@ export default function Shelf() {
         if (!item) { return null }
 
         return (
-          <SmallItem key={id} item={item} />
+          <SmallItem key={id} item={item} onClick={onItemClick} />
         )
       }) }
     </section>

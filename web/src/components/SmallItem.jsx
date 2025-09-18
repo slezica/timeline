@@ -18,7 +18,7 @@ function NoteItemExtras({ item }) {
   )
 }
 
-export default function SmallItem({ item }) {
+export default function SmallItem({ item, onClick }) {
   const renderItemExtras = () => {
     switch (item.kind) {
       case 'task':
@@ -35,8 +35,16 @@ export default function SmallItem({ item }) {
     }
   }
 
+  const handleClick = () => {
+    onClick?.(item)
+  }
+
   return (
-    <div className="shelf-item">
+    <div
+      className="shelf-item"
+      onClick={handleClick}
+      style={{ cursor: 'pointer' }}
+    >
       {renderItemExtras()}
     </div>
   )

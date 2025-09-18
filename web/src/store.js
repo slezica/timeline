@@ -45,6 +45,13 @@ export const useStore = zs.create((set, get) => {
       loading: false,
       run: createItem
     },
+
+    updateItem: {
+      result: null,
+      error: null,
+      loading: false,
+      run: updateItem
+    },
   })
 
   const initializeStore = async () => {
@@ -164,6 +171,29 @@ export const useStore = zs.create((set, get) => {
       console.error(err)
       set(s => ({
         createItem: { ...s.createItem, result: item, error: JSON.stringify(err), loading: false }
+      }))
+    }
+  }
+
+  const updateItem = async (item) => {
+    set(s => ({
+      updateItem: { ...s.updateItem, result: null, error: null, loading: true }
+    }))
+
+    try {
+      const putQ = await db.put(item)
+      item._rev = putQ.rev
+
+      set(s => ({
+        updateItem: { ...s.updateItem, result: item, error: null, loading: false }
+      }))
+
+      await fetchIndex()
+
+    } catch (err) {
+      console.error(err)
+      set(s => ({
+        updateItem: { ...s.updateItem, result: item, error: JSON.stringify(err), loading: false }
       }))
     }
   }

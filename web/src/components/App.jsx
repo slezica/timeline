@@ -4,6 +4,8 @@ import { useStore } from '../store'
 import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
 import SearchForm from './SearchForm'
+import Modal from './Modal'
+import EditableItem from './EditableItem'
 
 import './App.css'
 import Shelf from './Shelf'
@@ -15,6 +17,7 @@ export default function App() {
 
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
+  const [editingItem, setEditingItem] = useState(null)
 
   const handleQueryChange = (query) => {
     setQuery(query)
@@ -37,6 +40,19 @@ export default function App() {
 
   }, [index, query])
 
+  const handleItemClick = (item) => {
+    setEditingItem(item)
+  }
+
+  const handleModalClose = () => {
+    setEditingItem(null)
+  }
+
+  const handleItemSave = (updatedItem) => {
+    store.updateItem.run(updatedItem)
+    setEditingItem(null)
+  }
+
   return (
     <main className="container">
       <aside className="left sidebar">
@@ -46,10 +62,20 @@ export default function App() {
       </aside>
 
       <aside className="right sidebar">
-        <Shelf />
+        <Shelf onItemClick={handleItemClick} />
       </aside>
 
-      <Timeline index={queryIndex} />
+      <Timeline index={queryIndex} onItemClick={handleItemClick} />
+
+      <Modal showing={editingItem !== null} onClose={handleModalClose}>
+        {editingItem && (
+          <EditableItem
+            item={editingItem}
+            onSave={handleItemSave}
+            onCancel={handleModalClose}
+          />
+        )}
+      </Modal>
     </main>
   )
 }

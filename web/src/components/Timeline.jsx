@@ -6,7 +6,7 @@ import LargeItem from './LargeItem'
 const SENTINEL_SPACING = 50
 
 
-export default function Timeline({ index }) {
+export default function Timeline({ index, onItemClick }) {
   const [ groups, setGroups ] = useState([])
 
   useEffect(() => {
@@ -66,6 +66,7 @@ export default function Timeline({ index }) {
               ? <LargeItem
                   group = { group }
                   item  = { index.byId[entry.id] }
+                  onClick = { onItemClick }
                 />
               : <div>placeholder</div>
             }
