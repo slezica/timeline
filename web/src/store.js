@@ -121,7 +121,7 @@ export const useStore = zs.create((set, get) => {
       const shelf = await db.get('shelf')
 
       set(s => ({
-        shelf: { ...s.shelf, inOrder: shelf.inOrder, ready: true, loading: false }
+        shelf: { ...s.shelf, inOrder: shelf.refs, ready: true, loading: false }
       }))
 
     } catch (err) {
