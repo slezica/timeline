@@ -259,3 +259,24 @@ input:last-child {
   flex: 1;
 }
 
+/* ---------------------------------------------------------------------------------------------- */
+/* Task Date Display */
+
+.task-dates {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.9em;
+  color: var(--white-darker);
+}
+
+.due-date, .done-date {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  background-color: var(--black-light);
+}
+
+.done-date {
+  background-color: var(--green);
+  color: var(--black);
+}
+

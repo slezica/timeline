@@ -5,43 +5,29 @@ function formatDatetime(str) {
 }
 
 function TaskItemExtras({ item }) {
-  const handleDueDateChange = (newDueDate) => {
-    console.log(newDueDate)
+  const formatDisplayDate = (dateStr) => {
+    if (!dateStr) { return null }
+    return new Date(dateStr).toLocaleDateString()
   }
-
-  const handleDoneDateChange = (newDoneDate) => {
-    console.log(newDoneDate)
-  }
-
-  const dueDate = item.dueDate ? formatDatetime(item.dueDate) : undefined
-  const doneDate = item.doneDate ? formatDatetime(item.doneDate) : undefined
 
   return (
     <>
-      {item.body && (
-        <p>{item.body}</p>
+      {(item.dueDate || item.doneDate) && (
+        <div className="task-dates">
+          {item.dueDate && (
+            <span className="due-date">Due: {formatDisplayDate(item.dueDate)}</span>
+          )}
+          {item.doneDate && (
+            <span className="done-date">Done: {formatDisplayDate(item.doneDate)}</span>
+          )}
+        </div>
       )}
-
-      <form className="inline">
-        <fieldset className="inline">
-          <label>Due</label>
-          <input type="datetime-local" value={"2017-06-01T08:30"} onChange={handleDueDateChange} />
-          <label>Done</label>
-          <input type="datetime-local" value={doneDate} onChange={handleDoneDateChange} />
-        </fieldset>
-      </form>
     </>
   )
 }
 
 function NoteItemExtras({ item }) {
-  return (
-    <>
-      {item.body && (
-        <p>{item.body}</p>
-      )}
-    </>
-  )
+  return null
 }
 
 export default function LargeItem({ group, item, onClick }) {
@@ -92,6 +78,10 @@ export default function LargeItem({ group, item, onClick }) {
       </header>
 
       {renderItemExtras()}
+
+      {item.body && (
+        <p>{item.body}</p>
+      )}
     </article>
   )
 }
