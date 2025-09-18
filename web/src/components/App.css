@@ -37,15 +37,16 @@ main.container {
 
 aside.sidebar {
   width: var(--side-width);
-  position: absolute;
+  position: fixed;
+  left: calc(50vw);
 }
 
 aside.sidebar.left {
-  left: calc(-1 * var(--side-width) - 12px);
+  transform: translateX(calc(-1 * (var(--main-width)/2 + var(--side-width) + 16px)));
 }
 
 aside.sidebar.right {
-  left: calc(var(--main-width) + 12px);
+  transform: translateX(calc((var(--main-width)/2 + 16px)));
 }
 
 @media(min-width: 1300px) {
@@ -101,6 +102,10 @@ input:last-child {
   max-width: 770px;
   max-height: 100vw;
   overflow: scroll;
+}
+
+.timeline .present {
+  height: var(--pico-spacing);
 }
 
 .timeline-entry {

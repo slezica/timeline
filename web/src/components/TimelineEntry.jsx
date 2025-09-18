@@ -42,8 +42,8 @@ export default function TimelineEntry({ group, item }) {
         <h4>{item.title || 'Untitled'}</h4>
 
         {group.map(entry =>
-          <span className="tags">
-            <span key={entry.dateKind} className={"tag " + entry.event}>{entry.event}</span>
+          <span className="tags" key={entry.event}>
+            <span className={"tag " + entry.event}>{entry.event}</span>
           </span>
         )}
       </header>
@@ -51,7 +51,7 @@ export default function TimelineEntry({ group, item }) {
 
       <pre>{JSON.stringify(item, null, 2)}</pre>
       {group.map(entry =>
-        <pre>{JSON.stringify(entry, null, 2)}</pre>
+        <pre key={entry.event}>{JSON.stringify(entry, null, 2)}</pre>
       )}
 
       { item.kind == 'atask' ? <TaskItemExtras entry={entry} item={item} /> :

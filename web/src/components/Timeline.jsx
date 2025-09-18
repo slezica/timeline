@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from "react-intersection-observer"
 import { useStore } from '../store'
 import TimelineEntry from './TimelineEntry'
@@ -12,11 +12,18 @@ export default function Timeline({ index }) {
   useEffect(() => {
     if (!index.ready) { return }
 
-    // Merge consecutive same-ID entries:
+    // Merge consecutive same-ID entries, mark entry closest to present:
     const groups = []
+    const present = new Date().toISOString()
+    let mostRecentEntry = null
 
-    for (let entry of index.inOrder) {
+    for (let i = index.inOrder.length - 1; i > 0; i--) {
+      const entry = index.inOrder[i]
       const lastGroup = groups[groups.length - 1]
+
+      if (entry.date < present) {
+        mostRecentEntry = entry
+      }
 
       if (lastGroup && entry.id == lastGroup[0].id) {
         lastGroup.push(entry)
@@ -25,29 +32,51 @@ export default function Timeline({ index }) {
       }
     }
 
+    mostRecentEntry.isMostRecent = true
     setGroups(groups)
+
   }, [index])
 
+  const scrollToRef = useCallback((el) => {
+    console.log('scroll', el)
+    if (el) {
+      el.scrollIntoView({ block: 'start' })
+    }
+  }, [])
 
   return (
     <section className="timeline">
-      { groups.map(group => [
-          <div className="timeline-entry" key={group[0].id}>
-          { index.byId[group[0].id]
-            ? <TimelineEntry group={group} item={index.byId[group[0].id]} />
-            : <div>placeholder</div>
-          }
-          </div>,
-        ]
-      )}
+      { groups.map(group => {
+        const entry = group[0]
+        const key = entry.event + entry.id 
+        const isMostRecent = group.some(entry => entry.isMostRecent)
 
-      {index.loading && (
+        return (
+          <div className="timeline-entry" key={key}>
+            { isMostRecent && [
+                <div key={1} className="present" />,
+                <div key={2} className="initial-scroll" ref={scrollToRef} />
+              ]
+            }
+
+            { index.byId[entry.id]
+              ? <TimelineEntry
+                  group = { group }
+                  item  = { index.byId[entry.id] }
+                />
+              : <div>placeholder</div>
+            }
+          </div>
+        )
+      })}
+
+      { index.loading && (
         <div aria-busy="true">Loading...</div>
       )}
 
-      {index.error && (
+      { index.error && (
         <div role="alert">
-        Error: {index.error}
+          Error: {index.error}
         </div>
       )}
     </section>
