@@ -6,8 +6,11 @@ import { scheduled } from './utils'
 
 const miniSearch = new MiniSearch({
   fields: ['title', 'body', 'createdDate', 'dueDate', 'doneDate'],
+  storeFields: ['id'],
+  processTerm: (term) => term.toLowerCase()
 })
 window.miniSearch = miniSearch
+window.miniSearch.temp = 'jaja'
 
 
 export const useStore = zs.create((set, get) => {
@@ -82,16 +85,16 @@ export const useStore = zs.create((set, get) => {
     } 
   })
 
-  const searchIndex = async (query="") => {
+  const searchIndex = async (query="", options) => {
     if (query) {
-      const results = miniSearch.search(query)
+      const results = miniSearch.search(query, options)
 
       const ids = new Set()
       for (let result of results) {
         ids.add(result.id)
       }
 
-      return get().index.inOrder.filter(it => ids.has(it._id))
+      return get().index.inOrder.filter(it => ids.has(it.id))
 
     } else {
       return get().index.inOrder

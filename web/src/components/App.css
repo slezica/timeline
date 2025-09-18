@@ -25,10 +25,6 @@
   --side-width: 300px;
 }
 
-* {
-  scrollbar-width: none;
-}
-
 html {
   background-color: var(--black);
 }
@@ -39,21 +35,16 @@ main.container {
   width: var(--main-width);
 }
 
-.create-item,
-.pinned {
-  width: 300px;
+aside.sidebar {
+  width: var(--side-width);
   position: absolute;
 }
 
-main .create-item {
-  position: absolute;
-  width: var(--side-width);
+aside.sidebar.left {
   left: calc(-1 * var(--side-width) - 12px);
 }
 
-main .pinned-items {
-  position: absolute;
-  width: var(--side-width);
+aside.sidebar.right {
   left: calc(var(--main-width) + 12px);
 }
 
@@ -91,6 +82,19 @@ main .pinned-items {
     }
   }
 }
+
+
+/* ---------------------------------------------------------------------------------------------- */
+
+* {
+  scrollbar-width: none;
+}
+
+input:last-child {
+  margin-bottom: 0;
+}
+
+/* ---------------------------------------------------------------------------------------------- */
 
 .timeline {
   flex: 1;

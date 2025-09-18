@@ -1,25 +1,55 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useStore } from '../store'
+
 import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
+import SearchForm from './SearchForm'
+
 import './App.css'
-import { useStore } from '../store'
+
 
 export default function App() {
   const store = useStore()
   const index = useStore(state => state.index)
 
+  const [query, setQuery] = useState("")
+  const [queryIndex, setQueryIndex] = useState([])
+
+  
+  const handleQueryChange = (query) => {
+    setQuery(query)
+  }
+
   useEffect(() => {
     store.initialize()
   }, [])
 
+  useEffect(() => {
+    const searchOptions = {
+      fuzzy: 0.2,
+      boost: { title: 2 },
+      prefix: true
+    }
+
+    index.search(query, searchOptions).then(inOrder => {
+      setQueryIndex({ ...index, inOrder })
+    })
+
+  }, [index, query])
+
   return (
     <main className="container">
-      <CreateItemForm />
-      <div className="pinned-items">
-        Pinned
-      </div>
+      <aside className="left sidebar">
+        <SearchForm onQueryChange={setQuery} />
+        <hr />
+        <CreateItemForm />
+      </aside>
 
-      <Timeline index={index} />
+      <aside className="right sidebar">
+        Pinned
+      </aside>
+
+      <Timeline index={queryIndex} />
     </main>
   )
 }
