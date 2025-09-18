@@ -1,6 +1,13 @@
 import * as zs from 'zustand'
+import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { scheduled } from './utils'
+
+
+const miniSearch = new MiniSearch({
+  fields: ['title', 'body', 'createdDate', 'dueDate', 'doneDate'],
+})
+window.miniSearch = miniSearch
 
 
 export const useStore = zs.create((set, get) => {
@@ -56,6 +63,9 @@ export const useStore = zs.create((set, get) => {
 
         // ID Lookup:
         byId[doc.id] = doc
+
+        // Full-text search:
+        miniSearch.has(doc.id) ? miniSearch.replace(doc) : miniSearch.add(doc)
       }
 
       inOrder.reverse() // TODO query desc or sort in-place
@@ -71,6 +81,22 @@ export const useStore = zs.create((set, get) => {
       }))
     } 
   })
+
+  const searchIndex = async (query="") => {
+    if (query) {
+      const results = miniSearch.search(query)
+
+      const ids = new Set()
+      for (let result of results) {
+        ids.add(result.id)
+      }
+
+      return get().index.inOrder.filter(it => ids.has(it._id))
+
+    } else {
+      return get().index.inOrder
+    }
+  }
 
   const createItem = async (item) => {
     set(s => ({
