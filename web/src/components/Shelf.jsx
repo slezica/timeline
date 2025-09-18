@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
+import ShelfItem from './ShelfItem'
 
 
 export default function Shelf() {
@@ -54,10 +55,7 @@ export default function Shelf() {
         if (!item) { return null }
 
         return (
-          <div key={id} className="shelf-item">
-            <strong>{item.title || 'Untitled'}</strong>
-            <small>{item.kind}</small>
-          </div>
+          <ShelfItem key={id} item={item} />
         )
       }) }
     </section>
