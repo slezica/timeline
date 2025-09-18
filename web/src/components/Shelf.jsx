@@ -49,7 +49,8 @@ export default function Shelf({ onItemClick }) {
       onDrop={handleDrop}
     >
       <h3>Shelf</h3>
-      <p>{draggingOver ? 'Drop item here' : 'Drag items from timeline'}</p>
+      {draggingOver && <p>Drop item here</p>}
+      {!draggingOver && shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
       { shelf.inOrder.map(id => {
         const item = index.byId[id]
         if (!item) { return null }
