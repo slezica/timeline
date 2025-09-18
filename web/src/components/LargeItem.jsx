@@ -80,7 +80,9 @@ export default function LargeItem({ group, item, onClick }) {
       {renderItemExtras()}
 
       {item.body && (
-        <p>{item.body}</p>
+        <div className="item-body">
+          <p>{item.body}</p>
+        </div>
       )}
     </article>
   )

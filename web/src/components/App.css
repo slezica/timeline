@@ -167,6 +167,17 @@ input:last-child {
   margin: 0;
 }
 
+.item-body p {
+  max-height: calc(1.5em * 20);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 20;
+  -webkit-box-orient: vertical;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 /* Drag and Drop Styles */
 
