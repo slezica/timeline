@@ -197,7 +197,7 @@ input:last-child {
   margin: 0.25rem 0;
   background-color: var(--black-light);
   border-radius: 4px;
-  border-left: 3px solid var(--border);
+  border-left: 3px solid var(--blue);
 }
 
 .shelf-item strong {

@@ -79,15 +79,13 @@ const migrations = [
   }],
 
   ["Add shelf", async () => {
-    async () => {
-      const shelf = {
-        _id: 'shelf',
-        type: 'shelf',
-        refs: []
-      }
-
-      await db.put(shelf)
+    const shelf = {
+      _id: 'shelf',
+      type: 'shelf',
+      refs: []
     }
+
+    await db.put(shelf)
   }]
 ]
 

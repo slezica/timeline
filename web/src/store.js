@@ -54,6 +54,7 @@ export const useStore = zs.create((set, get) => {
       .on('change', fetchIndex) // scheduled
 
     fetchIndex()
+    fetchShelf()
   }
 
   const fetchIndex = scheduled(async () => {
