@@ -52,6 +52,42 @@ const migrations = [
     }
 
     await db.bulkDocs(docs)
+  }],
+
+  ["Add references to items", async () => {
+    const index = await db.get('_design/index')
+    const allDocsQ = await db.allDocs({ include_docs: true })
+
+    const docs = []
+    for (let row of allDocsQ.rows) {
+      if (row?.doc?.type != 'item') { continue }
+      row.doc.refs ??= []
+      docs.push(row.doc)
+    }
+
+    await db.bulkDocs(docs)
+
+    function mapRefs(doc) {
+      if (doc.type != 'item') { return }
+
+      for (let ref of doc.refs) {
+        emit(ref.id, doc)
+      }
+    }
+
+    index.views.byRef = { map: mapRefs }
+  }],
+
+  ["Add shelf", async () => {
+    async () => {
+      const shelf = {
+        _id: 'shelf',
+        type: 'shelf',
+        refs: []
+      }
+
+      await db.put(shelf)
+    }
   }]
 ]
 
@@ -68,6 +104,7 @@ export async function initializeDb() {
 
     status = {
       _id: 'status',
+      type: 'status',
       migration: -1
     }
 
@@ -78,7 +115,7 @@ export async function initializeDb() {
   for (let i = status.migration + 1; i < migrations.length; i++) {
     const [ name, f ] = migrations[i]
 
-    console.log('[db]', "Applying migration", name)
+    console.log('[db]', "Applying migration:", name)
     await f()
 
     status.migration += 1
