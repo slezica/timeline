@@ -6,6 +6,7 @@ import Timeline from './Timeline'
 import SearchForm from './SearchForm'
 
 import './App.css'
+import Shelf from './Shelf'
 
 
 export default function App() {
@@ -15,7 +16,6 @@ export default function App() {
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
 
-  
   const handleQueryChange = (query) => {
     setQuery(query)
   }
@@ -46,7 +46,7 @@ export default function App() {
       </aside>
 
       <aside className="right sidebar">
-        Pinned
+        <Shelf />
       </aside>
 
       <Timeline index={queryIndex} />
