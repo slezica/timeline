@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
-import ShelfItem from './ShelfItem'
+import SmallItem from './SmallItem'
 
 
 export default function Shelf() {
@@ -55,7 +55,7 @@ export default function Shelf() {
         if (!item) { return null }
 
         return (
-          <ShelfItem key={id} item={item} />
+          <SmallItem key={id} item={item} />
         )
       }) }
     </section>

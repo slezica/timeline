@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from "react-intersection-observer"
 import { useStore } from '../store'
-import TimelineItem from './TimelineItem'
+import LargeItem from './LargeItem'
 
 const SENTINEL_SPACING = 50
 
@@ -63,7 +63,7 @@ export default function Timeline({ index }) {
             }
 
             { index.byId[entry.id]
-              ? <TimelineItem
+              ? <LargeItem
                   group = { group }
                   item  = { index.byId[entry.id] }
                 />

@@ -1,15 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-function NoteItemExtras({ entry, item }) {
-  return (
-    <>
-      <h3>{item.title || 'Untitled'}</h3>
-      <pre><code>{JSON.stringify(item, null, 2)}</code></pre>
-    </>
-  )
+function formatDatetime(str) {
+  return str.slice(0, str.lastIndexOf(':'))
 }
 
-function TaskItemExtras({ entry, item }) {
+function TaskItemExtras({ item }) {
   const handleDueDateChange = (newDueDate) => {
     console.log(newDueDate)
   }
@@ -23,6 +18,10 @@ function TaskItemExtras({ entry, item }) {
 
   return (
     <>
+      {item.body && (
+        <p>{item.body}</p>
+      )}
+
       <form className="inline">
         <fieldset className="inline">
           <label>Due</label>
@@ -35,7 +34,17 @@ function TaskItemExtras({ entry, item }) {
   )
 }
 
-export default function TimelineEntry({ group, item }) {
+function NoteItemExtras({ item }) {
+  return (
+    <>
+      {item.body && (
+        <p>{item.body}</p>
+      )}
+    </>
+  )
+}
+
+export default function LargeItem({ group, item }) {
   const handleDragStart = (e) => {
     e.dataTransfer.setData('text/plain', item.id)
     e.dataTransfer.effectAllowed = 'copy'
@@ -44,6 +53,17 @@ export default function TimelineEntry({ group, item }) {
 
   const handleDragEnd = (e) => {
     e.currentTarget.classList.remove('dragging')
+  }
+
+  const renderItemExtras = () => {
+    switch (item.kind) {
+      case 'task':
+        return <TaskItemExtras item={item} />
+      case 'note':
+        return <NoteItemExtras item={item} />
+      default:
+        return <p>Unknown item type: {item.kind}</p>
+    }
   }
 
   return (
@@ -63,20 +83,7 @@ export default function TimelineEntry({ group, item }) {
         )}
       </header>
 
-
-      <pre>{JSON.stringify(item, null, 2)}</pre>
-      {group.map(entry =>
-        <pre key={entry.event}>{JSON.stringify(entry, null, 2)}</pre>
-      )}
-
-      { item.kind == 'atask' ? <TaskItemExtras entry={entry} item={item} /> :
-        item.kind == 'anote' ? <NoteItemExtras entry={entry} item={item} /> :
-        null
-      }
+      {renderItemExtras()}
     </article>
   )
-}
-
-function formatDatetime(str) {
-  return str.slice(0, str.lastIndexOf(':'))
 }
