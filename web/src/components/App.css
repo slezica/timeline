@@ -165,6 +165,7 @@ fieldset *:last-child {
 
   header {
     display: flex;
+    margin-bottom: 0;
     gap: 0.5rem;
     justify-content: right;
     align-items: stretch;

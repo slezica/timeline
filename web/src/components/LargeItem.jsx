@@ -6,21 +6,18 @@ function formatDatetime(str) {
 }
 
 function TaskItemExtras({ item }) {
-  const formatDisplayDate = (dateStr) => {
-    if (!dateStr) { return null }
-    return new Date(dateStr).toLocaleDateString()
-  }
+  const formatDisplayDate = (dateStr) => dateStr ? new Date(dateStr).toLocaleDateString() : null
 
   return (
     <>
       {(item.dueDate || item.doneDate) && (
         <div className="task-dates">
-          {item.dueDate && (
-            <span className="due-date">Due: {formatDisplayDate(item.dueDate)}</span>
-          )}
-          {item.doneDate && (
-            <span className="done-date">Done: {formatDisplayDate(item.doneDate)}</span>
-          )}
+          { item.dueDate && 
+            <span className="due-date">Due {formatDisplayDate(item.dueDate)}</span>
+          }
+          { item.doneDate && 
+            <span className="done-date">Done {formatDisplayDate(item.doneDate)}</span>
+          }
         </div>
       )}
     </>
@@ -40,17 +37,6 @@ export default function LargeItem({ group, item, onClick, index }) {
 
   const handleDragEnd = (e) => {
     e.currentTarget.classList.remove('dragging')
-  }
-
-  const renderItemExtras = () => {
-    switch (item.kind) {
-      case 'task':
-        return <TaskItemExtras item={item} />
-      case 'note':
-        return <NoteItemExtras item={item} />
-      default:
-        return <p>Unknown item type: {item.kind}</p>
-    }
   }
 
   const handleClick = (e) => {
@@ -79,13 +65,17 @@ export default function LargeItem({ group, item, onClick, index }) {
         )}
       </header>
 
-      {renderItemExtras()}
-
       {item.body && (
         <div className="body">
           {item.body}
         </div>
       )}
+
+      { 
+        item.kind == 'task' ? <TaskItemExtras item={item} /> :
+        item.kind == 'note' ? <NoteItemExtras item={item} /> :
+        null
+      }
 
       {item.refs && item.refs.length > 0 && index && (
         <div className="item-refs">
