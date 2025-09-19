@@ -112,7 +112,7 @@ function TaskItemFields({ value, onChange, disabled }) {
   }
 
   return (
-    <fieldset>
+    <fieldset class="inline">
       <div>
         <label>Due Date</label>
         <input

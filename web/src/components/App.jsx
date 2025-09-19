@@ -73,6 +73,7 @@ export default function App() {
             item={editingItem}
             onSave={handleItemSave}
             onCancel={handleModalClose}
+            index={index}
           />
         )}
       </Modal>

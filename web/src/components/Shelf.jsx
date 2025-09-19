@@ -53,9 +53,8 @@ export default function Shelf({ onItemClick }) {
         {shelf.inOrder.map(id =>
           index.byId[id]
             ? <SmallItem key={id} item={index.byId[id]} onClick={onItemClick} /> 
-            : <div class="placeholder">placeholder</div>
+            : <div key={id} className="placeholder">placeholder</div>
         )}
-    ) 
     </section>
   )
 }

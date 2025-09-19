@@ -188,13 +188,14 @@ export const useStore = zs.create((set, get) => {
         updateItem: { ...s.updateItem, result: item, error: null, loading: false }
       }))
 
-      await fetchIndex()
-
     } catch (err) {
       console.error(err)
       set(s => ({
         updateItem: { ...s.updateItem, result: item, error: JSON.stringify(err), loading: false }
       }))
+
+    } finally {
+      await fetchIndex()
     }
   }
 

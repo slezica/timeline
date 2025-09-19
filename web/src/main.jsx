@@ -4,6 +4,7 @@ import '@picocss/pico'
 import App from './components/App'
 import { db, initializeDb } from './database'
 
+import './samples'
 
 const container = document.body
 const root = createRoot(container)
