@@ -11,13 +11,13 @@ export default function CreateItemForm() {
   const [kind, setKind] = useState('note')
   const [extras, setExtras] = useState({})
 
-  const inputRef = useRef()
+  const shortcutRef = useRef()
 
   useEffect(() => {
     const handleKey = (ev) =>  {
       if (ev.key === '+') {
         ev.preventDefault()
-        inputRef.current?.focus()
+        shortcutRef.current?.focus()
       }
     }
 
@@ -54,6 +54,7 @@ export default function CreateItemForm() {
           value={kind}
           onChange={(e) => setKind(e.target.value)}
           disabled={createItem.loading}
+          ref={shortcutRef}
         >
           <option value="note">Note</option>
           <option value="task">Task</option>
@@ -65,7 +66,6 @@ export default function CreateItemForm() {
           placeholder="Enter item title..."
           disabled={createItem.loading}
           aria-busy={createItem.loading}
-          ref={inputRef}
         />
       </fieldset>
 
@@ -112,7 +112,7 @@ function TaskItemFields({ value, onChange, disabled }) {
   }
 
   return (
-    <fieldset class="inline">
+    <fieldset>
       <div>
         <label>Due Date</label>
         <input

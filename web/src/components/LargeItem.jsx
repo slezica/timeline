@@ -70,7 +70,7 @@ export default function LargeItem({ group, item, onClick, index }) {
       style={{ cursor: 'pointer' }}
     >
       <header>
-        <h4>{item.title || 'Untitled'}</h4>
+        <strong class="title">{item.title || 'Untitled'}</strong>
 
         {group.map(entry =>
           <span className="tags" key={entry.event}>
@@ -82,8 +82,8 @@ export default function LargeItem({ group, item, onClick, index }) {
       {renderItemExtras()}
 
       {item.body && (
-        <div className="item-body">
-          <p>{item.body}</p>
+        <div className="body">
+          {item.body}
         </div>
       )}
 
