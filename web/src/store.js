@@ -14,6 +14,18 @@ window.miniSearch.temp = 'jaja'
 
 
 export const useStore = zs.create((set, get) => {
+  const scope = (key) => ({
+    ctx: () => get(),
+    get: () => get()[key],
+    set: (partial, replace) => set(state => {
+      const prev = state[key]
+      const next = (typeof partial === 'function') ? partial(prev) : partial
+      const comb = replace ? next : { ...prev, ...next }
+
+      return { [key]: comb }
+    })
+  })
+
   // Store factory (member functions defined below):
   const createStore = () => ({
     initialize: initializeStore,
