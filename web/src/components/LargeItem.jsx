@@ -40,36 +40,21 @@ export default function LargeItem({ group, item, onClick, index }) {
     }
   }
 
-  const handleDragStart = (e, data) => {
-    e.dataTransfer.setData('text/plain', data.id)
+  const handleDrop = (data) => {
+    if (canDrop(data)) {
+      store.updateItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
+    }
   }
 
-  const handleDrop = (e) => {
-    const draggedItemId = e.dataTransfer.getData('text/plain')
-
-    if (!draggedItemId || draggedItemId === item.id) {
-      return
-    }
-
-    // Add reference to item
-    const updatedItem = {
-      ...item,
-      refs: [...(item.refs || []), { id: draggedItemId }]
-    }
-    store.updateItem.run(updatedItem)
-  }
-
-  const canDrop = (e) => {
-    const draggedItemId = e.dataTransfer.getData('text/plain') ||
-      (e.dataTransfer.types.includes('text/plain') ? '' : null)
-
-    // Prevent self-reference and duplicates
-    return draggedItemId !== item.id &&
-      !item.refs?.some(ref => ref.id === draggedItemId)
+  const canDrop = (data) => {
+    return data
+      && data.id
+      && data.id !== item.id
+      && !item.refs.some(ref => ref.id == data.id)
   }
 
   return (
-    <Draggable data={item} onDragStart={handleDragStart}>
+    <Draggable data={item}>
       <DropTarget onDrop={handleDrop} canDrop={canDrop}>
         <article
           className={"item large " + item.kind}
@@ -78,7 +63,7 @@ export default function LargeItem({ group, item, onClick, index }) {
           style={{ cursor: 'pointer' }}
         >
       <header>
-        <strong class="title">{item.title || 'Untitled'}</strong>
+        <strong className="title">{item.title || 'Untitled'}</strong>
 
         {group.map(entry =>
           <span className="tags" key={entry.event}>

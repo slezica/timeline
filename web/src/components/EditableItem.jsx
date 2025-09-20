@@ -3,8 +3,6 @@ import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 
 
-
-
 export default function EditableItem({ index, item, onSave, onCancel }) {
   const [data, setData] = useState({
     title: item.title || '',
@@ -19,7 +17,9 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     setData(prev => ({ ...prev, [name]: value }))
   }
 
-  const changeHandler = (name) => (ev) => { handleChange(name, ev.target.value) }
+  const changeHandler = (name) => (ev) => {
+    handleChange(name, ev.target.value)
+  }
 
   const handleSubmit = (ev) => {
     ev.preventDefault()
@@ -29,6 +29,7 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
       ...data,
       title: data.title || 'Untitled'
     }
+
     onSave?.(updatedItem)
   }
 
@@ -37,31 +38,20 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
   }
 
   const handleRemoveRef = (refId) => {
-    setData(prev => ({
-      ...prev,
-      refs: prev.refs.filter(ref => ref.id !== refId)
-    }))
+    setData(prev => ({ ...prev, refs: prev.refs.filter(ref => ref.id !== refId) }))
   }
 
-  const handleDrop = (e) => {
-    const itemId = e.dataTransfer.getData('text/plain')
-    if (!itemId || itemId === item.id) {
-      return
+  const handleDrop = (data) => {
+    if (canDrop(data)) {
+      setData(prev => ({ ...prev, refs: [...prev.refs, { id: data.id }] }))
     }
-
-    setData(prev => ({
-      ...prev,
-      refs: [...(prev.refs || []), { id: itemId }]
-    }))
   }
 
-  const canDrop = (e) => {
-    const draggedItemId = e.dataTransfer.getData('text/plain') ||
-      (e.dataTransfer.types.includes('text/plain') ? '' : null)
-
-    // Prevent self-reference and duplicates
-    return draggedItemId !== item.id &&
-      !data.refs?.some(ref => ref.id === draggedItemId)
+  const canDrop = (data) => {
+    return data
+      && data.id
+      && data.id !== item.id
+      && !item.refs.some(ref => ref.id == data.id)
   }
 
   return (
@@ -99,7 +89,7 @@ function TopItemFields({ item, data, onChange }) {
   const changeHandler = (name) => (ev) => { onChange(name, ev.target.value) }
 
   return (
-    <fieldset class="inline">
+    <fieldset className="inline">
       <input
         className="title"
         type="text"
@@ -177,8 +167,8 @@ function ReferenceFields({ index, data, onRemove }) {
       <div className="item-refs">
         { data.refs.map(ref => 
           index.byId[ref.id] && (
-            <div class="removable">
-              <span class="remove" onClick={removeHandler(ref)}>X</span>
+            <div className="removable">
+              <span className="remove" onClick={removeHandler(ref)}>X</span>
               <SmallItem key={ref.id} item={index.byId[ref.id]} />
             </div>
           )

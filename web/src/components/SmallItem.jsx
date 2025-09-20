@@ -14,12 +14,8 @@ export default function SmallItem({ item, onClick }) {
     onClick?.(item)
   }
 
-  const handleDragStart = (e, data) => {
-    e.dataTransfer.setData('text/plain', data.id)
-  }
-
   return (
-    <Draggable data={item} onDragStart={handleDragStart}>
+    <Draggable data={item}>
       <div className={"item small " + item.kind} data-id={item.id} onClick={handleClick}>
         <strong className="title">{item.title || 'Untitled'}</strong>
         <small className="kind">{item.kind}</small>

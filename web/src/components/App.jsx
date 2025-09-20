@@ -9,6 +9,7 @@ import EditableItem from './EditableItem'
 
 import './App.css'
 import Shelf from './Shelf'
+import DropTarget from './DropTarget'
 
 
 export default function App() {
@@ -53,31 +54,37 @@ export default function App() {
     setEditingItem(null)
   }
 
+  const canNeverDrop = () => {
+    return false // catch drag-and-drops to nowhere, consider them invalid
+  }
+
   return (
-    <main className="container">
-      <aside className="left sidebar">
-        <SearchForm onQueryChange={setQuery} />
-        <hr />
-        <CreateItemForm />
-      </aside>
+    <DropTarget canDrop={canNeverDrop}>
+      <main className="container">
+        <aside className="left sidebar">
+          <SearchForm onQueryChange={setQuery} />
+          <hr />
+          <CreateItemForm />
+        </aside>
 
-      <aside className="right sidebar">
-        <Shelf onItemClick={handleItemClick} />
-      </aside>
+        <aside className="right sidebar">
+          <Shelf onItemClick={handleItemClick} />
+        </aside>
 
-      <Timeline index={queryIndex} onItemClick={handleItemClick} />
+        <Timeline index={queryIndex} onItemClick={handleItemClick} />
 
-      <Modal showing={editingItem !== null} onClose={handleModalClose}>
-        {editingItem && (
-          <EditableItem
-            item={editingItem}
-            onSave={handleItemSave}
-            onCancel={handleModalClose}
-            index={index}
-          />
-        )}
-      </Modal>
-    </main>
+        <Modal showing={editingItem !== null} onClose={handleModalClose}>
+          {editingItem && (
+            <EditableItem
+              item={editingItem}
+              onSave={handleItemSave}
+              onCancel={handleModalClose}
+              index={index}
+            />
+          )}
+        </Modal>
+      </main>
+    </DropTarget>
   )
 }
 

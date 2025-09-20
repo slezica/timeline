@@ -75,3 +75,17 @@ export function scheduled(asyncFn) {
     }
   }
 }
+
+
+export function setTransferData(dataTransfer, data) {
+  dataTransfer.setData('application/json', JSON.stringify(data))
+}
+
+export function getTransferData(dataTransfer) {
+  try {
+    const json = dataTransfer.getData('application/json')
+    return json ? JSON.parse(json) : null
+  } catch {
+    return null
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 import SmallItem from './SmallItem'
+import { getTransferData } from '../utils'
 
 
 export default function Shelf({ onItemClick }) {
@@ -28,15 +29,17 @@ export default function Shelf({ onItemClick }) {
     e.preventDefault()
     setDraggingOver(false)
 
-    const itemId = e.dataTransfer.getData('text/plain')
-    const item = index.byId[itemId]
+    const dragData = getTransferData(e.dataTransfer)
+    console.log('shelf', dragData)
+    if (!dragData?.id) { return }
 
+    const item = index.byId[dragData.id]
     if (!item) { return }
 
-    const isAlreadyInShelf = shelf.inOrder.some(id => id === itemId)
+    const isAlreadyInShelf = shelf.inOrder.some(id => id === dragData.id)
     if (isAlreadyInShelf) { return }
 
-    const newShelfOrder = [...shelf.inOrder, itemId]
+    const newShelfOrder = [...shelf.inOrder, dragData.id]
     shelf.replace(newShelfOrder)
   }
 
