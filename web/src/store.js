@@ -10,7 +10,6 @@ const miniSearch = new MiniSearch({
   processTerm: (term) => term.toLowerCase()
 })
 window.miniSearch = miniSearch
-window.miniSearch.temp = 'jaja'
 
 
 export const useStore = zs.create((set, get) => {
