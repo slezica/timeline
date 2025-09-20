@@ -45,12 +45,25 @@ const itemSchema = {
         },
       },
       default: []
-    }
+    },
+
+    // Task extras (conditional):
+    dueDate : { type: ['string', 'null'], format: 'date-time' },
+    doneDate: { type: ['string', 'null'], format: 'date-time' },
   },
 
-  // Task extras:
-  dueDate : { type: ['string', 'null'], format: 'date-time' },
-  doneDate: { type: ['string', 'null'], format: 'date-time' },
+  // Constraints:
+  allOf: [
+    { if: { properties: { kind: { const: 'task' } } },
+      then: { required: ['dueDate', 'doneDate'] },
+      else: { not: {
+        anyOf: [
+          { required: ['dueDate'] },
+          { required: ['doneDate'] }
+        ]
+      }}
+    }
+  ]
 }
 
 
