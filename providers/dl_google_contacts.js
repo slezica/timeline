@@ -4,9 +4,15 @@ import { google } from 'googleapis'
 import fs from 'fs'
 import path from 'path'
 
-const SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
+
+const METHOD = 'dl_google_contacts.js'
+const VERSION = 1
+const OUTPUT_PATH = 'google_contacts.json'
 const TOKEN_PATH = 'token.json'
 const CREDENTIALS_PATH = 'credentials.json'
+
+const SCOPES = ['https://www.googleapis.com/auth/contacts.readonly']
+
 
 async function authorize() {
   const credentials = JSON.parse(fs.readFileSync(CREDENTIALS_PATH))
@@ -23,6 +29,7 @@ async function authorize() {
   // Generate new token
   return await getNewToken(oAuth2Client)
 }
+
 
 async function getNewToken(oAuth2Client) {
   const authUrl = oAuth2Client.generateAuthUrl({
@@ -63,24 +70,28 @@ async function downloadContacts(auth) {
     const response = await service.people.connections.list({
       resourceName: 'people/me',
       pageSize: 1000,
-      personFields: 'names,emailAddresses,phoneNumbers,organizations,addresses,birthdays,metadata'
+      personFields: 'names,emailAddresses,phoneNumbers,organizations,addresses,birthdays,metadata,photos'
     })
 
     const connections = response.data.connections || []
     console.log(`Found ${connections.length} contacts`)
 
     // Convert to line-separated JSON format
-    const outputPath = 'google_contacts.jsonl'
-    const writeStream = fs.createWriteStream(outputPath)
+    const outputPath = 'google_contacts.json'
 
-    for (const person of connections) {
-      const contact = transformContact(person)
-      if (contact) {
-        writeStream.write(JSON.stringify(contact, null, 2) + '\n')
-      }
+    const contacts = connections.map(transformContact)
+
+    const output = {
+      kind: 'contact',
+      download: {
+        method: METHOD,
+        version: VERSION,
+        date: new Date().toISOString(),
+      },
+      data: contacts 
     }
 
-    writeStream.end()
+    fs.writeFileSync(outputPath, JSON.stringify(output, null, 2))
     console.log(`Contacts written to ${outputPath}`)
 
   } catch (error) {
@@ -90,7 +101,7 @@ async function downloadContacts(auth) {
 
 function transformContact(person) {
   const contact = {
-    id: person.resourceName?.replace('people/', '') || crypto.randomUUID(),
+    _id: person.resourceName?.replace('people/', 'g') || crypto.randomUUID(),
     type: 'contact',
     source: 'google_contacts'
   }
@@ -123,7 +134,6 @@ function transformContact(person) {
   // Extract phone numbers
   contact.phones = []
   for (let phone of person.phoneNumbers ?? []) {
-    console.log(phone)
     contact.phones.push({ type: phone.type || 'main', number: phone.canonicalForm || phone.value })
   }
 
@@ -151,13 +161,16 @@ function transformContact(person) {
     contact.birthday = null
   }
 
+  // Extract primary photo:
+  if (person.photos?.length) {
+    const index = person.photos.findIndex(photo => photo.metadata?.primary === true)
+    contact.picture = person.photos[index == -1 ? 0 : index].url
+  }
+
   return contact
 }
 
 async function main() {
-  console.log('Google Contacts Downloader')
-  console.log('==========================')
-
   // Check if credentials exist
   if (!fs.existsSync(CREDENTIALS_PATH)) {
     console.error(`Credentials file not found: ${CREDENTIALS_PATH}`)
