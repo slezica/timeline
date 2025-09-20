@@ -63,6 +63,7 @@ export default function LargeItem({ group, item, onClick, index }) {
           style={{ cursor: 'pointer' }}
         >
       <header>
+        <span class="dot" />
         <strong className="title">{item.title || 'Untitled'}</strong>
 
         {group.map(entry =>
@@ -70,6 +71,7 @@ export default function LargeItem({ group, item, onClick, index }) {
             <span className={"tag " + entry.event}>{entry.event}</span>
           </span>
         )}
+
       </header>
 
       {item.body && (

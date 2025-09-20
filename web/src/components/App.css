@@ -3,14 +3,17 @@
 :root {
   --pico-font-size: 14px;
 
+  --lightness: 57%;
+  --chroma: 34%;
+
   --black: #2a2a2b;
   --black-light: #333333;
   --black-lighter: #4a4a4a;
   --white: #d7e3de;
   --white-dark: #c9d0c8;
   --white-darker: #75848a;
-  --red: oklch(60% 40% 22);
-  --blue: oklch(60% 40% 239);
+  --red: oklch(var(--lightness) var(--chroma) 22);
+  --blue: oklch(var(--lightness) var(--chroma) 242);
   --yellow: #feb800;
   --green: #7fd991;
   --pink: #ff83cd;
@@ -154,16 +157,39 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item {
-  .title {
+  header {
     display: flex;
+    margin-bottom: 0;
+    gap: 0.5rem;
     align-items: center;
+  }
+
+  header * {
+    margin: 0;
+  }
+
+  header .title {
+    flex: 1;
     text-wrap: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
   }
 
-  .title::before {
-    content: '';
+  header .tag {
+    flex: 0;
+    padding: 2px 8px;
+    border-radius: 4px;
+    text-wrap: nowrap;
+    text-transform: uppercase;
+    background-color: var(--black-light);
+  }
+
+  &:has(header:first-child:last-child) {
+    padding: 0;
+    header { margin: 0; }
+  }
+
+  header .dot {
     height: 1em;
     width: 1em;
     margin-top: 0.075em;
@@ -190,36 +216,6 @@ fieldset *:last-child {
   flex-direction: column;
   gap: 1rem;
 
-  header {
-    display: flex;
-    margin-bottom: 0;
-    gap: 0.5rem;
-    justify-content: right;
-    align-items: stretch;
-  }
-
-  header * {
-    margin: 0;
-  }
-
-  header .title {
-    flex: 1;
-  }
-
-  header .tag {
-    flex: 0;
-    padding: 2px 8px;
-    border-radius: 4px;
-    text-wrap: nowrap;
-    text-transform: uppercase;
-    background-color: var(--black-light);
-  }
-
-  &:has(header:first-child:last-child) {
-    padding: 0;
-    header { margin: 0; }
-  }
-
   .body {
     margin-top: 0.5rem;
     margin-bottom: 0.5rem;
@@ -231,11 +227,14 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item.small {
-  padding: 0.5rem;
   background-color: var(--pico-form-element-selected-background-color);
-  border-radius: 4px;
 
-  .title {
+  header {
+    font-size: 0.9em;
+    padding: 0.25rem 1rem;
+  }
+
+  header .title {
     display: block;
     margin-bottom: 0.25rem;
   }
