@@ -70,16 +70,16 @@ export const useStore = zs.create((set, get) => {
     await initializeDb()
 
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
-      .on('change', fetchIndex) // scheduled
+      .on('change', () => get().index.fetch()) // scheduled
 
-    fetchIndex()
-    fetchShelf()
+    get().index.fetch()
+    get().shelf.fetch()
   }
 
   const fetchIndex = scheduled(async () => {
-    set(s => ({
-      index: { ...s.index, loading: true }
-    }))
+    const { set } = scope('index')
+
+    set({ loading: true })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
@@ -103,19 +103,17 @@ export const useStore = zs.create((set, get) => {
 
       inOrder.reverse() // TODO query desc or sort in-place
 
-      set(s => ({
-        index: { ...s.index, inOrder, byId, error: null, ready: true, loading: false }
-      }))
+      set({ inOrder, byId, error: null, ready: true, loading: false })
 
     } catch (err) {
       console.error(err)
-      set(s => ({
-        index: { ...s.index, error: JSON.stringify(err), loading: false }
-      }))
+      set({ error: JSON.stringify(err) })
     } 
   })
 
   const searchIndex = async (query="", options) => {
+    const { get } = scope('index')
+
     if (query) {
       const results = miniSearch.search(query, options)
 
@@ -124,37 +122,32 @@ export const useStore = zs.create((set, get) => {
         ids.add(result.id)
       }
 
-      return get().index.inOrder.filter(it => ids.has(it.id))
+      return get().inOrder.filter(it => ids.has(it.id))
 
     } else {
-      return get().index.inOrder
+      return get().inOrder
     }
   }
 
   const fetchShelf = async () => {
-    set(s => ({
-      shelf: { ...s.shelf, loading: true }
-    }))
+    const { set } = scope('shelf')
+
+    set({ loading: true })
 
     try {
       const shelf = await db.get('shelf')
-
-      set(s => ({
-        shelf: { ...s.shelf, inOrder: shelf.refs, ready: true, loading: false }
-      }))
+      set({ loading: false, error: null, ready: true, inOrder: shelf.refs })
 
     } catch (err) {
       console.error(err)
-      set(s => ({
-        shelf: { ...s.shelf, error: JSON.stringify(err), loading: false }
-      }))
+      set({ loading: false, error: JSON.parse(JSON.stringify(error)) })
     }
   }
 
   const replaceShelf = async (inOrder) => {
-    set(s => ({
-      shelf: { ...s.shelf, inOrder }
-    }))
+    const { set } = scope('shelf')
+
+    set({ inOrder })
 
     const shelf = await db.get('shelf')
     shelf.refs = inOrder
@@ -162,9 +155,9 @@ export const useStore = zs.create((set, get) => {
   }
 
   const createItem = async (item) => {
-    set(s => ({
-      createItem: { ...s.createItem, result: null, error: null, loading: true }
-    }))
+    const { set } = scope('createItem')
+
+    set({ loading: false, error: null, result: null })
 
     try {
       item._id = crypto.randomUUID()
@@ -173,41 +166,28 @@ export const useStore = zs.create((set, get) => {
       const putQ = await db.put(item) // TODO actually check `.ok`
       item._rev = putQ.rev
 
-      set(s => ({
-        createItem: { ...s.createItem, result: item, error: null, loading: false }
-      }))
-
+      set({ loading: false, error: null, result: item })
       await fetchIndex()
 
     } catch (err) {
       console.error(err)
-      set(s => ({
-        createItem: { ...s.createItem, result: item, error: JSON.stringify(err), loading: false }
-      }))
+      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
     }
   }
 
   const updateItem = async (item) => {
-    set(s => ({
-      updateItem: { ...s.updateItem, result: null, error: null, loading: true }
-    }))
+    const { set } = scope('updateItem')
+
+    set({ result: null, error: null, loading: true })
 
     try {
       const putQ = await db.put(item)
       item._rev = putQ.rev
-
-      set(s => ({
-        updateItem: { ...s.updateItem, result: item, error: null, loading: false }
-      }))
+      set({ loading: false, error: null, result: item })
 
     } catch (err) {
       console.error(err)
-      set(s => ({
-        updateItem: { ...s.updateItem, result: item, error: JSON.stringify(err), loading: false }
-      }))
-
-    } finally {
-      await fetchIndex()
+      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
     }
   }
 
