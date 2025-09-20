@@ -31,3 +31,10 @@ dist-ssr
 # CouchDB
 couch/db
 couch/couch.absolute.ini
+
+# APIs
+token.json
+credentials.json
+
+# Data
+*.jsonl
