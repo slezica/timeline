@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import SmallItem from './SmallItem'
+import DropTarget from './DropTarget'
 
 
 
@@ -42,31 +43,40 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     }))
   }
 
+  const handleItemDrop = (itemId, item) => {
+    setData(prev => ({
+      ...prev,
+      refs: [...(prev.refs || []), { id: itemId }]
+    }))
+  }
+
   return (
-    <article className={"item editable " + item.kind} data-id={item.id}>
-      <form onSubmit={handleSubmit}>
-        <TopItemFields item={item} data={data} onChange={handleChange} />
+    <DropTarget item={{...item, refs: data.refs}} onItemDrop={handleItemDrop}>
+      <article className={"item editable " + item.kind} data-id={item.id}>
+        <form onSubmit={handleSubmit}>
+          <TopItemFields item={item} data={data} onChange={handleChange} />
 
-        { 
-          item.kind == 'task' ? <TaskItemFields item={item} data={data} onChange={handleChange} /> :
-          item.kind == 'note' ? <NoteItemFields item={item} data={data} onChange={handleChange} /> :
-          null
-        }
+          {
+            item.kind == 'task' ? <TaskItemFields item={item} data={data} onChange={handleChange} /> :
+            item.kind == 'note' ? <NoteItemFields item={item} data={data} onChange={handleChange} /> :
+            null
+          }
 
-        <BottomItemFields item={item} data={data} onChange={handleChange} />
+          <BottomItemFields item={item} data={data} onChange={handleChange} />
 
-        {/* References section */}
-        { (index.ready && data.refs && data.refs.length > 0) && 
-            <ReferenceFields index={index} data={data} /> 
-        }
+          {/* References section */}
+          { (index.ready && data.refs && data.refs.length > 0) &&
+              <ReferenceFields index={index} data={data} />
+          }
 
-        {/* Footer with buttons */}
-        <fieldset className="inline">
-          <button type="button" onClick={handleCancel}>Cancel</button>
-          <button type="submit">Save</button>
-        </fieldset>
-      </form>
-    </article>
+          {/* Footer with buttons */}
+          <fieldset className="inline">
+            <button type="button" onClick={handleCancel}>Cancel</button>
+            <button type="submit">Save</button>
+          </fieldset>
+        </form>
+      </article>
+    </DropTarget>
   )
 }
 
@@ -98,7 +108,7 @@ function BottomItemFields({ item, data, onChange }) {
 
   return (
     <fieldset>
-      <textarea value={data.body || ''} onChange={changeHandler('body')} rows={4} />
+      <textarea value={data.body || ''} onChange={changeHandler('body')} rows={8} />
     </fieldset>
   )
 }
@@ -139,8 +149,8 @@ function ReferenceFields({ index, data, onRemove }) {
   const handleDrop = (ev) => {
     e.preventDefault()
 
-    if (e.dataTransfer.getData('application/x-ref-remove')) {
-      window._refDropped = true
+    if (e.dataTransfer.getData('application/x-item-remove')) {
+      window._itemDropped = true
     }
   }
 

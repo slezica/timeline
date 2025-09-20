@@ -292,20 +292,6 @@ fieldset *:last-child {
   display: block;
 }
 
-.ref-item[draggable="true"] {
-  cursor: grab;
-  opacity: 0.9;
-  transition: opacity 0.2s ease;
-}
-
-.ref-item[draggable="true"]:hover {
-  opacity: 1;
-}
-
-.ref-item.dragging {
-  opacity: 0.5;
-  cursor: grabbing;
-}
 
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -356,6 +342,18 @@ fieldset *:last-child {
 .shelf.drag-over {
   border-color: var(--blue);
   background-color: rgba(117, 196, 255, 0.1);
+}
+
+.drop-target.drag-over-valid {
+  background-color: rgba(117, 196, 255, 0.1);
+  border: 2px dashed var(--blue);
+  border-radius: 8px;
+}
+
+.drop-target.drag-over-invalid {
+  background-color: rgba(255, 117, 117, 0.1);
+  border: 2px dashed #ff4444;
+  border-radius: 8px;
 }
 
 

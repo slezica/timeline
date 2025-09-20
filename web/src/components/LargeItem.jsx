@@ -1,5 +1,7 @@
 import React from 'react'
 import SmallItem from './SmallItem'
+import DraggableItem from './DraggableItem'
+import DropTarget from './DropTarget'
 
 function formatDatetime(str) {
   return str.slice(0, str.lastIndexOf(':'))
@@ -29,16 +31,6 @@ function NoteItemExtras({ item }) {
 }
 
 export default function LargeItem({ group, item, onClick, index }) {
-  const handleDragStart = (e) => {
-    e.dataTransfer.setData('text/plain', item.id)
-    e.dataTransfer.effectAllowed = 'copy'
-    e.currentTarget.classList.add('dragging')
-  }
-
-  const handleDragEnd = (e) => {
-    e.currentTarget.classList.remove('dragging')
-  }
-
   const handleClick = (e) => {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
       onClick?.(item)
@@ -46,15 +38,14 @@ export default function LargeItem({ group, item, onClick, index }) {
   }
 
   return (
-    <article
-      className={"item large " + item.kind}
-      data-id={item.id}
-      draggable={true}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-      onClick={handleClick}
-      style={{ cursor: 'pointer' }}
-    >
+    <DraggableItem item={item}>
+      <DropTarget item={item}>
+        <article
+          className={"item large " + item.kind}
+          data-id={item.id}
+          onClick={handleClick}
+          style={{ cursor: 'pointer' }}
+        >
       <header>
         <strong class="title">{item.title || 'Untitled'}</strong>
 
@@ -77,18 +68,20 @@ export default function LargeItem({ group, item, onClick, index }) {
         null
       }
 
-      {item.refs && item.refs.length > 0 && index && (
-        <div className="item-refs">
-          {item.refs.map(ref => {
-            const refItem = index.byId[ref.id]
-            if (!refItem) { return null }
+          {item.refs && item.refs.length > 0 && index && (
+            <div className="item-refs">
+              {item.refs.map(ref => {
+                const refItem = index.byId[ref.id]
+                if (!refItem) { return null }
 
-            return (
-              <SmallItem key={ref.id} item={refItem} onClick={onClick} />
-            )
-          })}
-        </div>
-      )}
-    </article>
+                return (
+                  <SmallItem key={ref.id} item={refItem} onClick={onClick} />
+                )
+              })}
+            </div>
+          )}
+        </article>
+      </DropTarget>
+    </DraggableItem>
   )
 }
