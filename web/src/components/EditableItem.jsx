@@ -164,7 +164,7 @@ function ReferenceFields({ index, data, onRemove }) {
 
   return (
     <fieldset>
-      <div className="item-refs">
+      <div className="refs">
         { data.refs.map(ref => 
           index.byId[ref.id] && (
             <div className="removable">

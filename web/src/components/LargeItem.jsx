@@ -85,7 +85,7 @@ export default function LargeItem({ group, item, onClick, index }) {
       }
 
           {item.refs && item.refs.length > 0 && index && (
-            <div className="item-refs">
+            <div className="refs">
               {item.refs.map(ref => {
                 const refItem = index.byId[ref.id]
                 if (!refItem) { return null }

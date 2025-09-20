@@ -9,8 +9,8 @@
   --white: #d7e3de;
   --white-dark: #c9d0c8;
   --white-darker: #75848a;
-  --red: #df4040;
-  --blue: #75c4ff;
+  --red: oklch(60% 40% 22);
+  --blue: oklch(60% 40% 239);
   --yellow: #feb800;
   --green: #7fd991;
   --pink: #ff83cd;
@@ -31,7 +31,7 @@ html {
 
 main.container {
   position: relative;
-  /* padding: 1rem 0; */
+  padding: 1rem 0;
   width: var(--main-width);
 }
 
@@ -39,6 +39,7 @@ aside.sidebar {
   width: var(--side-width);
   position: fixed;
   left: calc(50vw);
+  top: 1rem;
 }
 
 aside.sidebar.left {
@@ -105,7 +106,7 @@ p {
 form {
   display: flex;
   flex-direction: column;
-  gap: calc(1rem);
+  gap: 1rem;
   align-items: start;
 }
 
@@ -118,6 +119,7 @@ fieldset {
 
 fieldset.inline {
   flex-direction: row;
+  * { flex: 1; }
 }
 
 fieldset *:last-child {
@@ -136,25 +138,50 @@ fieldset *:last-child {
 }
 
 .timeline .present {
-  /* height: 1rem; */
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  span { flex: 0; }
+  hr { flex: 1; }
+}
+
+.timeline .initial-scroll {
+  padding-bottom: 1rem;
 }
 
 
 /* ---------------------------------------------------------------------------------------------- */
 
 .item {
-  /* border-left: 2px solid var(--border); */
-}
+  .title {
+    display: flex;
+    align-items: center;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-/* Item type styling */
-.item.note {
-  --border: var(--blue);
-}
+  .title::before {
+    content: '';
+    height: 1em;
+    width: 1em;
+    margin-top: 0.075em;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--item-color);
+  }
 
-.item.task {
-  --border: var(--red);
-}
+  .refs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, calc(50% - 0.5rem));
+    gap: 1rem;
+  }
 
+  &.note { --item-color: var(--blue); }
+  &.task { --item-color: var(--red); }
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -204,9 +231,8 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item.small {
-  min-width: 16em;
   padding: 0.5rem;
-  background-color: var(--black-light);
+  background-color: var(--pico-form-element-selected-background-color);
   border-radius: 4px;
 
   .title {
@@ -250,48 +276,6 @@ fieldset *:last-child {
   line-height: 1.5;
   margin: 0.5rem 0;
 }
-
-.item-refs {
-  display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding: 0.25rem 0;
-  scrollbar-width: thin;
-}
-
-.item-refs::-webkit-scrollbar {
-  height: 4px;
-}
-
-.item-refs::-webkit-scrollbar-track {
-  background: var(--black-light);
-  border-radius: 2px;
-}
-
-.item-refs::-webkit-scrollbar-thumb {
-  background: var(--white-darker);
-  border-radius: 2px;
-}
-
-.item-refs .item {
-  flex-shrink: 0;
-  max-width: 200px;
-}
-
-.item-refs .item strong {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
-.item-refs .item small {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: block;
-}
-
 
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -344,18 +328,6 @@ fieldset *:last-child {
   background-color: rgba(117, 196, 255, 0.1);
 }
 
-.drop-target.drag-over-valid {
-  background-color: rgba(117, 196, 255, 0.1);
-  border: 2px dashed var(--blue);
-  border-radius: 8px;
-}
-
-.drop-target.drag-over-invalid {
-  background-color: rgba(255, 117, 117, 0.1);
-  border: 2px dashed #ff4444;
-  border-radius: 8px;
-}
-
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Modal Styles */
@@ -384,24 +356,24 @@ fieldset *:last-child {
   overflow-y: auto;
 }
 
-.modal-content .item {
-  border: none;
-  margin: 0;
-}
-
-.modal-content form {
-  display: flex;
-  flex-direction: column;
-}
-
-.modal-content fieldset.inline {
-  display: flex;
-  gap: 1rem;
-}
-
-.modal-content fieldset.inline > * {
-  flex: 1;
-}
+/* .modal-content .item { */
+/*   border: none; */
+/*   margin: 0; */
+/* } */
+/**/
+/* .modal-content form { */
+/*   display: flex; */
+/*   flex-direction: column; */
+/* } */
+/**/
+/* .modal-content fieldset.inline { */
+/*   display: flex; */
+/*   gap: 1rem; */
+/* } */
+/**/
+/* .modal-content fieldset.inline > * { */
+/*   flex: 1; */
+/* } */
 
 /* ---------------------------------------------------------------------------------------------- */
 /* Task Date Display */
@@ -429,8 +401,7 @@ fieldset *:last-child {
 
 
 .drop-target.drag-over {
-  border: 1px solid blue;
-  box-shadow: inset 0 0 0 1px red;
+  box-shadow: 0 0 0 1px red;
 }
 
 

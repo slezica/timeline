@@ -14,7 +14,7 @@ export default function Timeline({ index, onItemClick }) {
 
     // Merge consecutive same-ID entries, mark entry closest to present:
     const groups = []
-    const present = new Date().toISOString()
+    const present = new Date('2025-09-12').toISOString()
     let mostRecentEntry = null
 
     for (let i = index.inOrder.length - 1; i > 0; i--) {
@@ -57,7 +57,9 @@ export default function Timeline({ index, onItemClick }) {
         return (
           <div className="timeline-entry" key={key}>
             { isMostRecent && [
-                <div key={1} className="present" />,
+                <div key={1} className="present">
+                  <hr />Present<hr />
+                </div>,
                 <div key={2} className="initial-scroll" ref={scrollToRef} />
               ]
             }
