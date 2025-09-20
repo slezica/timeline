@@ -1,7 +1,8 @@
 import React from 'react'
 import SmallItem from './SmallItem'
-import DraggableItem from './DraggableItem'
+import Draggable from './Draggable'
 import DropTarget from './DropTarget'
+import { useStore } from '../store'
 
 function formatDatetime(str) {
   return str.slice(0, str.lastIndexOf(':'))
@@ -31,15 +32,45 @@ function NoteItemExtras({ item }) {
 }
 
 export default function LargeItem({ group, item, onClick, index }) {
+  const store = useStore()
+
   const handleClick = (e) => {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
       onClick?.(item)
     }
   }
 
+  const handleDragStart = (e, data) => {
+    e.dataTransfer.setData('text/plain', data.id)
+  }
+
+  const handleDrop = (e) => {
+    const draggedItemId = e.dataTransfer.getData('text/plain')
+
+    if (!draggedItemId || draggedItemId === item.id) {
+      return
+    }
+
+    // Add reference to item
+    const updatedItem = {
+      ...item,
+      refs: [...(item.refs || []), { id: draggedItemId }]
+    }
+    store.updateItem.run(updatedItem)
+  }
+
+  const canDrop = (e) => {
+    const draggedItemId = e.dataTransfer.getData('text/plain') ||
+      (e.dataTransfer.types.includes('text/plain') ? '' : null)
+
+    // Prevent self-reference and duplicates
+    return draggedItemId !== item.id &&
+      !item.refs?.some(ref => ref.id === draggedItemId)
+  }
+
   return (
-    <DraggableItem item={item}>
-      <DropTarget item={item}>
+    <Draggable data={item} onDragStart={handleDragStart}>
+      <DropTarget onDrop={handleDrop} canDrop={canDrop}>
         <article
           className={"item large " + item.kind}
           data-id={item.id}
@@ -82,6 +113,6 @@ export default function LargeItem({ group, item, onClick, index }) {
           )}
         </article>
       </DropTarget>
-    </DraggableItem>
+    </Draggable>
   )
 }

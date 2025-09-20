@@ -43,15 +43,29 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     }))
   }
 
-  const handleItemDrop = (itemId, item) => {
+  const handleDrop = (e) => {
+    const itemId = e.dataTransfer.getData('text/plain')
+    if (!itemId || itemId === item.id) {
+      return
+    }
+
     setData(prev => ({
       ...prev,
       refs: [...(prev.refs || []), { id: itemId }]
     }))
   }
 
+  const canDrop = (e) => {
+    const draggedItemId = e.dataTransfer.getData('text/plain') ||
+      (e.dataTransfer.types.includes('text/plain') ? '' : null)
+
+    // Prevent self-reference and duplicates
+    return draggedItemId !== item.id &&
+      !data.refs?.some(ref => ref.id === draggedItemId)
+  }
+
   return (
-    <DropTarget item={{...item, refs: data.refs}} onItemDrop={handleItemDrop}>
+    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
       <article className={"item editable " + item.kind} data-id={item.id}>
         <form onSubmit={handleSubmit}>
           <TopItemFields item={item} data={data} onChange={handleChange} />

@@ -1,5 +1,5 @@
 import React from 'react'
-import DraggableItem from './DraggableItem'
+import Draggable from './Draggable'
 
 function TaskItemExtras({ item }) {
   return null
@@ -14,8 +14,12 @@ export default function SmallItem({ item, onClick }) {
     onClick?.(item)
   }
 
+  const handleDragStart = (e, data) => {
+    e.dataTransfer.setData('text/plain', data.id)
+  }
+
   return (
-    <DraggableItem item={item}>
+    <Draggable data={item} onDragStart={handleDragStart}>
       <div className={"item small " + item.kind} data-id={item.id} onClick={handleClick}>
         <strong className="title">{item.title || 'Untitled'}</strong>
         <small className="kind">{item.kind}</small>
@@ -26,6 +30,6 @@ export default function SmallItem({ item, onClick }) {
             null
           }
       </div>
-    </DraggableItem>
+    </Draggable>
   )
 }
