@@ -79,7 +79,13 @@ async function downloadContacts(auth) {
     // Convert to line-separated JSON format
     const outputPath = 'google_contacts.json'
 
-    const contacts = connections.map(transformContact)
+    const contacts = []
+    for (let connection of connections) {
+      const contact = transformContact(connection) // null if invalid or uninteresting
+      if (contact) {
+        contacts.push(contact)
+      }
+    }
 
     const output = {
       kind: 'contact',

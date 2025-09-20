@@ -1,6 +1,11 @@
 {
   "type": "module",
+  "scripts": {
+    "dl:contacts": "node dl_google_contacts.js",
+    "ul:couch": "node ul_couch.js"
+  },
   "dependencies": {
-    "googleapis": "^160.0.0"
+    "googleapis": "^160.0.0",
+    "nano": "^11.0.1"
   }
 }
