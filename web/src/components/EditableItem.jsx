@@ -37,8 +37,8 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     onCancel?.()
   }
 
-  const handleRemoveRef = (refId) => {
-    setData(prev => ({ ...prev, refs: prev.refs.filter(ref => ref.id !== refId) }))
+  const handleRemoveRef = (ref) => {
+    setData(prev => ({ ...prev, refs: prev.refs.filter(it => it.id !== ref.id) }))
   }
 
   const handleDrop = (data) => {
@@ -70,7 +70,7 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
 
           {/* References section */}
           { (index.ready && data.refs && data.refs.length > 0) &&
-              <ReferenceFields index={index} data={data} />
+              <ReferenceFields onRemove={handleRemoveRef} index={index} data={data} />
           }
 
           {/* Footer with buttons */}
