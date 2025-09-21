@@ -2,6 +2,7 @@ import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { scheduled } from './utils'
+import { validateItem } from '../schema'
 
 
 const miniSearch = new MiniSearch({
@@ -162,6 +163,10 @@ export const useStore = zs.create((set, get) => {
       item._id = crypto.randomUUID()
       item.type = 'item'
 
+      if (!validateItem(item)) {
+        throw new Error(`Validation failed: ${JSON.stringify(validateItem.errors)}`)
+      }
+
       const putQ = await db.put(item) // TODO actually check `.ok`
       item._rev = putQ.rev
 
@@ -180,6 +185,10 @@ export const useStore = zs.create((set, get) => {
     set({ result: null, error: null, loading: true })
 
     try {
+      if (!validateItem(item)) {
+        throw new Error(`Validation failed: ${JSON.stringify(validateItem.errors)}`)
+      }
+
       const putQ = await db.put(item)
       item._rev = putQ.rev
       set({ loading: false, error: null, result: item })

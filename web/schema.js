@@ -1,7 +1,9 @@
 import Ajv from 'ajv'
+import addFormats from 'ajv-formats'
 
 
 const ajv = new Ajv()
+addFormats(ajv)
 
 
 const itemSchema = {
@@ -10,7 +12,7 @@ const itemSchema = {
   additionalProperties: false,
 
   properties: {
-    _id : { type: 'string', format: 'uuid' },
+    _id : { type: 'string' },
     _rev: { type: 'string' },
     type: { type: 'string', enum: ['item'] },
     kind: { type: 'string', enum: ['task', 'note' ] },

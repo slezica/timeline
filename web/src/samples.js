@@ -1,4 +1,5 @@
 import { db } from './database'
+import { validateItem } from '../schema'
 
 const samples = [
   {"_id":"testdoc1","type":"item","kind":"task","title":"Write project proposal","body":"Create comprehensive project proposal with timeline, budget, and technical requirements.","createdDate":"2025-09-01T09:00:00.000Z","updatedDate":"2025-09-01T12:00:00.000Z","dueDate":"2025-09-05T09:00:00.000Z","doneDate":null,"refs":[]} ,
@@ -105,6 +106,10 @@ const samples = [
 
 export async function putSampleData() {
   for (let sample of samples) {
+    if (!validateItem(sample)) {
+      console.error(`Invalid sample item ${sample._id}:`, validateItem.errors)
+      continue
+    }
     await db.put(sample)
   }
 }
