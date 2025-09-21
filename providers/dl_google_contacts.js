@@ -129,13 +129,13 @@ function transformContact(person) {
   }
 
   // Extract name:
-  contact.name = person.names?.[0]?.displayName ?? ''
+  contact.name = person.names?.[0]?.displayName ?? null
   if (!contact.name) {
     return null
   }
 
   // Extract email (one):
-  contact.email = person.emailAddresses?.[0]?.value ?? ''
+  contact.email = person.emailAddresses?.[0]?.value ?? null
 
   // Extract phone numbers
   contact.phones = []
