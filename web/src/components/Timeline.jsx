@@ -40,9 +40,9 @@ export default function Timeline({ index, onItemClick }) {
 
   }, [index])
 
-  const scrollToRef = useCallback((el) => {
+  const scrollToElement = useCallback((el) => {
     if (el) {
-      el.scrollIntoView({ block: 'start' })
+      el.scrollIntoView({ block: 'start', container: 'nearest' })
     }
   }, [])
 
@@ -50,37 +50,32 @@ export default function Timeline({ index, onItemClick }) {
     <section className="timeline">
       { groups.map(group => {
         const entry = group[0]
-        const key = entry.event + entry.id 
+        const key = entry.event + entry.id
         const isMostRecent = group.some(entry => entry.isMostRecent)
 
         return (
           <div className="timeline-entry" key={key}>
-            { isMostRecent && [
-                <div key={1} className="present">
-                  <hr />Present<hr />
-                </div>,
-                <div key={2} className="initial-scroll" ref={scrollToRef} />
-              ]
-            }
+            { isMostRecent && <div className="present"><hr />Present<hr /></div> }
+            { isMostRecent && <div className="anchor" ref={scrollToElement} /> }
 
-            { index.byId[entry.id]
+            {index.byId[entry.id]
               ? <LargeItem
-                  group = { group }
-                  item  = { index.byId[entry.id] }
-                  onClick = { onItemClick }
-                  index = { index }
-                />
+                group={group}
+                item={index.byId[entry.id]}
+                onClick={onItemClick}
+                index={index}
+              />
               : <div>placeholder</div>
             }
           </div>
         )
       })}
 
-      { index.loading && (
+      {index.loading && (
         <div aria-busy="true">Loading...</div>
       )}
 
-      { index.error && (
+      {index.error && (
         <div role="alert">
           Error: {index.error}
         </div>

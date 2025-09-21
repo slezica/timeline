@@ -59,32 +59,32 @@ export default function App() {
   }
 
   return (
-    <DropTarget canDrop={canNeverDrop}>
-      <main className="container">
-        <aside className="left sidebar">
-          <SearchForm onQueryChange={setQuery} />
-          <hr />
-          <CreateItemForm />
-        </aside>
+    <div id="app">
+      <aside>
+        <SearchForm onQueryChange={setQuery} />
+        <hr />
+        <CreateItemForm />
+      </aside>
 
-        <aside className="right sidebar">
-          <Shelf onItemClick={handleItemClick} />
-        </aside>
-
+      <main>
         <Timeline index={queryIndex} onItemClick={handleItemClick} />
-
-        <Modal showing={editingItem !== null} onClose={handleModalClose}>
-          {editingItem && (
-            <EditableItem
-              item={editingItem}
-              onSave={handleItemSave}
-              onCancel={handleModalClose}
-              index={index}
-            />
-          )}
-        </Modal>
       </main>
-    </DropTarget>
+
+      <aside>
+        <Shelf onItemClick={handleItemClick} />
+      </aside>
+
+      <Modal showing={editingItem !== null} onClose={handleModalClose}>
+        {editingItem && (
+          <EditableItem
+            item={editingItem}
+            onSave={handleItemSave}
+            onCancel={handleModalClose}
+            index={index}
+          />
+        )}
+      </Modal>
+    </div>
   )
 }
 
