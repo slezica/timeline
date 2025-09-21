@@ -88,17 +88,22 @@ export const useStore = zs.create((set, get) => {
       const byId = {}
 
       for (let row of byDateQ.rows) {
-        const doc = { id: row.doc._id, ...row.doc }
+        const ok = validateItem(row.doc)
+        if (!ok) {
+          console.warn("Invalid item fetched:", validateItem.errors)
+        }
+
         const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
 
         // Sorted index:
         inOrder.push(entry)
 
         // ID Lookup:
-        byId[doc.id] = doc
+        byId[row.doc._id] = row.doc
 
         // Full-text search:
-        miniSearch.has(doc.id) ? miniSearch.replace(doc) : miniSearch.add(doc)
+        const searchDoc = { id: row.doc._id, ...row.doc }
+        miniSearch.has(searchDoc.id) ? miniSearch.replace(searchDoc) : miniSearch.add(searchDoc)
       }
 
       inOrder.reverse() // TODO query desc or sort in-place

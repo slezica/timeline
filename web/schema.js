@@ -2,26 +2,53 @@ import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 
 
-const ajv = new Ajv()
+const ajv = new Ajv({
+  allErrors: true,
+  verbose: true
+})
+
 addFormats(ajv)
 
 
-const itemSchema = {
+const refSchema = {
   type: 'object',
-  required: ['_id', 'type', 'kind', 'title', 'body', 'createdDate', 'updatedDate'],
+  required: ['id'],
   additionalProperties: false,
 
   properties: {
+    id: { type: 'string' },
+  },
+}
+
+
+const phoneSchema = {
+  type: 'object',
+  required: ['type', 'number'],
+  additionalProperties: false,
+
+  properties: {
+    type  : { type: 'string' },
+    number: { type: 'string' }
+  }
+}
+
+
+const baseItemSchema = {
+  type: 'object',
+  required: ['_id', 'type', 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
+  additionalProperties: false,
+
+  properties: {
+    // Identity:
     _id : { type: 'string' },
     _rev: { type: 'string' },
     type: { type: 'string', enum: ['item'] },
-    kind: { type: 'string', enum: ['task', 'note' ] },
 
-    // Base dates:
+    // Dates:
     createdDate: { type: 'string', format: 'date-time' },
     updatedDate: { type: 'string', format: 'date-time' },
 
-    // Base content:
+    // Text:
     title: {
       type: 'string',
       minLength: 1,
@@ -37,35 +64,89 @@ const itemSchema = {
     // References:
     refs: {
       type: 'array',
-      items: {
-        type: 'object',
-        required: ['id'],
-        additionalProperties: false,
+      items: refSchema,
+      default: []
+    }
+  },
 
-        properties: {
-          id: { type: 'string', format: 'uuid' },
-        },
-      },
+  allOf: [
+    { 'required': ['_id'] } // superflous, this is just to have an allOf field in the base :D
+  ]
+}
+
+
+export const taskSchema = {
+  ...baseItemSchema,
+  required: [...baseItemSchema.required, 'dueDate', 'doneDate'],
+
+  properties: {
+    ...baseItemSchema.properties,
+
+    kind: { type: 'string', enum: ['task'] },
+    dueDate: { type: ['string', 'null'], format: 'date-time' },
+    doneDate: { type: ['string', 'null'], format: 'date-time' },
+  }
+}
+
+
+export const noteSchema = {
+  ...baseItemSchema,
+
+  properties: {
+    ...baseItemSchema.properties,
+
+    kind: { type: 'string', enum: ['note'] },
+  }
+}
+
+
+const contactSchema = {
+  ...baseItemSchema,
+  required: [...baseItemSchema.required, 'name' ],
+
+  properties: {
+    ...baseItemSchema.properties,
+
+    kind: { type: 'string', enum: ['contact'] },
+
+    name: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 500
+    },
+
+    email: {
+      type: 'string',
+      format: 'email',
+      default: ''
+    },
+
+    phones: {
+      type: 'array',
+      items: phoneSchema,
       default: []
     },
 
-    // Task extras (conditional):
-    dueDate : { type: ['string', 'null'], format: 'date-time' },
-    doneDate: { type: ['string', 'null'], format: 'date-time' },
+    organization: { type: 'string', default: '' },
+    birthday: { type: ['string', 'null'], format: 'date-time' },
+    picture: { type: 'string', default: '' }
   },
 
-  // Constraints:
   allOf: [
-    { if: { properties: { kind: { const: 'task' } } },
-      then: { required: ['dueDate', 'doneDate'] },
-      else: { not: {
-        anyOf: [
-          { required: ['dueDate'] },
-          { required: ['doneDate'] }
-        ]
-      }}
-    }
+    ...baseItemSchema.allOf,
+
+    { anyOf: [
+      { "required": ["name"] },
+      { "required": ["email"] },
+      { "required": ["phones"] }
+    ]}
   ]
+}
+
+
+// Universal validator that handles both items and contacts
+const itemSchema = {
+  oneOf: [taskSchema, noteSchema, contactSchema]
 }
 
 
