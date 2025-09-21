@@ -15,7 +15,7 @@
   --red: oklch(var(--lightness) var(--chroma) 22);
   --blue: oklch(var(--lightness) var(--chroma) 242);
   --green: oklch(var(--lightness) var(--chroma) 178);
-  --yellow: #feb800;
+  --yellow: oklch(var(--lightness) var(--chroma) 86);
   --pink: #ff83cd;
   --purple: #b0a4ff;
   --cyan: #00bbc6;
@@ -165,14 +165,17 @@ fieldset *:last-child {
     gap: 1rem;
   }
 
-  &.note { --item-color: var(--blue); }
-  &.task { --item-color: var(--red); }
+  &.note    { --item-color: var(--yellow); }
+  &.task    { --item-color: var(--red); }
+  &.contact { --item-color: var(--blue); }
 }
 
 
 .item:has(> header:only-child) {
+  padding: 0;
+
   > header {
-    margin: calc(-1 * var(--pico-block-spacing-vertical) * 0.5) calc(-1 * var(--pico-block-spacing-horizontal));
+    margin: 0;
     border-radius: var(--pico-border-radius);
   }
 }
@@ -182,7 +185,7 @@ fieldset *:last-child {
 
 .item.large {
   header .dot {
-    margin-top: 0.075em;
+    margin-top: 0.07em;
   }
 }
 
@@ -202,7 +205,7 @@ fieldset *:last-child {
   }
 
   header .dot {
-    margin-top: -0.2em;
+    margin-top: -0.25em;
   }
 
   .body {
@@ -230,7 +233,7 @@ fieldset *:last-child {
   }
 
   header .dot {
-    margin-top: -0.2em;
+    margin-top: -0.23em;
   }
 
   --whiten: 4%;
