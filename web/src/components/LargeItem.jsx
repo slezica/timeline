@@ -63,7 +63,7 @@ export default function LargeItem({ group, item, onClick, index }) {
           style={{ cursor: 'pointer' }}
         >
       <header>
-        <span class="dot" />
+        <span className="dot" />
         <strong className="title">{item.title || 'Untitled'}</strong>
 
         {group.map(entry =>

@@ -18,16 +18,16 @@ export default function SmallItem({ item, onClick }) {
     <Draggable data={item}>
       <article className={"item small " + item.kind} data-id={item.id} onClick={handleClick}>
         <header>
-          <span class="dot" />
+          <span className="dot" />
           <strong className="title">{item.title || 'Untitled'}</strong>
         </header>
 
-        <small className="kind">{item.kind}</small>
+        <small className="kind"></small>
 
         {
           item.kind == 'task' ? <TaskItemExtras item={item} /> :
-            item.kind == 'note' ? <NoteItemExtras item={item} /> :
-              null
+          item.kind == 'note' ? <NoteItemExtras item={item} /> :
+            null
         }
       </article>
     </Draggable>
