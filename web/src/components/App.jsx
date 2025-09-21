@@ -54,21 +54,12 @@ export default function App() {
     setEditingItem(null)
   }
 
-  const canDropFile = (data) => {
-    // Accept file drops but reject item drops
-    return Array.isArray(data) // file drops are arrays of File objects
-  }
-
-  const handleFileDrop = (files) => {
-    if (files && files.length > 0) {
-      const file = files[0]
-      console.log('File dropped:', file.name)
-      // TODO: handle file import
-    }
+  const canNeverDrop = () => {
+    return false // catch drag-and-drops to nowhere, consider them invalid
   }
 
   return (
-    <DropTarget canDrop={canDropFile} onDrop={handleFileDrop}>
+    <DropTarget canDrop={canNeverDrop}>
       <main className="container">
         <aside className="left sidebar">
           <SearchForm onQueryChange={setQuery} />
