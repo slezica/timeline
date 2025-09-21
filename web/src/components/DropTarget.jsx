@@ -12,45 +12,43 @@ export default function DropTarget({
   const [draggingOver, setDraggingOver] = useState(false)
   const counter = useRef(0)
 
-  const isValidData = (data) => {
-    return canDrop ? canDrop(data) : !!data
-  }
-
   const validDataHandler = (fn) => (ev) => {
     ev.preventDefault()
-    const data = getTransferData(ev.dataTransfer)
 
-    if (isValidData(data)) {
+    const data = getTransferData(ev.dataTransfer)
+    const files = ev.dataTransfer.files ?? []
+
+    if (canDrop?.(data, files)) {
       ev.dataTransfer.dropEffect = 'copy'
-      fn(data)
+      fn(data, files)
     }
   }
 
-  const handleDragEnter = validDataHandler(data => {
+  const handleDragEnter = validDataHandler((data, files) => {
     counter.current++
 
     if (counter.current == 1) {
       setDraggingOver(true)
-      onDragEnter?.(data)
+      onDragEnter?.(data, files)
     }
   })
 
-  const handleDragOver = validDataHandler(data => {
-    onDragOver?.(data)
+  const handleDragOver = validDataHandler((data, files) => {
+    onDragOver?.(data, files)
   })
 
-  const handleDragLeave = validDataHandler(data => {
+  const handleDragLeave = validDataHandler((data, files) => {
     counter.current--
 
     if (counter.current == 0) {
       setDraggingOver(false)
-      onDragLeave?.(data)
+      onDragLeave?.(data, files)
     }
   })
 
-  const handleDrop = validDataHandler(data => {
+  const handleDrop = validDataHandler((data, files) => {
     setDraggingOver(false)
-    onDrop?.(data)
+    onDrop?.(data, files)
   })
 
   const className = `drop-target ${draggingOver ? 'drag-over' : ''}`

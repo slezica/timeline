@@ -12,14 +12,14 @@ export default function Draggable({ data, onDragStart, onDragEnd, children }) {
     setTransferData(ev.dataTransfer, data)
 
     setDragging(true)
-    onDragStart?.(ev, data)
+    onDragStart?.(data, ev.dataTransfer.files ?? [])
   }
 
   const handleDragEnd = (ev) => {
     ev.currentTarget.classList.remove('dragging')
 
     setDragging(false)
-    onDragEnd?.(ev, data)
+    onDragEnd?.(data, ev.dataTransfer.files ?? [])
   }
 
   return (
