@@ -9,10 +9,16 @@ function NoteItemExtras({ item }) {
   return null
 }
 
-export default function SmallItem({ item, onClick }) {
+export default function SmallItem({ item, onClick, onRemove }) {
   const handleClick = () => {
     onClick?.(item)
   }
+
+  const handleRemove = (ev) => {
+    ev.preventDefault()
+    ev.stopPropagation()
+    onRemove?.({ id: item._id })
+  } 
 
   const ref = { id: item._id }
 
@@ -22,6 +28,9 @@ export default function SmallItem({ item, onClick }) {
         <header>
           <span className="dot" />
           <strong className="title">{item.title || 'Untitled'}</strong>
+          { onRemove &&
+            <span className="remove" onClick={handleRemove}>X</span>
+          }
         </header>
 
         <p className="body">

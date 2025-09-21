@@ -310,16 +310,16 @@ fieldset *:last-child {
 
 .shelf {
   display: flex;
-  min-height: 200px;
+  min-height: 300px;
   flex-direction: column;
   gap: 1rem;
-  border: 2px dashed transparent;
+  border: 4px dashed transparent;
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .shelf.drag-over {
-  border-color: var(--blue);
+  border-color: var(--pico-text-selection-color);
   background-color: rgba(117, 196, 255, 0.1);
 }
 
@@ -392,7 +392,7 @@ fieldset *:last-child {
 
 
 .drop-target.drag-over {
-  box-shadow: 0 0 0 1px red;
+
 }
 
 

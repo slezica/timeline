@@ -15,10 +15,10 @@ export default function Shelf({ onItemClick }) {
     const item = index.byId[data.id]
     if (!item) { return }
 
-    const isAlreadyInShelf = shelf.inOrder.some(id => id === data.id)
+    const isAlreadyInShelf = shelf.inOrder.some(it => it.id === data.id)
     if (isAlreadyInShelf) { return }
 
-    const newShelfOrder = [...shelf.inOrder, data.id]
+    const newShelfOrder = [...shelf.inOrder, {id: data.id}]
     shelf.replace(newShelfOrder)
   }
 
@@ -27,11 +27,20 @@ export default function Shelf({ onItemClick }) {
   }
 
   const handleDragEnter = (data) => {
+    console.log('enter')
     setDraggingOver(true)
   }
 
   const handleDragLeave = () => {
+    console.log('leave')
     setDraggingOver(false)
+  }
+
+  const handleRemove = (ref) => {
+    const i = shelf.inOrder.findIndex(it => it.id == ref.id)
+    if (i == -1) { return }
+
+    shelf.replace([...shelf.inOrder.slice(0, i), ...shelf.inOrder.slice(i+1)])
   }
 
   return (
@@ -44,10 +53,10 @@ export default function Shelf({ onItemClick }) {
       <section className={`shelf ${draggingOver ? 'drag-over' : ''}`}>
         {!draggingOver && shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
 
-        {shelf.inOrder.map(id =>
-          index.byId[id]
-            ? <SmallItem key={id} item={index.byId[id]} onClick={onItemClick} />
-            : <div key={id} className="placeholder">placeholder</div>
+        {shelf.inOrder.map(ref =>
+          index.byId[ref.id]
+            ? <SmallItem key={ref.id} item={index.byId[ref.id]} onClick={onItemClick} onRemove={handleRemove} />
+            : <div key={ref.id} className="placeholder">placeholder</div>
         )}
       </section>
     </DropTarget>
