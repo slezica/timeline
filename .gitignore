@@ -37,4 +37,5 @@ token.json
 credentials.json
 
 # Data
-*.jsonl
+providers/data/*
+

@@ -77,7 +77,7 @@ async function downloadContacts(auth) {
     console.log(`Found ${connections.length} contacts`)
 
     // Convert to line-separated JSON format
-    const outputPath = 'google_contacts.json'
+    const outputPath = 'data/google_contacts.json'
 
     const contacts = []
     for (let connection of connections) {
