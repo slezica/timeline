@@ -14,12 +14,12 @@ function TaskItemExtras({ item }) {
   return (
     <>
       {(item.dueDate || item.doneDate) && (
-        <div className="task-dates">
+        <div className="tags">
           { item.dueDate && 
-            <span className="due-date">Due {formatDisplayDate(item.dueDate)}</span>
+            <span className="tag due-date">Due {formatDisplayDate(item.dueDate)}</span>
           }
           { item.doneDate && 
-            <span className="done-date">Done {formatDisplayDate(item.doneDate)}</span>
+            <span className="tag done-date">Done {formatDisplayDate(item.doneDate)}</span>
           }
         </div>
       )}
@@ -53,7 +53,7 @@ export default function LargeItem({ group, item, onClick, index }) {
       && !item.refs.some(ref => ref.id == data.id)
   }
 
-  const ref = { id: item.id }
+  const ref = { id: item._id }
 
   return (
     <Draggable data={ref}>
@@ -64,29 +64,28 @@ export default function LargeItem({ group, item, onClick, index }) {
           onClick={handleClick}
           style={{ cursor: 'pointer' }}
         >
-      <header>
-        <span className="dot" />
-        <strong className="title">{item.title || 'Untitled'}</strong>
+          <header>
+            <span className="dot" />
+            <strong className="title">{item.title || 'Untitled'}</strong>
 
-        {group.map(entry =>
-          <span className="tags" key={entry.event}>
-            <span className={"tag " + entry.event}>{entry.event}</span>
-          </span>
-        )}
+            {group.map(entry =>
+              <span className="tags" key={entry.event}>
+                <kbd className={"tag " + entry.event}>{entry.event}</kbd>
+              </span>
+            )}
+          </header>
 
-      </header>
+          {item.body && (
+            <div className="body">
+              {item.body}
+            </div>
+          )}
 
-      {item.body && (
-        <div className="body">
-          {item.body}
-        </div>
-      )}
-
-      { 
-        item.kind == 'task' ? <TaskItemExtras item={item} /> :
-        item.kind == 'note' ? <NoteItemExtras item={item} /> :
-        null
-      }
+          {
+            item.kind == 'task' ? <TaskItemExtras item={item} /> :
+            item.kind == 'note' ? <NoteItemExtras item={item} /> :
+            null
+          }
 
           {item.refs && item.refs.length > 0 && index && (
             <div className="refs">

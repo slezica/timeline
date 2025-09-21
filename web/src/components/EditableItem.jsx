@@ -4,14 +4,7 @@ import DropTarget from './DropTarget'
 
 
 export default function EditableItem({ index, item, onSave, onCancel }) {
-  const [data, setData] = useState({
-    title: item.title || '',
-    body: item.body || '',
-    kind: item.kind,
-    dueDate: item.dueDate || '',
-    doneDate: item.doneDate || '',
-    refs: item.refs || []
-  })
+  const [data, setData] = useState({ ...item })
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -167,9 +160,9 @@ function ReferenceFields({ index, data, onRemove }) {
       <div className="refs">
         { data.refs.map(ref => 
           index.byId[ref.id] && (
-            <div className="removable">
+            <div key={ref.id} className="removable">
               <span className="remove" onClick={removeHandler(ref)}>X</span>
-              <SmallItem key={ref.id} item={index.byId[ref.id]} />
+              <SmallItem item={index.byId[ref.id]} />
             </div>
           )
         )}

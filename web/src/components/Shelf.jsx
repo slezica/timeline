@@ -10,6 +10,8 @@ export default function Shelf({ onItemClick }) {
   const [draggingOver, setDraggingOver] = useState(false)
 
   const handleDrop = (data) => {
+    setDraggingOver(false)
+
     const item = index.byId[data.id]
     if (!item) { return }
 

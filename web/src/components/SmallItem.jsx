@@ -14,7 +14,7 @@ export default function SmallItem({ item, onClick }) {
     onClick?.(item)
   }
 
-  const ref = { id: item.id }
+  const ref = { id: item._id }
 
   return (
     <Draggable data={ref}>
@@ -24,7 +24,11 @@ export default function SmallItem({ item, onClick }) {
           <strong className="title">{item.title || 'Untitled'}</strong>
         </header>
 
-        <small className="kind"></small>
+        { item.body && (
+          <p className="body">
+            { item.body }
+          </p>
+        )}
 
         {
           item.kind == 'task' ? <TaskItemExtras item={item} /> :

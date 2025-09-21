@@ -7,15 +7,15 @@
   --chroma: 34%;
 
   --black: #2a2a2b;
-  --black-light: #333333;
+  --black-light: #262626;
   --black-lighter: #4a4a4a;
   --white: #d7e3de;
   --white-dark: #c9d0c8;
   --white-darker: #75848a;
   --red: oklch(var(--lightness) var(--chroma) 22);
   --blue: oklch(var(--lightness) var(--chroma) 242);
+  --green: oklch(var(--lightness) var(--chroma) 178);
   --yellow: #feb800;
-  --green: #7fd991;
   --pink: #ff83cd;
   --purple: #b0a4ff;
   --cyan: #00bbc6;
@@ -26,10 +26,6 @@
 
   --main-width: 720px;
   --side-width: 300px;
-}
-
-html {
-  background-color: var(--black);
 }
 
 main.container {
@@ -157,6 +153,10 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+
   header {
     display: flex;
     margin-bottom: 0;
@@ -176,17 +176,7 @@ fieldset *:last-child {
   }
 
   header .tag {
-    flex: 0;
-    padding: 2px 8px;
-    border-radius: 4px;
-    text-wrap: nowrap;
-    text-transform: uppercase;
-    background-color: var(--black-light);
-  }
-
-  &:has(header:first-child:last-child) {
-    padding: 0;
-    header { margin: 0; }
+    background-color: color-mix(in oklch, var(--pico-card-background-color), white 10%);
   }
 
   header .dot {
@@ -209,29 +199,47 @@ fieldset *:last-child {
   &.task { --item-color: var(--red); }
 }
 
-/* ---------------------------------------------------------------------------------------------- */
 
-.item.large {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+.item:has(> header:only-child) {
+  /* padding: 0; */
 
-  .body {
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-    white-space: pre; /* TODO instead should be many paragraphs */
+  > header {
+    margin: 0;
+    border-radius: var(--pico-border-radius);
   }
 }
 
 
 /* ---------------------------------------------------------------------------------------------- */
 
+.refs .item.small {
+  --whiten: 4%;
+
+  gap: 0.5rem;
+  padding: calc(var(--pico-block-spacing-vertical) * 0.5) var(--pico-block-spacing-horizontal);
+  background-color: color-mix(in oklch, var(--pico-card-background-color), white var(--whiten));
+
+  > header {
+    padding: calc(var(--pico-block-spacing-vertical) * .44) var(--pico-block-spacing-horizontal);
+    background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white var(--whiten));
+  }
+}
+
+
+/* ---------------------------------------------------------------------------------------------- */
+
+.item.large {
+}
+
+
+/* ---------------------------------------------------------------------------------------------- */
+
 .item.small {
-  background-color: var(--pico-form-element-selected-background-color);
+  /* background-color: var(--pico-dropdown-border-color); */
+  gap: 0.75rem;
 
   header {
     font-size: 0.9em;
-    padding: 0.25rem 1rem;
   }
 
   header .title {
@@ -242,6 +250,12 @@ fieldset *:last-child {
   .kind {
     color: var(--white-darker);
     text-transform: uppercase;
+  }
+
+  .body {
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 
@@ -377,24 +391,25 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 /* Task Date Display */
 
-.task-dates {
+.tags {
   display: flex;
   gap: 1rem;
   font-size: 0.9em;
   color: var(--white-darker);
 }
 
-.due-date, .done-date {
+.tag {
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
-  background-color: var(--black-light);
+  text-wrap: nowrap;
+  color: var(--pico-color);
+  background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white 3.5%);
 }
 
-.done-date {
+.tag.done-date {
   background-color: var(--green);
   color: var(--black);
 }
-
 
 /* ---------------------------------------------------------------------------------------------- */
 
