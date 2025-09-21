@@ -18,8 +18,19 @@ export default function DropTarget({
 
   const validDataHandler = (fn) => (ev) => {
     ev.preventDefault()
-    const data = getTransferData(ev.dataTransfer)
 
+    // Check for files first
+    if (ev.dataTransfer.files && ev.dataTransfer.files.length > 0) {
+      const files = Array.from(ev.dataTransfer.files)
+      if (isValidData(files)) {
+        ev.dataTransfer.dropEffect = 'copy'
+        fn(files)
+        return
+      }
+    }
+
+    // Fall back to JSON data
+    const data = getTransferData(ev.dataTransfer)
     if (isValidData(data)) {
       ev.dataTransfer.dropEffect = 'copy'
       fn(data)
