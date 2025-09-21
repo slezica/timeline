@@ -79,7 +79,7 @@ export default function CreateItemForm() {
 
       <button 
         type="submit" 
-        disabled={!title.trim() || createItem.loading}
+        disabled={createItem.loading}
         >
           {createItem.loading ? 'Creating...' : 'Create'}
       </button>

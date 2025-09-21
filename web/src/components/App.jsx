@@ -10,6 +10,7 @@ import EditableItem from './EditableItem'
 import './App.css'
 import Shelf from './Shelf'
 import DropTarget from './DropTarget'
+import ImportFileForm from './ImportFileForm'
 
 
 export default function App() {
@@ -54,16 +55,14 @@ export default function App() {
     setEditingItem(null)
   }
 
-  const canNeverDrop = () => {
-    return false // catch drag-and-drops to nowhere, consider them invalid
-  }
-
   return (
     <div id="app">
       <aside>
         <SearchForm onQueryChange={setQuery} />
         <hr />
         <CreateItemForm />
+        <hr />
+        <ImportFileForm />
       </aside>
 
       <main>

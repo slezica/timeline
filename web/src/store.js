@@ -51,19 +51,9 @@ export const useStore = zs.create((set, get) => {
       replace: replaceShelf
     },
 
-    createItem: {
-      result: null,
-      error: null,
-      loading: false,
-      run: createItem
-    },
-
-    updateItem: {
-      result: null,
-      error: null,
-      loading: false,
-      run: updateItem
-    },
+    createItem: { loading: false, error: null, result: null, run: createItem },
+    updateItem: { loading: false, error: null, result: null, run: updateItem },
+    importFile: { loading: false, error: null, result: null, run: importFile },
   })
 
   const initializeStore = async () => {
@@ -198,6 +188,37 @@ export const useStore = zs.create((set, get) => {
       const putQ = await db.put(item)
       item._rev = putQ.rev
       set({ loading: false, error: null, result: item })
+
+    } catch (err) {
+      console.error(err)
+      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
+    }
+  }
+
+  const importFile = async (file) => {
+    const { set } = scope('importFile')
+
+    set({ result: null, error: null, loading: true })
+
+    const fileContent = await new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => resolve(reader.result)
+      reader.onerror = () => reject(reader.error)
+      reader.readAsText(file)
+    })
+
+    const data = JSON.parse(fileContent)
+
+    try {
+      for (let item of data.items) {
+        if (!validateItem(item)) {
+          console.error(validateItem.errors)
+          throw new Error(`Validation failed`)
+        }
+      }
+
+      await db.bulkDocs(data.items)
+      set({ loading: false, error: null, result: data.items })
 
     } catch (err) {
       console.error(err)

@@ -88,13 +88,12 @@ async function downloadContacts(auth) {
     }
 
     const output = {
-      kind: 'contact',
       download: {
         method: METHOD,
         version: VERSION,
         date: new Date().toISOString(),
       },
-      data: contacts 
+      items: contacts 
     }
 
     fs.writeFileSync(outputPath, JSON.stringify(output, null, 2))
@@ -108,8 +107,10 @@ async function downloadContacts(auth) {
 function transformContact(person) {
   const contact = {
     _id: person.resourceName?.replace('people/', 'g') || crypto.randomUUID(),
-    type: 'contact',
-    source: 'google_contacts'
+    type: 'item',
+    kind: 'contact',
+    body: '',
+    refs: []
   }
 
   // Extract Google metadata timestamps
@@ -129,8 +130,8 @@ function transformContact(person) {
   }
 
   // Extract name:
-  contact.name = person.names?.[0]?.displayName ?? null
-  if (!contact.name) {
+  contact.title = person.names?.[0]?.displayName ?? null
+  if (!contact.title) {
     return null
   }
 
@@ -144,13 +145,13 @@ function transformContact(person) {
   }
 
   // Extract addresses:
-  contact.places = []
-  for (let address of person.addresses ?? []) {
-    contact.places.push({ type: address.type || 'home', address: address.formattedValue })
-  }
+  // contact.places = []
+  // for (let address of person.addresses ?? []) {
+  //   contact.places.push({ type: address.type || 'home', address: address.formattedValue })
+  // }
 
   // Skip this contact if we have no meaningful data:
-  if (!contact.email && !contact.phones.length && !contact.places.length) {
+  if (!contact.email && !contact.phones.length /* && !contact.places.length */) {
     return null
   }
 

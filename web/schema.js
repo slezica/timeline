@@ -102,22 +102,15 @@ export const noteSchema = {
 
 const contactSchema = {
   ...baseItemSchema,
-  required: [...baseItemSchema.required, 'name' ],
+  required: [...baseItemSchema.required ],
 
   properties: {
     ...baseItemSchema.properties,
 
     kind: { type: 'string', enum: ['contact'] },
 
-    name: {
-      type: 'string',
-      minLength: 1,
-      maxLength: 500
-    },
-
     email: {
-      type: 'string',
-      format: 'email',
+      type: ['string', 'null'],
       default: ''
     },
 
@@ -136,7 +129,6 @@ const contactSchema = {
     ...baseItemSchema.allOf,
 
     { anyOf: [
-      { "required": ["name"] },
       { "required": ["email"] },
       { "required": ["phones"] }
     ]}
