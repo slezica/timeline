@@ -92,7 +92,7 @@ export const useStore = zs.create((set, get) => {
 
       inOrder.reverse() // TODO query desc or sort in-place
 
-      set({ inOrder, byId, error: null, ready: true, loading: false })
+      set({ loading: false, error: null, ready: true, inOrder, byId })
 
     } catch (err) {
       console.error(err)
@@ -167,7 +167,7 @@ export const useStore = zs.create((set, get) => {
   const updateItem = async (item) => {
     const { set } = scope('updateItem')
 
-    set({ result: null, error: null, loading: true })
+    set({ loading: true, error: null, result: null })
 
     try {
       const putQ = await db.put(item)
