@@ -95,6 +95,7 @@ function TopItemFields({ item, data, onChange }) {
       <select className="kind" value={data.kind} onChange={changeHandler('kind')}>
         <option value="task">Task</option>
         <option value="note">Note</option>
+        <option value="contact">Contact</option>
       </select>
     </fieldset>
   )
