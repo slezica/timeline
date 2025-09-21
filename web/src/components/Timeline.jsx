@@ -41,7 +41,6 @@ export default function Timeline({ index, onItemClick }) {
   }, [index])
 
   const scrollToRef = useCallback((el) => {
-    console.log('scroll', el)
     if (el) {
       el.scrollIntoView({ block: 'start' })
     }
