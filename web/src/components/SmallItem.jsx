@@ -24,11 +24,9 @@ export default function SmallItem({ item, onClick }) {
           <strong className="title">{item.title || 'Untitled'}</strong>
         </header>
 
-        { item.body && (
-          <p className="body">
-            { item.body }
-          </p>
-        )}
+        <p className="body">
+          { item.body }
+        </p>
 
         {
           item.kind == 'task' ? <TaskItemExtras item={item} /> :

@@ -24,7 +24,7 @@
   --black: oklch(20% 2% 270);
   --white: #fafafa;
 
-  --main-width: 720px;
+  --main-width: 650px;
   --side-width: 300px;
 }
 
@@ -39,6 +39,8 @@ aside.sidebar {
   position: fixed;
   left: calc(50vw);
   top: 1rem;
+  max-height: 100vh;
+  overflow-y: scroll;
 }
 
 aside.sidebar.left {
@@ -47,41 +49,6 @@ aside.sidebar.left {
 
 aside.sidebar.right {
   transform: translateX(calc((var(--main-width)/2 + 16px)));
-}
-
-@media(min-width: 1300px) {
-  main.container {
-    flex-direction: row;
-    justify-content: center;
-  }
-}
-
-@media(max-width: 1300px) {
-  main.container {
-    flex-direction: column;
-  }
-
-  .create-item {
-    fieldset {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    fieldset * {
-      flex: 1;
-    }
-
-    fieldset select {
-      flex: 0;
-      min-width: 6em;
-    }
-
-    fieldset button {
-      flex: 0;
-      white-space: nowrap;
-    }
-  }
 }
 
 
@@ -164,15 +131,12 @@ fieldset *:last-child {
     align-items: center;
   }
 
-  header * {
-    margin: 0;
-  }
-
   header .title {
     flex: 1;
     text-wrap: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    font-weight: 600;
   }
 
   header .tag {
@@ -182,11 +146,13 @@ fieldset *:last-child {
   header .dot {
     height: 1em;
     width: 1em;
-    margin-top: 0.075em;
-    margin-right: 0.5rem;
     vertical-align: middle;
     border-radius: 50%;
     background-color: var(--item-color);
+  }
+
+  .body {
+    min-height: 1.5em;
   }
 
   .refs {
@@ -201,10 +167,8 @@ fieldset *:last-child {
 
 
 .item:has(> header:only-child) {
-  /* padding: 0; */
-
   > header {
-    margin: 0;
+    margin: calc(-1 * var(--pico-block-spacing-vertical) * 0.5) calc(-1 * var(--pico-block-spacing-horizontal));
     border-radius: var(--pico-border-radius);
   }
 }
@@ -212,31 +176,17 @@ fieldset *:last-child {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.refs .item.small {
-  --whiten: 4%;
-
-  gap: 0.5rem;
-  padding: calc(var(--pico-block-spacing-vertical) * 0.5) var(--pico-block-spacing-horizontal);
-  background-color: color-mix(in oklch, var(--pico-card-background-color), white var(--whiten));
-
-  > header {
-    padding: calc(var(--pico-block-spacing-vertical) * .44) var(--pico-block-spacing-horizontal);
-    background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white var(--whiten));
+.item.large {
+  header .dot {
+    margin-top: 0.075em;
   }
 }
 
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item.large {
-}
-
-
-/* ---------------------------------------------------------------------------------------------- */
-
 .item.small {
-  /* background-color: var(--pico-dropdown-border-color); */
-  gap: 0.75rem;
+  gap: 1rem;
 
   header {
     font-size: 0.9em;
@@ -247,9 +197,8 @@ fieldset *:last-child {
     margin-bottom: 0.25rem;
   }
 
-  .kind {
-    color: var(--white-darker);
-    text-transform: uppercase;
+  header .dot {
+    margin-top: -0.2em;
   }
 
   .body {
@@ -259,6 +208,35 @@ fieldset *:last-child {
   }
 }
 
+
+/* ---------------------------------------------------------------------------------------------- */
+
+.item.ref {
+  padding: calc(var(--pico-block-spacing-vertical) * 0.5) var(--pico-block-spacing-horizontal);
+  background-color: color-mix(in oklch, var(--pico-card-background-color), white var(--whiten));
+
+  header {
+    font-size: 0.9em;
+    background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white var(--whiten));
+  }
+
+  header .title {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  header .dot {
+    margin-top: -0.2em;
+  }
+
+  --whiten: 4%;
+
+  .body {
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+}
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -404,11 +382,6 @@ fieldset *:last-child {
   text-wrap: nowrap;
   color: var(--pico-color);
   background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white 3.5%);
-}
-
-.tag.done-date {
-  background-color: var(--green);
-  color: var(--black);
 }
 
 /* ---------------------------------------------------------------------------------------------- */

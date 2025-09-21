@@ -3,6 +3,7 @@ import SmallItem from './SmallItem'
 import Draggable from './Draggable'
 import DropTarget from './DropTarget'
 import { useStore } from '../store'
+import RefItem from './RefItem'
 
 function formatDatetime(str) {
   return str.slice(0, str.lastIndexOf(':'))
@@ -94,7 +95,7 @@ export default function LargeItem({ group, item, onClick, index }) {
                 if (!refItem) { return null }
 
                 return (
-                  <SmallItem key={ref.id} item={refItem} onClick={onClick} />
+                  <RefItem key={ref.id} item={refItem} onClick={onClick} />
                 )
               })}
             </div>
