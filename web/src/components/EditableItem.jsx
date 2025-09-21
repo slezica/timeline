@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
+import RefItem from './RefItem'
 
 
 export default function EditableItem({ index, item, onSave, onCancel }) {
@@ -151,8 +152,8 @@ function ReferenceFields({ index, data, onRemove }) {
     }
   }
 
-  const removeHandler = (ref) => (ev) => {
-    onRemove?.(ref)
+  const handleRemove = (item) => {
+    onRemove?.({ id: item._id })
   }
 
   return (
@@ -160,10 +161,7 @@ function ReferenceFields({ index, data, onRemove }) {
       <div className="refs">
         { data.refs.map(ref => 
           index.byId[ref.id] && (
-            <div key={ref.id} className="removable">
-              <span className="remove" onClick={removeHandler(ref)}>X</span>
-              <SmallItem item={index.byId[ref.id]} />
-            </div>
+            <RefItem key={ref.id} item={index.byId[ref.id]} onRemove={handleRemove} />
           )
         )}
       </div>

@@ -62,10 +62,9 @@ export default function LargeItem({ group, item, onClick, index }) {
         <article
           className={"item large " + item.kind}
           data-id={item.id}
-          onClick={handleClick}
           style={{ cursor: 'pointer' }}
         >
-          <header>
+          <header onClick={handleClick}>
             <span className="dot" />
             <strong className="title">{item.title || 'Untitled'}</strong>
 
