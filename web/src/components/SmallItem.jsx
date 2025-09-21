@@ -14,8 +14,10 @@ export default function SmallItem({ item, onClick }) {
     onClick?.(item)
   }
 
+  const ref = { id: item.id }
+
   return (
-    <Draggable data={item}>
+    <Draggable data={ref}>
       <article className={"item small " + item.kind} data-id={item.id} onClick={handleClick}>
         <header>
           <span className="dot" />

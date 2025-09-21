@@ -53,8 +53,10 @@ export default function LargeItem({ group, item, onClick, index }) {
       && !item.refs.some(ref => ref.id == data.id)
   }
 
+  const ref = { id: item.id }
+
   return (
-    <Draggable data={item}>
+    <Draggable data={ref}>
       <DropTarget onDrop={handleDrop} canDrop={canDrop}>
         <article
           className={"item large " + item.kind}
