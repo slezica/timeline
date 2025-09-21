@@ -191,7 +191,8 @@ export const useStore = zs.create((set, get) => {
 
     try {
       if (!validateItem(item)) {
-        throw new Error(`Validation failed: ${JSON.stringify(validateItem.errors)}`)
+        console.error(validateItem.errors)
+        throw new Error(`Validation failed`)
       }
 
       const putQ = await db.put(item)
