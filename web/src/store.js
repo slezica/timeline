@@ -2,7 +2,6 @@ import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { scheduled } from './utils'
-import { validateItem } from '../schema'
 
 
 const miniSearch = new MiniSearch({
@@ -78,11 +77,6 @@ export const useStore = zs.create((set, get) => {
       const byId = {}
 
       for (let row of byDateQ.rows) {
-        const ok = validateItem(row.doc)
-        if (!ok) {
-          console.warn("Invalid item fetched:", validateItem.errors)
-        }
-
         const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
 
         // Sorted index:
@@ -135,7 +129,7 @@ export const useStore = zs.create((set, get) => {
 
     } catch (err) {
       console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(error)) })
+      set({ loading: false, error: JSON.parse(JSON.stringify(err)) })
     }
   }
 
@@ -158,10 +152,6 @@ export const useStore = zs.create((set, get) => {
       item._id = crypto.randomUUID()
       item.type = 'item'
 
-      if (!validateItem(item)) {
-        throw new Error(`Validation failed: ${JSON.stringify(validateItem.errors)}`)
-      }
-
       const putQ = await db.put(item) // TODO actually check `.ok`
       item._rev = putQ.rev
 
@@ -180,11 +170,6 @@ export const useStore = zs.create((set, get) => {
     set({ result: null, error: null, loading: true })
 
     try {
-      if (!validateItem(item)) {
-        console.error(validateItem.errors)
-        throw new Error(`Validation failed`)
-      }
-
       const putQ = await db.put(item)
       item._rev = putQ.rev
       set({ loading: false, error: null, result: item })
@@ -210,13 +195,6 @@ export const useStore = zs.create((set, get) => {
     const data = JSON.parse(fileContent)
 
     try {
-      for (let item of data.items) {
-        if (!validateItem(item)) {
-          console.error(validateItem.errors)
-          throw new Error(`Validation failed`)
-        }
-      }
-
       await db.bulkDocs(data.items)
       set({ loading: false, error: null, result: data.items })
 

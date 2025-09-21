@@ -1,9 +1,8 @@
 import PouchDB from 'pouchdb'
+import { validateDoc, validateItem } from '../schema'
 
-export const db = new PouchDB('test')
-export const remoteDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
-window.db = db
-
+const pouchDb = new PouchDB('test')
+const couchDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
 
 let emit // shut up, linter
 
@@ -127,9 +126,60 @@ export async function initializeDb() {
   }
 
   console.log('[db]', "Starting sync")
-  db.sync(remoteDb, { live: true, retry: true })
+  pouchDb.sync(couchDb, { live: true, retry: true })
 
   console.log('[db]', "Initialized")
 }
 
+
+
+function validOrNull(doc) {
+  if (validateDoc(doc)) {
+    return doc
+  } else {
+    console.error(validateItem.errors)
+    return null
+  }
+}
+
+
+function validOrThrow(doc) {
+  if (validateDoc(doc)) {
+    return doc
+  } else {
+    const docStr = JSON.stringify(doc, null, 2)
+    const errStr = JSON.stringify(validateItem.errors)
+
+    throw new Error(`Validation error,\n${docStr},\n${errStr}`)
+  }
+}
+
+
+export const db = {
+  get: async (...args) => {
+    return validOrNull(await pouchDb.get(...args))
+  },
+
+  query: async (...args) => {
+    const result = await pouchDb.query(...args)
+    result.rows = result.rows.filter(validOrNull)
+
+    return result
+  },
+
+  put: async (doc, ...args) => {
+    validOrThrow(doc)
+    return await pouchDb.put(doc, ...args)
+  },
+
+  bulkDocs: async (docs, ...args) => {
+    return await pouchDb.bulkDocs(docs.filter(validOrNull), ...args)
+  },
+
+  changes: (...args) => {
+    return pouchDb.changes(...args)
+  }
+}
+
+window.db = db
 

@@ -10,7 +10,7 @@ const ajv = new Ajv({
 addFormats(ajv)
 
 
-const refSchema = {
+export const refSchema = {
   type: 'object',
   required: ['id'],
   additionalProperties: false,
@@ -21,7 +21,7 @@ const refSchema = {
 }
 
 
-const phoneSchema = {
+export const phoneSchema = {
   type: 'object',
   required: ['type', 'number'],
   additionalProperties: false,
@@ -33,15 +33,28 @@ const phoneSchema = {
 }
 
 
-const baseItemSchema = {
+export const baseDocSchema = {
   type: 'object',
-  required: ['_id', 'type', 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
+  required: ['_id', 'type'],
+
+  properties: {
+    _id : { type: 'string' },
+    _rev: { type: 'string' },
+  },
+
+  allOf: [
+    { 'required': ['_id'] } // superflous, this is just to have a non-empty allOf field in the base :D
+  ]
+}
+
+
+export const baseItemSchema = {
+  ...baseDocSchema,
+  required: [...baseDocSchema.required, 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
   additionalProperties: false,
 
   properties: {
-    // Identity:
-    _id : { type: 'string' },
-    _rev: { type: 'string' },
+    ...baseDocSchema.properties,
     type: { type: 'string', enum: ['item'] },
 
     // Dates:
@@ -58,20 +71,14 @@ const baseItemSchema = {
     body: {
       type: 'string',
       maxLength: 10000,
-      default: ''
     },
 
     // References:
     refs: {
       type: 'array',
       items: refSchema,
-      default: []
     }
   },
-
-  allOf: [
-    { 'required': ['_id'] } // superflous, this is just to have an allOf field in the base :D
-  ]
 }
 
 
@@ -100,7 +107,7 @@ export const noteSchema = {
 }
 
 
-const contactSchema = {
+export const contactSchema = {
   ...baseItemSchema,
   required: [...baseItemSchema.required ],
 
@@ -111,18 +118,16 @@ const contactSchema = {
 
     email: {
       type: ['string', 'null'],
-      default: ''
     },
 
     phones: {
       type: 'array',
       items: phoneSchema,
-      default: []
     },
 
-    organization: { type: 'string', default: '' },
+    organization: { type: ['string', 'null'] },
     birthday: { type: ['string', 'null'], format: 'date-time' },
-    picture: { type: 'string', default: '' }
+    picture: { type: ['string', 'null'] }
   },
 
   allOf: [
@@ -136,13 +141,55 @@ const contactSchema = {
 }
 
 
-// Universal validator that handles both items and contacts
-const itemSchema = {
+export const itemSchema = {
   oneOf: [taskSchema, noteSchema, contactSchema]
 }
 
 
-const validateItem = ajv.compile(itemSchema)
+export const statusSchema = {
+  ...baseDocSchema,
+  required: [...baseDocSchema.required, 'migration'],
+
+  properties: {
+    ...baseDocSchema.properties,
+    type: { type: 'string', enum: ['status'] },
+
+    migration: {
+      type: 'number',
+      minimum: 1
+    }
+  }
+}
 
 
-export { itemSchema, validateItem }
+export const shelfSchema = {
+  ...baseDocSchema,
+  required: [...baseDocSchema.required, 'refs'],
+
+  properties: {
+    ...baseDocSchema.properties,
+    type: { type: 'string', enum: ['shelf'] },
+    
+    refs: {
+      type: 'array',
+      items: refSchema,
+    }
+  }
+}
+
+
+export const designSchema = {
+  properties: {
+    type: { type: 'string', pattern: '^_design/' },
+  }
+}
+
+
+export const docSchema = {
+  oneOf: [statusSchema, itemSchema, shelfSchema, designSchema]
+}
+
+
+export const validateStatus = ajv.compile(statusSchema)
+export const validateItem = ajv.compile(itemSchema)
+export const validateDoc = ajv.compile(docSchema)
