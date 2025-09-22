@@ -1,16 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 import SmallItem from './SmallItem'
-import DropTarget from './DropTarget'
+import { getTransferData } from '../utils'
 
 
 export default function Shelf({ onItemClick }) {
   const shelf = useStore(state => state.shelf)
   const index = useStore(state => state.index)
-  const [draggingOver, setDraggingOver] = useState(false)
 
-  const handleDrop = (data) => {
-    setDraggingOver(false)
+  const canDrop = (data) => {
+    return data?.id && index.byId[data.id]
+  }
+
+  const handleDrop = (ev) => {
+    ev.preventDefault()
+    const data = getTransferData(ev.dataTransfer)
 
     const item = index.byId[data.id]
     if (!item) { return }
@@ -22,16 +26,12 @@ export default function Shelf({ onItemClick }) {
     shelf.replace(newShelfOrder)
   }
 
-  const canDrop = (data) => {
-    return data?.id && index.byId[data.id]
-  }
-
-  const handleDragEnter = (data) => {
-    setDraggingOver(true)
-  }
-
-  const handleDragLeave = () => {
-    setDraggingOver(false)
+  const handleDragOver = (ev) => {
+    const data = getTransferData(ev.dataTransfer)
+    if (canDrop(data)) {
+      ev.preventDefault()
+      ev.dataTransfer.dropEffect = 'copy'
+    }
   }
 
   const handleRemove = (ref) => {
@@ -42,22 +42,18 @@ export default function Shelf({ onItemClick }) {
   }
 
   return (
-    <DropTarget
+    <section
+      className="shelf"
       onDrop={handleDrop}
-      canDrop={canDrop}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
     >
-      <section className={`shelf ${draggingOver ? 'drag-over' : ''}`}>
-        {!draggingOver && shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
+      {shelf.inOrder.length === 0 && <p>Drag items from timeline</p>}
 
-        {shelf.inOrder.map(ref =>
-          index.byId[ref.id]
-            ? <SmallItem key={ref.id} item={index.byId[ref.id]} onClick={onItemClick} onRemove={handleRemove} />
-            : <div key={ref.id} className="placeholder">placeholder</div>
-        )}
-      </section>
-    </DropTarget>
+      {shelf.inOrder.map(ref =>
+        index.byId[ref.id]
+          ? <SmallItem key={ref.id} item={index.byId[ref.id]} onClick={onItemClick} onRemove={handleRemove} />
+          : <div key={ref.id} className="placeholder">placeholder</div>
+      )}
+    </section>
   )
 }
-

@@ -9,7 +9,6 @@ import EditableItem from './EditableItem'
 
 import './App.css'
 import Shelf from './Shelf'
-import DropTarget from './DropTarget'
 import ImportFileForm from './ImportFileForm'
 
 
@@ -31,14 +30,23 @@ export default function App() {
 
   useEffect(() => {
     const onDragStart = (ev) => { ev.target.classList.add('dragging') }
-    const onDragEnd = (ev) => { ev.target.classList.remove('dragging') }
+    const onDragEnd   = (ev) => { ev.target.classList.remove('dragging') }
+    const onDragEnter = (ev) => { ev.target.classList.add('dragover') }
+    const onDragLeave = (ev) => { ev.target.classList.remove('dragover') }
+    const onDrop      = (ev) => { ev.target.classList.remove('dragover') }
 
     document.addEventListener('dragstart', onDragStart, true)
     document.addEventListener('dragend', onDragEnd, true)
+    document.addEventListener('dragenter', onDragEnter, true)
+    document.addEventListener('dragleave', onDragLeave, true)
+    document.addEventListener('drop', onDrop, true)
 
     return () => {
       document.removeEventListener('dragstart', onDragStart)
       document.removeEventListener('dragend', onDragEnd)
+      document.removeEventListener('dragenter', onDragEnter)
+      document.removeEventListener('dragleave', onDragLeave)
+      document.removeEventListener('drop', onDrop)
     }
   }, [])
 

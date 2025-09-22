@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import SmallItem from './SmallItem'
-import DropTarget from './DropTarget'
 import RefItem from './RefItem'
+import { getTransferData } from '../utils'
 
 
 export default function EditableItem({ index, item, onSave, onCancel }) {
@@ -35,12 +35,6 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     setData(prev => ({ ...prev, refs: prev.refs.filter(it => it.id !== ref.id) }))
   }
 
-  const handleDrop = (data) => {
-    if (canDrop(data)) {
-      setData(prev => ({ ...prev, refs: [...prev.refs, { id: data.id }] }))
-    }
-  }
-
   const canDrop = (data) => {
     return data
       && data.id
@@ -48,9 +42,29 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
       && !item.refs.some(ref => ref.id == data.id)
   }
 
+  const handleDrop = (ev) => {
+    ev.preventDefault()
+    const data = getTransferData(ev.dataTransfer)
+    if (canDrop(data)) {
+      setData(prev => ({ ...prev, refs: [...prev.refs, { id: data.id }] }))
+    }
+  }
+
+  const handleDragOver = (ev) => {
+    const data = getTransferData(ev.dataTransfer)
+    if (canDrop(data)) {
+      ev.preventDefault()
+      ev.dataTransfer.dropEffect = 'copy'
+    }
+  }
+
   return (
-    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
-      <article className={"item editable " + item.kind} data-id={item.id}>
+    <article
+      className={"item editable " + item.kind}
+      data-id={item.id}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
         <form onSubmit={handleSubmit}>
           <TopItemFields item={item} data={data} onChange={handleChange} />
 
@@ -73,8 +87,7 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
             <button type="submit">Save</button>
           </fieldset>
         </form>
-      </article>
-    </DropTarget>
+    </article>
   )
 }
 

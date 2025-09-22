@@ -1,10 +1,9 @@
 import React from 'react'
 import SmallItem from './SmallItem'
-import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import RefItem from './RefItem'
 import Tag from './Tag'
-import { setTransferData } from '../utils'
+import { setTransferData, getTransferData } from '../utils'
 
 
 export default function LargeItem({ group, item, onClick, index }) {
@@ -16,17 +15,27 @@ export default function LargeItem({ group, item, onClick, index }) {
     }
   }
 
-  const handleDrop = (data) => {
-    if (canDrop(data)) {
-      store.updateItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
-    }
-  }
-
   const canDrop = (data) => {
     return data
       && data.id
       && data.id !== item.id
       && !item.refs.some(ref => ref.id == data.id)
+  }
+
+  const handleDrop = (ev) => {
+    ev.preventDefault()
+    const data = getTransferData(ev.dataTransfer)
+    if (canDrop(data)) {
+      store.updateItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
+    }
+  }
+
+  const handleDragOver = (ev) => {
+    const data = getTransferData(ev.dataTransfer)
+    if (canDrop(data)) {
+      ev.preventDefault()
+      ev.dataTransfer.dropEffect = 'copy'
+    }
   }
 
   const draggableData = { id: item._id }
@@ -37,14 +46,15 @@ export default function LargeItem({ group, item, onClick, index }) {
   }
 
   return (
-    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
-      <article
-        className={"item large " + item.kind}
-        data-id={item.id}
-        style={{ cursor: 'pointer' }}
-        draggable={true}
-        onDragStart={handleDragStart}
-      >
+    <article
+      className={"item large " + item.kind}
+      data-id={item.id}
+      style={{ cursor: 'pointer' }}
+      draggable={true}
+      onDragStart={handleDragStart}
+      onDrop={handleDrop}
+      onDragOver={handleDragOver}
+    >
           <header onClick={handleClick}>
             <i className="dot circle" />
             <strong className="title">{item.title || 'Untitled'}</strong>
@@ -95,8 +105,7 @@ export default function LargeItem({ group, item, onClick, index }) {
           </div>
 
           {window.DEBUG && <pre>{JSON.stringify(item, null, 2)}</pre>}
-      </article>
-    </DropTarget>
+    </article>
   )
 }
 
