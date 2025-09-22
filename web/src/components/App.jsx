@@ -5,7 +5,7 @@ import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
 import SearchOrCreateForm from './SearchForm'
 import Modal from './Modal'
-import EditableItem from './EditableItem'
+import EditItemForm from './EditItemForm'
 
 import './App.css'
 import Shelf from './Shelf'
@@ -78,7 +78,7 @@ export default function App() {
 
       <Modal showing={editingItem !== null} onClose={handleModalClose}>
         {editingItem && (
-          <EditableItem
+          <EditItemForm
             item={editingItem}
             onSave={handleItemSave}
             onCancel={handleModalClose}

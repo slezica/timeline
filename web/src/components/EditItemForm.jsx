@@ -5,7 +5,7 @@ import RefItem from './RefItem'
 import { useStore } from '../store'
 
 
-export default function EditableItem({ item, onSave, onCancel, onDelete }) {
+export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...item })
   const index = useStore(state => state.index)
   const updateItem = useStore(state => state.updateItem)
