@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import RefItem from './RefItem'
+import { useStore } from '../store'
 
 
-export default function EditableItem({ index, item, onSave, onCancel }) {
+export default function EditableItem({ index, item, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...item })
+  const updateItem = useStore(state => state.updateItem)
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -21,14 +23,25 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
     const updatedItem = {
       ...item,
       ...data,
-      title: data.title || 'Untitled'
+      title: data.title || "Untitled"
     }
 
-    onSave?.(updatedItem)
+    updateItem.run(updatedItem)
+    onSave?.()
   }
 
   const handleCancel = () => {
     onCancel?.()
+  }
+
+  const handleDelete = () => {
+    const updatedItem = {
+      ...item,
+      deleted: true
+    }
+
+    updateItem.run(updatedItem)
+    onDelete?.()
   }
 
   const handleRemoveRef = (ref) => {
@@ -69,6 +82,7 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
 
           {/* Footer with buttons */}
           <fieldset className="inline">
+            <button type="button" onClick={handleDelete}>Delete</button>
             <button type="button" onClick={handleCancel}>Cancel</button>
             <button type="submit">Save</button>
           </fieldset>

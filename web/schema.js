@@ -77,6 +77,10 @@ export const baseItemSchema = {
     refs: {
       type: 'array',
       items: refSchema,
+    },
+
+    deleted: {
+      type: ['boolean']
     }
   },
 }
