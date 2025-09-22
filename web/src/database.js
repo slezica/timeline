@@ -137,7 +137,7 @@ function validOrNull(doc) {
   if (validateDoc(doc)) {
     return doc
   } else {
-    console.error(validateItem.errors)
+    console.error(validateDoc.errors)
     return null
   }
 }
@@ -148,8 +148,9 @@ function validOrThrow(doc) {
     return doc
   } else {
     const docStr = JSON.stringify(doc, null, 2)
-    const errStr = JSON.stringify(validateItem.errors)
+    const errStr = JSON.stringify(validateDoc.errors)
 
+    console.error(validateDoc.errors)
     throw new Error(`Validation error,\n${docStr},\n${errStr}`)
   }
 }
