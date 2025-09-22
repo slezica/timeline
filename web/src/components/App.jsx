@@ -64,15 +64,15 @@ export default function App() {
 
   return (
     <div id="app">
-      <aside class="toolbar-container">
+      <header>
         <Toolbar onSearch={handleSearch} onEdit={handleItemEdit} />
-      </aside>
+      </header>
 
-      <main class="timeline-container">
+      <main>
         <Timeline index={queryIndex} onItemClick={handleItemClick} />
       </main>
 
-      <aside class="shelf-container">
+      <aside class="right">
         <Shelf onItemClick={handleItemClick} />
       </aside>
 

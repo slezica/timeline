@@ -26,6 +26,9 @@
 
   --black: oklch(20% 2% 270);
   --white: #fafafa;
+
+  --main-width: 600px;
+  --aside-width: 300px;
 }
 
 * {
@@ -43,6 +46,8 @@ section,
 p {
   margin: 0;
 }
+
+
 
 form {
   display: flex;
@@ -81,15 +86,32 @@ body, #app {
 }
 
 #app {
-  display: flex;
+  display: grid;
   margin: auto;
   max-width: 1250px;
-  gap: 1rem;
+  gap: 0 1rem;
+  grid-template-areas: 
+    "h h h"
+    "l m r"
+  ;
+  grid-template-columns: var(--aside-width) var(--main-width) var(--aside-width);
+}
+
+#app > header {
+  grid-area: h;
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+
+  .toolbar {
+    width: var(--main-width)
+  }
 }
 
 #app > main {
+  grid-area: m;
+
   display: flex;
-  flex: 1;
   min-height: 0;
   padding: 1rem 0;
   overflow-y: scroll;
@@ -97,11 +119,18 @@ body, #app {
 }
 
 #app > aside {
-  flex: 0 0 300px;
+  width: 300px;
   max-height: 100vh;
-  padding: 1rem 0;
   overflow-y: scroll;
   transition: opacity 0.15s ease;
+}
+
+#app > aside.left {
+  grid-area: l;
+}
+
+#app > aside.right {
+  grid-area: r;
 }
 
 #app > aside:not(:hover):not(:has(:focus)):not(:has(.dragover)) {

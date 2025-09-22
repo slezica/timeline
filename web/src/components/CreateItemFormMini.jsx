@@ -23,14 +23,14 @@ export default function CreateItemFormMini({ onItemCreate }) {
     const now = new Date().toISOString()
 
     try {
-      const item = await createItem.run({
+      const item = {
         title: "Untitled",
         kind: 'note',
         body: "",
         refs: [],
         createdDate: now,
         updatedDate: now
-      })
+      }
 
       onItemCreate?.(item)
 
