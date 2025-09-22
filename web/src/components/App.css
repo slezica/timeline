@@ -73,6 +73,7 @@ textarea,
 button, button[type="button"], button[type="submit"], 
 select,
 article,
+section,
 p {
   margin: 0;
 }
@@ -335,6 +336,7 @@ fieldset *:last-child {
 
 .shelf {
   display: flex;
+  height: 100%;
   min-height: 300px;
   flex-direction: column;
   gap: 1rem;
@@ -343,10 +345,18 @@ fieldset *:last-child {
   transition: all 0.2s ease;
 }
 
-.shelf.drag-over {
-  border-color: var(--pico-text-selection-color);
-  background-color: rgba(117, 196, 255, 0.1);
-}
+/* .shelf.dragover:not(:has(.shelf-entry.dragover)) .shelf-entry:last-child { */
+/*   padding-bottom: calc(1rem - 3px); */
+/*   border-bottom: 3px solid var(--yellow); */
+/* } */
+
+/* .shelf-entry.dragover::before { */
+/*   content: ''; */
+/*   position: absolute; */
+/*   pointer-events: none; */
+/*   height: 3px; */
+/*   background-color: solid var(--yellow); */
+/* } */
 
 
 /* ---------------------------------------------------------------------------------------------- */

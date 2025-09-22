@@ -156,7 +156,7 @@ export const statusSchema = {
 
     migration: {
       type: 'number',
-      minimum: 1
+      minimum: -1
     }
   }
 }
@@ -179,6 +179,7 @@ export const shelfSchema = {
 
 
 export const designSchema = {
+  type: 'object',
   properties: {
     type: { type: 'string', pattern: '^_design/' },
   }

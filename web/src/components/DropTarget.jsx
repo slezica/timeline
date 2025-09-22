@@ -1,67 +1,48 @@
 import React, { useRef, useState } from 'react'
 import { getTransferData } from '../utils'
 
-export default function DropTarget({
-  children,
-  onDrop,
-  onDragOver,
-  onDragEnter,
-  onDragLeave,
-  canDrop
-}) {
+
+export default function DropTarget({ onDragEnter, onDragLeave, onDragOver, onDrop, children }) {
   const [draggingOver, setDraggingOver] = useState(false)
   const counter = useRef(0)
 
-  const validDataHandler = (fn) => (ev) => {
-    ev.preventDefault()
-
-    const data = getTransferData(ev.dataTransfer)
-    const files = ev.dataTransfer.files ?? []
-
-    if (canDrop?.(data, files)) {
-      ev.dataTransfer.dropEffect = 'copy'
-      fn(data, files)
+  const handleDragEnter = (ev) => {
+    if (++counter.current == 1) {
+      setDraggingOver(true)
+      onDragEnter?.(ev)
     }
   }
 
-  const handleDragEnter = validDataHandler((data, files) => {
-    counter.current++
-
-    if (counter.current == 1) {
-      setDraggingOver(true)
-      onDragEnter?.(data, files)
-    }
-  })
-
-  const handleDragOver = validDataHandler((data, files) => {
-    onDragOver?.(data, files)
-  })
-
-  const handleDragLeave = validDataHandler((data, files) => {
-    counter.current--
-
-    if (counter.current == 0) {
+  const handleDragLeave = (ev) => {
+    if (--counter.current == 0) {
       setDraggingOver(false)
-      onDragLeave?.(data, files)
+      onDragLeave?.(ev)
     }
-  })
+  }
 
-  const handleDrop = validDataHandler((data, files) => {
+  const handleDragOver = (ev) => {
+    ev.preventDefault()
+    onDragOver?.(ev)
+  }
+
+  const handleDrop = (ev) => {
     setDraggingOver(false)
-    onDrop?.(data, files)
-  })
+    onDrop?.(ev)
+  }
 
-  const className = `drop-target ${draggingOver ? 'drag-over' : ''}`
+  return React.Children.toArray(children).map(child => 
+    React.cloneElement(child, {
+      className: child.props.className + (draggingOver ? ' dragover' : ''),
+      onDragEnter: handleDragEnter,
+      onDragLeave: handleDragLeave,
+      onDragOver: handleDragOver,
+      onDrop: handleDrop,
+    })
+  )
 
   return (
-    <div
-      className={className}
-      onDragOver={handleDragOver}
-      onDragEnter={handleDragEnter}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
+    <>
       {children}
-    </div>
+    </>
   )
 }

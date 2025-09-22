@@ -168,6 +168,13 @@ export const db = {
     return result
   },
 
+  allDocs: async (...args) => {
+    const result = await pouchDb.allDocs(...args)
+    result.rows = result.rows.filter(validOrNull)
+
+    return result
+  },
+
   put: async (doc, ...args) => {
     validOrThrow(doc)
     return await pouchDb.put(doc, ...args)
@@ -179,7 +186,11 @@ export const db = {
 
   changes: (...args) => {
     return pouchDb.changes(...args)
-  }
+  },
+
+  destroy: async (...args) => {
+    return await pouchDb.destroy(...args)
+  },
 }
 
 window.db = db
