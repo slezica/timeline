@@ -92,8 +92,6 @@ export default function App() {
 
       <aside>
         <Shelf onItemClick={handleItemClick} />
-        <div className="expand" />
-        <div>hola</div>
       </aside>
 
       <Modal showing={editingItem !== null} onClose={handleModalClose}>
