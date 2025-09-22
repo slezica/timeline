@@ -11,7 +11,7 @@ import './App.css'
 import Shelf from './Shelf'
 import DropTarget from './DropTarget'
 import ImportFileForm from './ImportFileForm'
-import { SidebarLeft } from './SidebarLeft'
+import { Toolbar } from './Toolbar'
 
 
 export default function App() {
@@ -64,15 +64,15 @@ export default function App() {
 
   return (
     <div id="app">
-      <aside>
-        <SidebarLeft onSearch={handleSearch} onEdit={handleItemEdit} />
+      <aside class="toolbar-container">
+        <Toolbar onSearch={handleSearch} onEdit={handleItemEdit} />
       </aside>
 
-      <main>
+      <main class="timeline-container">
         <Timeline index={queryIndex} onItemClick={handleItemClick} />
       </main>
 
-      <aside>
+      <aside class="shelf-container">
         <Shelf onItemClick={handleItemClick} />
       </aside>
 

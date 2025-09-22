@@ -1,7 +1,7 @@
 import CreateItemFormMini from "./CreateItemFormMini"
 import SearchForm from "./SearchForm"
 
-export function SidebarLeft({ onSearch, onEdit }) {
+export function Toolbar({ onSearch, onEdit }) {
   const handleQueryChange = (query) => {
     onSearch?.(query)
   }
@@ -11,11 +11,11 @@ export function SidebarLeft({ onSearch, onEdit }) {
   }
 
   return (
-    <aside className="sidebar left">
+    <div className="toolbar">
       <header>
         <SearchForm onQueryChange={handleQueryChange} />
         <CreateItemFormMini onItemCreate={handleItemCreate} />
       </header>
-    </aside>
+    </div>
   )
 }
