@@ -1,5 +1,5 @@
 import React from 'react'
-import Draggable from './Draggable'
+import { setTransferData } from '../utils'
 
 
 export default function RefItem({ item, onClick, onRemove }) {
@@ -14,18 +14,27 @@ export default function RefItem({ item, onClick, onRemove }) {
 
   const ref = { id: item._id }
 
-  return (
-    <Draggable data={ref}>
-      <article className={"item ref " + item.kind} data-id={item.id} onClick={handleClick}>
-        <header>
-          <i className="dot circle" />
-          <strong className="title">{item.title || 'Untitled'}</strong>
+  const handleDragStart = (ev) => {
+    ev.dataTransfer.effectAllowed = 'copy'
+    setTransferData(ev.dataTransfer, ref)
+  }
 
-          { onRemove &&
-            <span className="remove" onClick={handleRemove}>X</span> 
-          }
-        </header>
-      </article>
-    </Draggable>
+  return (
+    <article
+      className={"item ref " + item.kind}
+      data-id={item.id}
+      onClick={handleClick}
+      draggable={true}
+      onDragStart={handleDragStart}
+    >
+      <header>
+        <i className="dot circle" />
+        <strong className="title">{item.title || 'Untitled'}</strong>
+
+        { onRemove &&
+          <span className="remove" onClick={handleRemove}>X</span>
+        }
+      </header>
+    </article>
   )
 }

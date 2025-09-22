@@ -1,5 +1,4 @@
 import React from 'react'
-import Draggable from './Draggable'
 
 
 export default function Tag({ icon, name, children }) {

@@ -1,10 +1,10 @@
 import React from 'react'
 import SmallItem from './SmallItem'
-import Draggable from './Draggable'
 import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import RefItem from './RefItem'
 import Tag from './Tag'
+import { setTransferData } from '../utils'
 
 
 export default function LargeItem({ group, item, onClick, index }) {
@@ -31,14 +31,20 @@ export default function LargeItem({ group, item, onClick, index }) {
 
   const draggableData = { id: item._id }
 
+  const handleDragStart = (ev) => {
+    ev.dataTransfer.effectAllowed = 'copy'
+    setTransferData(ev.dataTransfer, draggableData)
+  }
+
   return (
-    <Draggable data={draggableData}>
-      <DropTarget onDrop={handleDrop} canDrop={canDrop}>
-        <article
-          className={"item large " + item.kind}
-          data-id={item.id}
-          style={{ cursor: 'pointer' }}
-        >
+    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
+      <article
+        className={"item large " + item.kind}
+        data-id={item.id}
+        style={{ cursor: 'pointer' }}
+        draggable={true}
+        onDragStart={handleDragStart}
+      >
           <header onClick={handleClick}>
             <i className="dot circle" />
             <strong className="title">{item.title || 'Untitled'}</strong>
@@ -89,9 +95,8 @@ export default function LargeItem({ group, item, onClick, index }) {
           </div>
 
           {window.DEBUG && <pre>{JSON.stringify(item, null, 2)}</pre>}
-        </article>
-      </DropTarget>
-    </Draggable>
+      </article>
+    </DropTarget>
   )
 }
 

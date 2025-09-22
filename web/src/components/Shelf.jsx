@@ -27,12 +27,10 @@ export default function Shelf({ onItemClick }) {
   }
 
   const handleDragEnter = (data) => {
-    console.log('enter')
     setDraggingOver(true)
   }
 
   const handleDragLeave = () => {
-    console.log('leave')
     setDraggingOver(false)
   }
 
