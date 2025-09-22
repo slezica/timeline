@@ -6,7 +6,7 @@ import { db, initializeDb } from './database'
 
 import './samples'
 
-window.DEBUG = true
+window.DEBUG = false
 
 const container = document.body
 const root = createRoot(container)

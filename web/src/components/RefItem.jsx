@@ -18,7 +18,7 @@ export default function RefItem({ item, onClick, onRemove }) {
     <Draggable data={ref}>
       <article className={"item ref " + item.kind} data-id={item.id} onClick={handleClick}>
         <header>
-          <span className="dot" />
+          <i className="dot circle" />
           <strong className="title">{item.title || 'Untitled'}</strong>
 
           { onRemove &&

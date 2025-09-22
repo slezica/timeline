@@ -26,7 +26,7 @@ export default function SmallItem({ item, onClick, onRemove }) {
     <Draggable data={ref}>
       <article className={"item small " + item.kind} data-id={item.id} onClick={handleClick}>
         <header>
-          <span className="dot" />
+          <i className="dot circle" />
           <strong className="title">{item.title || 'Untitled'}</strong>
           { onRemove &&
             <span className="remove" onClick={handleRemove}>X</span>

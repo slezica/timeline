@@ -2,13 +2,13 @@ import React from 'react'
 import Draggable from './Draggable'
 
 
-export default function Tag({ icon, name, content }) {
+export default function Tag({ icon, name, children }) {
 
   return (
     <span className="tag">
       { icon && <i className={icon} /> }
       { name && <span className="name">{name}</span> }
-      { content && <span className="content">{content}</span> }
+      { children && <span className="content">{children}</span> }
     </span>
   )
 }
