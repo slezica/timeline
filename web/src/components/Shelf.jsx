@@ -25,8 +25,8 @@ export default function Shelf({ onClick }) {
     if (prevIndex != -1) {
       newShelfOrder.splice(prevIndex, 1)
     }
-
     newShelfOrder.push(itemRef)
+    console.log('moving self', prevIndex, newShelfOrder.length)
     shelf.replace(newShelfOrder)
   }
 
@@ -39,17 +39,16 @@ export default function Shelf({ onClick }) {
     const item = index.byId[ref.id]
     const newShelfOrder = [...shelf.inOrder]
 
-    let newIndex = [...ev.target.parentElement.children].indexOf(ev.target)
-    let oldIndex = shelf.inOrder.findIndex(it => it.id == ref.id)
-
-    newShelfOrder.slice(newIndex, 0, ref)
-
-    if (oldIndex != -1) {
-      newShelfOrder.splice(oldIndex, 1)
-      if (oldIndex < newIndex) { newIndex++ }
-    }
+    const entry = findParentEntry(ev.target)
+    const newIndex = [...entry.parentElement.children].indexOf(entry)
+    const oldIndex = shelf.inOrder.findIndex(it => it.id == ref.id)
 
     newShelfOrder.splice(newIndex, 0, ref)
+
+    if (oldIndex != -1) {
+      newShelfOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
+    }
+
     shelf.replace(newShelfOrder)
   }
 
@@ -96,4 +95,11 @@ function ShelfEntry({ item, style, onDrop, onClick }) {
 }
 
 
+function findParentEntry(el) {
+  while (el) {
+    if (el.classList.contains('entry')) { return el }
+    el = el.parentElement
+  }
 
+  return null
+}

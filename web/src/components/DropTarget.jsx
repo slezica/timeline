@@ -1,20 +1,20 @@
 import React, { useRef, useState } from 'react'
-import { getTransferData } from '../utils'
-
 
 export default function DropTarget({ onDragEnter, onDragLeave, onDragOver, onDrop, children }) {
   const [draggingOver, setDraggingOver] = useState(false)
   const counter = useRef(0)
 
-  const handleDragEnter = (ev) => {
-    if (++counter.current == 1) {
+  const handleDragEnterCapture = (ev) => {
+    counter.current = Math.max(0, counter.current + 1)
+    if (counter.current == 1) {
       setDraggingOver(true)
       onDragEnter?.(ev)
     }
   }
 
-  const handleDragLeave = (ev) => {
-    if (--counter.current == 0) {
+  const handleDragLeaveCapture = (ev) => {
+    counter.current = Math.max(0, counter.current - 1)
+    if (counter.current == 0) {
       setDraggingOver(false)
       onDragLeave?.(ev)
     }
@@ -25,24 +25,30 @@ export default function DropTarget({ onDragEnter, onDragLeave, onDragOver, onDro
     onDragOver?.(ev)
   }
 
-  const handleDrop = (ev) => {
+  const handleDropCapture = (ev) => {
+    ev.preventDefault()
     setDraggingOver(false)
+    counter.current = 0
+  }
+
+  const handleDrop = (ev) => {
     onDrop?.(ev)
   }
 
-  return React.Children.toArray(children).map(child => 
-    React.cloneElement(child, {
-      className: child.props.className + (draggingOver ? ' dragover' : ''),
-      onDragEnter: handleDragEnter,
-      onDragLeave: handleDragLeave,
-      onDragOver: handleDragOver,
-      onDrop: handleDrop,
-    })
-  )
+  return React.Children.toArray(children).map(child => {
+    if (!React.isValidElement(child)) return child
 
-  return (
-    <>
-      {children}
-    </>
-  )
+    const className = [child.props.className, draggingOver ? 'dragover' : null]
+      .filter(Boolean)
+      .join(' ')
+
+    return React.cloneElement(child, {
+      className,
+      onDragEnterCapture: handleDragEnterCapture,
+      onDragLeaveCapture: handleDragLeaveCapture,
+      onDragOverCapture: handleDragOver,
+      onDropCapture: handleDropCapture,
+      onDrop: handleDrop
+    })
+  })
 }
