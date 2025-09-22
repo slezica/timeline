@@ -83,7 +83,6 @@ export default function App() {
             onSave={handleItemSave}
             onCancel={handleModalClose}
             onDelete={handleModalClose}
-            index={index}
           />
         )}
       </Modal>
