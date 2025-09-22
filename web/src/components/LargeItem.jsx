@@ -73,7 +73,7 @@ export default function LargeItem({ group, item, onClick, index }) {
 
               {item.kind == 'contact' &&
                 <>
-                  <Tag icon="envelope">{item.email}</Tag>
+                  <Tag icon="envelope">{item.email || '–'}</Tag>
 
                   {...[item.phones.length > 0
                     ? item.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)

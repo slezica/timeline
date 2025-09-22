@@ -252,6 +252,7 @@ fieldset *:last-child {
 
 .item.ref {
   height: 3rem;
+  overflow: hidden; /* for ellipsis */
 
   --whiten: 4%;
   background-color: var(--pico-card-background-color-nested);

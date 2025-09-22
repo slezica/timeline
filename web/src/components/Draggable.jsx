@@ -22,13 +22,18 @@ export default function Draggable({ data, onDragStart, onDragEnd, children }) {
     onDragEnd?.(data, ev.dataTransfer.files ?? [])
   }
 
+  const draggableChildren = React.Children.toArray(children).map(it => 
+    React.cloneElement(it, {
+      draggable: true,
+      onDragStart: handleDragStart,
+      onDragEnd: handleDragEnd
+    })
+  )
+
+
   return (
-    <div
-      draggable={true}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
-    >
-      {children}
-    </div>
+    <>
+      {draggableChildren}
+    </>
   )
 }
