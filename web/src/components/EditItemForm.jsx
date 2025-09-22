@@ -9,6 +9,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...item })
   const index = useStore(state => state.index)
   const updateItem = useStore(state => state.updateItem)
+  const saveItem = useStore(state => state.saveItem)
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -27,7 +28,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
       title: data.title || "Untitled"
     }
 
-    updateItem.run(updatedItem)
+    saveItem.run(updatedItem)
     onSave?.()
   }
 

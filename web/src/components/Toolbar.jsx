@@ -1,13 +1,13 @@
 import CreateItemFormMini from "./CreateItemFormMini"
 import SearchForm from "./SearchForm"
 
-export function Toolbar({ onSearch, onEdit }) {
+export function Toolbar({ onSearch, onItemCreate }) {
   const handleQueryChange = (query) => {
     onSearch?.(query)
   }
 
   const handleItemCreate = (item) => {
-    onEdit?.(item)
+    onItemCreate?.(item)
   }
 
   return (

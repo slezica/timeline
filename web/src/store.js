@@ -50,8 +50,7 @@ export const useStore = zs.create((set, get) => {
       replace: replaceShelf
     },
 
-    createItem: { loading: false, error: null, result: null, run: createItem },
-    updateItem: { loading: false, error: null, result: null, run: updateItem },
+    saveItem: { loading: false, error: null, result: null, run: saveItem },
     importFile: { loading: false, error: null, result: null, run: importFile },
   })
 
@@ -142,14 +141,13 @@ export const useStore = zs.create((set, get) => {
     await db.put(shelf)
   }
 
-  const createItem = async (item) => {
+  const saveItem = async (item) => {
     const { set } = scope('createItem')
 
     set({ loading: false, error: null, result: null })
 
     try {
-      item._id = crypto.randomUUID()
-      item.type = 'item'
+      item._id ??= crypto.randomUUID()
 
       const putQ = await db.put(item) // TODO actually check `.ok`
       item._rev = putQ.rev
@@ -163,22 +161,6 @@ export const useStore = zs.create((set, get) => {
     }
 
     return item
-  }
-
-  const updateItem = async (item) => {
-    const { set } = scope('updateItem')
-
-    set({ loading: true, error: null, result: null })
-
-    try {
-      const putQ = await db.put(item)
-      item._rev = putQ.rev
-      set({ loading: false, error: null, result: item })
-
-    } catch (err) {
-      console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
-    }
   }
 
   const importFile = async (file) => {

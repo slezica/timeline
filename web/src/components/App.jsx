@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useStore } from '../store'
 
-import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
 import SearchOrCreateForm from './SearchForm'
 import Modal from './Modal'
@@ -17,7 +16,6 @@ import { Toolbar } from './Toolbar'
 export default function App() {
   const store = useStore()
   const index = useStore(state => state.index)
-  const createItem = useStore(state => state.createItem)
 
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
@@ -49,7 +47,7 @@ export default function App() {
     setQuery(query)
   }
 
-  const handleItemEdit = (item) => {
+  const handleItemCreate = (item) => {
     setEditingItem(item)
   }
 
@@ -57,15 +55,14 @@ export default function App() {
     setEditingItem(null)
   }
 
-  const handleItemSave = (updatedItem) => {
-    store.updateItem.run(updatedItem)
+  const handleItemSave = (item) => {
     setEditingItem(null)
   }
 
   return (
     <div id="app">
       <header>
-        <Toolbar onSearch={handleSearch} onEdit={handleItemEdit} />
+        <Toolbar onSearch={handleSearch} onItemCreate={handleItemCreate} />
       </header>
 
       <main>

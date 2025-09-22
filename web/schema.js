@@ -191,7 +191,7 @@ export const designSchema = {
 
 
 export const docSchema = {
-  oneOf: [statusSchema, itemSchema, shelfSchema, designSchema]
+  oneOf: [itemSchema, shelfSchema, statusSchema, designSchema]
 }
 
 
