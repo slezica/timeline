@@ -32,8 +32,7 @@ export default function LargeItem({ group, item, onClick, index }) {
   const draggableData = { id: item._id }
 
   const handleDragStart = (ev) => {
-    ev.dataTransfer.effectAllowed = 'copy'
-    setTransferData(ev.dataTransfer, draggableData)
+    setTransferData(ev, draggableData)
   }
 
   return (

@@ -77,14 +77,14 @@ export function scheduled(asyncFn) {
 }
 
 
-export function setTransferData(dataTransfer, data) {
-  dataTransfer.setData('application/json', JSON.stringify(data))
+export function setTransferData(ev, data) {
+  ev.dataTransfer.effectAllowed = 'copy'
+  ev.dataTransfer.setData('application/json', JSON.stringify(data))
 }
 
-export function getTransferData(dataTransfer) {
+export function getTransferData(ev) {
   try {
-    const json = dataTransfer.getData('application/json')
-    return json ? JSON.parse(json) : null
+    return JSON.parse(ev.dataTransfer.getData('application/json'))
   } catch {
     return null
   }

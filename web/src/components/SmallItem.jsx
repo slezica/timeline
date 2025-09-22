@@ -23,8 +23,7 @@ export default function SmallItem({ item, onClick, onRemove }) {
   const ref = { id: item._id }
 
   const handleDragStart = (ev) => {
-    ev.dataTransfer.effectAllowed = 'copy'
-    setTransferData(ev.dataTransfer, ref)
+    setTransferData(ev, ref)
   }
 
   return (

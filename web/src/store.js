@@ -97,7 +97,7 @@ export const useStore = zs.create((set, get) => {
     } catch (err) {
       console.error(err)
       set({ error: JSON.stringify(err) })
-    } 
+    }
   })
 
   const searchIndex = async (query="", options) => {
@@ -135,10 +135,12 @@ export const useStore = zs.create((set, get) => {
 
   const replaceShelf = async (inOrder) => {
     const { set } = scope('shelf')
-
+    console.log('replacing')
     set({ inOrder })
 
+    console.log('get shelf')
     const shelf = await db.get('shelf')
+    console.log('now put shelf')
     shelf.refs = inOrder
     await db.put(shelf)
   }

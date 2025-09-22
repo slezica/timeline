@@ -10,35 +10,46 @@ export default function Shelf({ onClick }) {
   const shelf = useStore(state => state.shelf)
   const index = useStore(state => state.index)
 
-  const dropParentRef = useRef()
-  const [insertionPos, setInsertionPos] = useState(-1)
-
   const getValidTransferData = (ev) => {
     const data = getTransferData(ev)
     return (data?.id && index.byId[data.id]) ? data : null
   }
 
-  const handleDragOver = (ev) => {
-    setInsertionPos(getInsertionState(dropParentRef.current, ev))
+  const handleSelfDrop = (ev) => {
+    const itemRef = getValidTransferData(ev)
+    if (!itemRef) { return }
+
+    const newShelfOrder = [...shelf.inOrder]
+
+    const prevIndex = newShelfOrder.findIndex(it => it.id == itemRef.id)
+    if (prevIndex != -1) {
+      newShelfOrder.splice(prevIndex, 1)
+    }
+
+    newShelfOrder.push(itemRef)
+    shelf.replace(newShelfOrder)
   }
 
-  const handleDragLeave = (ev) => {
-    setInsertionPos(null)
-  }
-
-  const handleDrop = (ev) => {
+  const handleEntryDrop = (ev) => {
     const ref = getValidTransferData(ev)
     if (!ref) { return }
+
+    ev.stopPropagation()
 
     const item = index.byId[ref.id]
     const newShelfOrder = [...shelf.inOrder]
 
-    const prevIndex = shelf.inOrder.findIndex(it => it.id == ref.id)
-    if (prevIndex) {
-      newShelfOrder.splice(prevIndex, 1)
+    let newIndex = [...ev.target.parentElement.children].indexOf(ev.target)
+    let oldIndex = shelf.inOrder.findIndex(it => it.id == ref.id)
+
+    newShelfOrder.slice(newIndex, 0, ref)
+
+    if (oldIndex != -1) {
+      newShelfOrder.splice(oldIndex, 1)
+      if (oldIndex < newIndex) { newIndex++ }
     }
 
-    newShelfOrder.push(ref)
+    newShelfOrder.splice(newIndex, 0, ref)
     shelf.replace(newShelfOrder)
   }
 
@@ -54,21 +65,14 @@ export default function Shelf({ onClick }) {
   }
 
   return (
-    <DropTarget onDrop={handleDrop} onDragOver={handleDragOver} onDragLeave={handleDragLeave}>
-      <section className="shelf" ref={dropParentRef}>
+    <DropTarget onDrop={handleSelfDrop}>
+      <section className="shelf">
         {shelf.inOrder.map((ref, position) => {
-          // Calculate empty space before insertion position, if any:
-          const style = (position == insertionPos?.position)
-            ? { paddingTop: insertionPos.offset + 'px' }
-            : null
-
-          console.log(style, insertionPos)
-
           return <ShelfEntry
             key={ref.id}
             item={index.byId[ref.id]}
-            style={style}
-            onClick={handleItemClick} />;
+            onClick={handleItemClick}
+            onDrop={handleEntryDrop} />;
         }
         )}
       </section>
@@ -76,45 +80,20 @@ export default function Shelf({ onClick }) {
   )
 }
 
-
-function ShelfEntry({ item, style, onClick }) {
-  const handleClick = () => { onClick?.(item) }
+function ShelfEntry({ item, style, onDrop, onClick }) {
   const selfRef = useRef()
 
   return (
-    <div className="shelf-entry" ref={selfRef} style={style}>
-      {item != null
-        ? <SmallItem item={item} onClick={onClick} />
-        : <PlaceholderItem />
-      }
-    </div>
+    <DropTarget onDrop={onDrop}>
+      <div className="entry" ref={selfRef} style={style}>
+        {item != null
+          ? <SmallItem item={item} onClick={onClick} />
+          : <PlaceholderItem />
+        }
+      </div>
+    </DropTarget>
   )
 }
 
 
-function getInsertionIndex(parent, ev) {
-  if (parent.children.length == 0) { return }
-
-  const firstRect = parent.children[0].getBoundingClientRect()
-  const lastRect = parent.children[parent.children.length - 1].getBoundingClientRect()
-
-  if (ev.clientY < firstRect.top + tolerancePx) {
-    return 0
-  }
-
-  if (ev.clientY > lastRect.bottom - tolerancePx) {
-    return parent.children.length
-  }
-
-  for (let i = 0; i < parent.children.length - 1; i++) {
-    const currentRect = parent.children[i].getBoundingClientRect()
-    const siblingRect = parent.children[i + 1].getBoundingClientRect()
-
-    if (ev.clientY >= currentRect.bottom - tolerancePx && ev.clientY <= siblingRect.top + tolerancePx) {
-      return i + 1
-    }
-  }
-
-  return -1
-}
 
