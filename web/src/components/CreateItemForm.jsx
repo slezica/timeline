@@ -29,11 +29,16 @@ export default function CreateItemForm() {
     e.preventDefault()
     if (!title.trim()) return
 
+    const now = new Date().toISOString()
+
     const newItem = {
       ...extras,
       title: title.trim(),
       kind: kind,
-      createdDate: new Date().toISOString()
+      body: '',
+      refs: [],
+      createdDate: now,
+      updatedDate: now
     }
 
 
@@ -54,7 +59,6 @@ export default function CreateItemForm() {
           value={kind}
           onChange={(e) => setKind(e.target.value)}
           disabled={createItem.loading}
-          ref={shortcutRef}
         >
           <option value="note">Note</option>
           <option value="task">Task</option>
@@ -66,6 +70,7 @@ export default function CreateItemForm() {
           placeholder="Enter item title..."
           disabled={createItem.loading}
           aria-busy={createItem.loading}
+          ref={shortcutRef}
         />
       </fieldset>
 
