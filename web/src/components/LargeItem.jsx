@@ -63,29 +63,29 @@ export default function LargeItem({ group, item, onClick, index }) {
               </div>
             }
 
-            <div className="tags">
-              {item.kind == 'task' &&
-                <>
-                  <Tag icon="calendar" name="Due">{formatDisplayDate(item.dueDate) || '–'}</Tag>
-                  <Tag icon="calendar" name="Done">{formatDisplayDate(item.doneDate) || '–'}</Tag>
-                </>
-              }
+            {item.kind == 'task' &&
+              <div className="tags">
+                <Tag icon="calendar" name="Due">{formatDisplayDate(item.dueDate) || '–'}</Tag>
+                <Tag icon="calendar" name="Done">{formatDisplayDate(item.doneDate) || '–'}</Tag>
+              </div>
+            }
 
-              {item.kind == 'contact' &&
-                <>
-                  <Tag icon="envelope">{item.email || '–'}</Tag>
+            {item.kind == 'contact' &&
+              <div className="tags">
+                <Tag icon="envelope">{item.email || '–'}</Tag>
 
-                  {...[item.phones.length > 0
-                    ? item.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)
-                    : <Tag icon="phone"><em>Unknown</em></Tag>
-                  ]}
-                </>}
+                {...[item.phones.length > 0
+                  ? item.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)
+                  : <Tag icon="phone"><em>Unknown</em></Tag>
+                ]}
+              </div>}
+          </div>
 
-              {item.refs.map(ref =>
-                index.byId[ref.id] &&
-                  <RefItem key={ref.id} item={index.byId[ref.id]} onClick={onClick} />
-              )}
-            </div>
+          <div className="refs">
+            {item.refs.map(ref =>
+              index.byId[ref.id] &&
+              <RefItem key={ref.id} item={index.byId[ref.id]} onClick={onClick} />
+            )}
           </div>
 
           {window.DEBUG && <pre>{JSON.stringify(item, null, 2)}</pre>}

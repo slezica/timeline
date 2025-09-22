@@ -169,15 +169,13 @@ fieldset *:last-child {
     gap: 1rem;
   }
 
-  .extras .tags {
-    flex: 1;
+  .refs {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  .extras .tag {
-    height: 3rem;
-  }
-
-  &.note    { --item-color: var(--yellow); }
+  &.note    { --item-color: var(--green); }
   &.task    { --item-color: var(--red); }
   &.contact { --item-color: var(--blue); }
 }
@@ -196,6 +194,12 @@ fieldset *:last-child {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item.large {
+  transition: filter 0.2s ease;
+
+  &:hover {
+    filter: brightness(120%);
+  }
+
   & > header .title {
     font-size: 1.3em;
   }
@@ -205,6 +209,11 @@ fieldset *:last-child {
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
+
+  .extras .tag,
+  .ref {
+    height: 3rem;
+  } 
 }
 
 .item.large.contact {
@@ -433,4 +442,6 @@ i {
 }
 
 
-
+.expand {
+  flex: 1;
+}
