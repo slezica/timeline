@@ -3,7 +3,7 @@ import { useStore } from '../store'
 
 import CreateItemForm from './CreateItemForm'
 import Timeline from './Timeline'
-import SearchForm from './SearchForm'
+import SearchOrCreateForm from './SearchForm'
 import Modal from './Modal'
 import EditableItem from './EditableItem'
 
@@ -11,6 +11,7 @@ import './App.css'
 import Shelf from './Shelf'
 import DropTarget from './DropTarget'
 import ImportFileForm from './ImportFileForm'
+import { SidebarLeft } from './SidebarLeft'
 
 
 export default function App() {
@@ -22,25 +23,8 @@ export default function App() {
   const [queryIndex, setQueryIndex] = useState([])
   const [editingItem, setEditingItem] = useState(null)
 
-  const handleQueryChange = (query) => {
-    setQuery(query)
-  }
-
   useEffect(() => {
     store.initialize()
-  }, [])
-
-  useEffect(() => {
-    const onDragStart = (ev) => { ev.target.classList.add('dragging') }
-    const onDragEnd = (ev) => { ev.target.classList.remove('dragging') }
-
-    document.addEventListener('dragstart', onDragStart, true)
-    document.addEventListener('dragend', onDragEnd, true)
-
-    return () => {
-      document.removeEventListener('dragstart', onDragStart)
-      document.removeEventListener('dragend', onDragEnd)
-    }
   }, [])
 
   useEffect(() => {
@@ -51,6 +35,7 @@ export default function App() {
     }
 
     index.search(query, searchOptions).then(inOrder => {
+      inOrder.sort((a, b) => a.date < b.date)
       setQueryIndex({ ...index, inOrder })
     })
 
@@ -60,24 +45,12 @@ export default function App() {
     setEditingItem(item)
   }
 
-  const handleRequestCreate =  async (ev) => {
-    const now = new Date().toISOString()
+  const handleSearch = (query) => {
+    setQuery(query)
+  }
 
-    try {
-      const item = await createItem.run({
-        title: "Untitled",
-        kind: 'note',
-        body: "",
-        refs: [],
-        createdDate: now,
-        updatedDate: now
-      })
-
-      setEditingItem(item)
-
-    } catch (error) {
-      console.error(error)
-    }
+  const handleItemEdit = (item) => {
+    setEditingItem(item)
   }
 
   const handleModalClose = () => {
@@ -92,7 +65,7 @@ export default function App() {
   return (
     <div id="app">
       <aside>
-        <SearchForm onQueryChange={setQuery} onRequestCreate={handleRequestCreate} />
+        <SidebarLeft onSearch={handleSearch} onEdit={handleItemEdit} />
       </aside>
 
       <main>

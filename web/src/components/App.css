@@ -60,6 +60,21 @@ body, #app {
   opacity: 0.4;
 }
 
+#app aside.left {
+  header {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  header .search { flex: 1; }
+  header .create { flex: 0; }
+
+  header .create button {
+    height: 100%;
+    aspect-ratio: 1/1;
+  }
+}
+
 /* ---------------------------------------------------------------------------------------------- */
 
 * {
@@ -307,36 +322,6 @@ button {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.search-and-create {
-  display: flex;
-  gap: 0.5rem;
-
-  .search {
-    flex: 1;
-  }
-
-  .create {
-    flex: 0;
-  }
-
-  fieldset {
-    gap: 0.5rem;
-  }
-
-  button {
-    flex: 0;
-    aspect-ratio: 1/1;
-  }
-
-  i {
-    width: 1.1em;
-    height: 1.1em;
-  }
-}
-
-
-/* ---------------------------------------------------------------------------------------------- */
-
 .removable {
   position: relative;
 }
@@ -462,6 +447,8 @@ button {
 
 i {
   display: inline-block;
+  width: 1.1em;
+  height: 1.1em;
   mask-size: contain;
   mask-repeat: no-repeat;
   background-size: contain;
