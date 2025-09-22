@@ -55,8 +55,8 @@ export default function EditableItem({ index, item, onSave, onCancel }) {
           <TopItemFields item={item} data={data} onChange={handleChange} />
 
           {
-            item.kind == 'task' ? <TaskItemFields item={item} data={data} onChange={handleChange} /> :
-            item.kind == 'note' ? <NoteItemFields item={item} data={data} onChange={handleChange} /> :
+            data.kind == 'task' ? <TaskItemFields item={item} data={data} onChange={handleChange} /> :
+            data.kind == 'note' ? <NoteItemFields item={item} data={data} onChange={handleChange} /> :
             null
           }
 
