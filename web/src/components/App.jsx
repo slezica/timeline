@@ -30,6 +30,19 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    const onDragStart = (ev) => { ev.target.classList.add('dragging') }
+    const onDragEnd = (ev) => { ev.target.classList.remove('dragging') }
+
+    document.addEventListener('dragstart', onDragStart, true)
+    document.addEventListener('dragend', onDragEnd, true)
+
+    return () => {
+      document.removeEventListener('dragstart', onDragStart)
+      document.removeEventListener('dragend', onDragEnd)
+    }
+  }, [])
+
+  useEffect(() => {
     const searchOptions = {
       fuzzy: 0.2,
       boost: { title: 2 },
@@ -71,6 +84,8 @@ export default function App() {
 
       <aside>
         <Shelf onItemClick={handleItemClick} />
+        <div className="expand" />
+        <div>hola</div>
       </aside>
 
       <Modal showing={editingItem !== null} onClose={handleModalClose}>

@@ -6,7 +6,6 @@ export default function Draggable({ data, onDragStart, onDragEnd, children }) {
 
   const handleDragStart = (ev) => {
     ev.dataTransfer.effectAllowed = 'copy'
-    ev.currentTarget.classList.add('dragging')
 
     // Automatically serialize data to transfer
     setTransferData(ev.dataTransfer, data)
@@ -16,8 +15,6 @@ export default function Draggable({ data, onDragStart, onDragEnd, children }) {
   }
 
   const handleDragEnd = (ev) => {
-    ev.currentTarget.classList.remove('dragging')
-
     setDragging(false)
     onDragEnd?.(data, ev.dataTransfer.files ?? [])
   }
