@@ -161,6 +161,8 @@ export const useStore = zs.create((set, get) => {
       console.error(err)
       set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
     }
+
+    return item
   }
 
   const updateItem = async (item) => {

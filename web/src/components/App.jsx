@@ -16,6 +16,7 @@ import ImportFileForm from './ImportFileForm'
 export default function App() {
   const store = useStore()
   const index = useStore(state => state.index)
+  const createItem = useStore(state => state.createItem)
 
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
@@ -59,6 +60,26 @@ export default function App() {
     setEditingItem(item)
   }
 
+  const handleRequestCreate =  async (ev) => {
+    const now = new Date().toISOString()
+
+    try {
+      const item = await createItem.run({
+        title: "Untitled",
+        kind: 'note',
+        body: "",
+        refs: [],
+        createdDate: now,
+        updatedDate: now
+      })
+
+      setEditingItem(item)
+
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const handleModalClose = () => {
     setEditingItem(null)
   }
@@ -71,11 +92,7 @@ export default function App() {
   return (
     <div id="app">
       <aside>
-        <SearchForm onQueryChange={setQuery} />
-        <hr />
-        <CreateItemForm />
-        <hr />
-        <ImportFileForm />
+        <SearchForm onQueryChange={setQuery} onRequestCreate={handleRequestCreate} />
       </aside>
 
       <main>
