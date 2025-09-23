@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
 import { setTransferData } from '../utils'
 
 function TaskItemExtras({ item }) {
@@ -9,7 +9,9 @@ function NoteItemExtras({ item }) {
   return null
 }
 
-export default function SmallItem({ item, onClick, onRemove }) {
+export default function SmallItem({ item, onClick, onRemove, onDiscard }) {
+  const draggableRef = useRef()
+
   const handleClick = () => {
     onClick?.(item)
   }
@@ -24,23 +26,37 @@ export default function SmallItem({ item, onClick, onRemove }) {
     setTransferData(ev, { id: item._id })
   }
 
+  useLayoutEffect(() => {
+    const handleDiscard = (ev) => {
+      onDiscard?.({ id: item._id })
+    }
+
+    // The 'discard' event is custom, indicating this element was dropped outside
+    // any drop area. It's fired in main.jsx.
+    draggableRef.current.addEventListener('discard', handleDiscard)
+    return () => { draggableRef.current.removeEventListener('discard', handleDiscard) }
+
+  }, [onDiscard])
+
   return <SmallItemView
-    item={item}
-    onClick={handleClick}
-    onRemove={onRemove ? handleRemove : null}
-    onDragStart={handleDragStart}
+    item         = {item}
+    onClick      = {handleClick}
+    onRemove     = {onRemove ? handleRemove : null}
+    onDragStart  = {handleDragStart}
+    draggableRef = {draggableRef}
   />
 }
 
 
-function SmallItemView({ item, onClick, onRemove, onDragStart }) {
+function SmallItemView({ item, onClick, onRemove, onDragStart, onDiscard, draggableRef }) {
   return (
     <article
-      className={"item small " + item.kind}
-      data-id={item.id}
-      onClick={onClick}
-      draggable={true}
-      onDragStart={onDragStart}
+      ref         = {draggableRef}
+      className   = {"item small " + item.kind}
+      draggable   = {true}
+      onClick     = {onClick}
+      onDragStart = {onDragStart}
+      data-id     = {item.id}
     >
       <header>
         <i className="dot circle" />

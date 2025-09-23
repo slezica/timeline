@@ -62,43 +62,43 @@ export default function Shelf({ onClick }) {
     shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
   }
 
+  const handleItemDiscard = (ref) => {
+    const newRefs = [...shelf.refs]
+
+    const refIndex = newRefs.findIndex(it => it.id == ref.id)
+    newRefs.splice(refIndex, 1)
+
+    shelf.replace(newRefs)
+  }
+
   return <ShelfView
     refs={shelf.refs}
     items={items.byId}
     onSelfDrop={handleSelfDrop}
     onEntryDrop={handleEntryDrop}
+    onItemDiscard={handleItemDiscard}
     onItemClick={handleItemClick}
   />
 }
 
 
-function ShelfView({ refs, items, onSelfDrop, onEntryDrop, onItemClick }) {
+function ShelfView({ refs, items, onSelfDrop, onEntryDrop, onItemDiscard, onItemClick }) {
   return (
     <DropTarget onDrop={onSelfDrop}>
       <section className="shelf">
-        {refs.map((ref, position) => {
-          return <ShelfEntryView
-            key={ref.id}
-            item={items[ref.id]}
-            onDrop={onEntryDrop}
-            onClick={onItemClick}
-          />
-        })}
+
+        {refs.map((ref, position) =>
+          <DropTarget key={ref.id} onDrop={onEntryDrop}>
+            <div className="entry">
+              {items[ref.id] != null
+                ? <SmallItem item={items[ref.id]} onClick={onItemClick} onDiscard={onItemDiscard} />
+                : <div>mierda</div>
+              }
+            </div>
+          </DropTarget>
+
+        )}
       </section>
-    </DropTarget>
-  )
-}
-
-
-function ShelfEntryView({ item, style, onDrop, onClick }) {
-  return (
-    <DropTarget onDrop={onDrop}>
-      <div className="entry" style={style}>
-        {item != null
-          ? <SmallItem item={item} onClick={onClick} />
-          : <PlaceholderItem />
-        }
-      </div>
     </DropTarget>
   )
 }

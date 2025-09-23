@@ -6,7 +6,30 @@ import { db, initializeDb } from './database'
 
 import './samples'
 
-window.DEBUG = false
+(function setUpDropOutsideToDiscard() {
+  let draggedEl = null
+
+  window.addEventListener('dragstart', (ev) => {
+    draggedEl = ev.target.closest('[draggable="true"]') || null
+  }, true)
+
+  window.addEventListener('dragend', (ev) => {
+    draggedEl = null
+  }, true)
+
+  window.addEventListener('dragover', (ev) => {
+    ev.preventDefault()
+  })
+
+  window.addEventListener('drop', (ev) => {
+    // Catch unhandled drops on known elements:
+    if (!draggedEl) { return }
+    if (ev.defaultPrevented) { return }
+
+    ev.preventDefault()
+    draggedEl.dispatchEvent(new CustomEvent('discard', { bubbles: false }))
+  }, true)
+})()
 
 const container = document.body
 const root = createRoot(container)
