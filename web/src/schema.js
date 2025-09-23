@@ -10,11 +10,11 @@ const ajv = new Ajv({
 addFormats(ajv)
 addKeywords(ajv, ["uniqueItemProperties"])
 
+
 /** @typedef {{
   id  : string,
   name: string
 }} Ref */
-
 export const refSchema = {
   type: 'object',
   required: ['id'],
@@ -26,6 +26,10 @@ export const refSchema = {
 }
 
 
+/** @typedef {{
+  type: string,
+  number: string
+}} Phone */
 export const phoneSchema = {
   type: 'object',
   required: ['type', 'number'],
@@ -38,6 +42,10 @@ export const phoneSchema = {
 }
 
 
+/** @typedef {{
+  _id: string,
+  _rev?: string
+}} BaseDoc */
 export const baseDocSchema = {
   type: 'object',
   required: ['_id', 'type'],
@@ -53,6 +61,16 @@ export const baseDocSchema = {
 }
 
 
+/** @typedef {BaseDoc & {
+  type: 'item',
+  kind: string,
+  createdDate: string,
+  updatedDate: string,
+  title: string,
+  body: string,
+  refs: Ref[],
+  deleted?: boolean
+}} BaseItem */
 export const baseItemSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
@@ -92,6 +110,11 @@ export const baseItemSchema = {
 }
 
 
+/** @typedef {BaseItem & {
+  kind: 'task',
+  dueDate: string | null,
+  doneDate: string | null
+}} Task */
 export const taskSchema = {
   ...baseItemSchema,
   required: [...baseItemSchema.required, 'dueDate', 'doneDate'],
@@ -106,6 +129,9 @@ export const taskSchema = {
 }
 
 
+/** @typedef {BaseItem & {
+  kind: 'note'
+}} Note */
 export const noteSchema = {
   ...baseItemSchema,
 
@@ -117,6 +143,14 @@ export const noteSchema = {
 }
 
 
+/** @typedef {BaseItem & {
+  kind: 'contact',
+  email?: string | null,
+  phones?: Phone[],
+  organization?: string | null,
+  birthday?: string | null,
+  picture?: string | null
+}} Contact */
 export const contactSchema = {
   ...baseItemSchema,
   required: [...baseItemSchema.required ],
@@ -151,11 +185,16 @@ export const contactSchema = {
 }
 
 
+/** @typedef {Task | Note | Contact} Item */
 export const itemSchema = {
   oneOf: [taskSchema, noteSchema, contactSchema]
 }
 
 
+/** @typedef {BaseDoc & {
+  type: 'status',
+  migration: number
+}} Status */
 export const statusSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'migration'],
@@ -172,6 +211,10 @@ export const statusSchema = {
 }
 
 
+/** @typedef {BaseDoc & {
+  type: 'collection',
+  refs: Ref[]
+}} Collection */
 export const collectionSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'refs'],
@@ -184,7 +227,9 @@ export const collectionSchema = {
 }
 
 
-
+/** @typedef {{
+  type: string
+}} Design */
 export const designSchema = {
   type: 'object',
   properties: {
@@ -193,6 +238,7 @@ export const designSchema = {
 }
 
 
+/** @typedef {Item | Collection | Status | Design} Doc */
 export const docSchema = {
   oneOf: [itemSchema, collectionSchema, statusSchema, designSchema]
 }

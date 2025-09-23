@@ -5,7 +5,66 @@ import { genId, scheduled } from './utils'
 import { validateItem } from './schema'
 
 
-/** @typedef {{ ready: true }} StoreState */
+/**
+  @typedef {import('./schema').Phone} Phone
+  @typedef {import('./schema').Ref} Ref
+  @typedef {import('./schema').BaseDoc} BaseDoc
+  @typedef {import('./schema').BaseItem} BaseItem
+  @typedef {import('./schema').Task} Task
+  @typedef {import('./schema').Note} Note
+  @typedef {import('./schema').Contact} Contact
+  @typedef {import('./schema').Item} Item
+  @typedef {import('./schema').Status} Status
+  @typedef {import('./schema').Collection} Collection
+  @typedef {import('./schema').Doc} Doc
+*/
+
+/** @typedef {{
+  ready: boolean,
+  error: string | null,
+  loading: boolean
+}} AsyncState */
+
+/** @template T
+  @typedef {AsyncState & {
+  result: T | null,
+  run: (...args: any[]) => Promise<T>
+}} AsyncOperation */
+
+
+/**
+  @typedef {{
+    ready: boolean,
+    initialize: () => Promise<void>,
+
+    items: AsyncState & {
+      byId: Record<string, Item>,
+      fetch: () => Promise<void>
+    },
+
+    timeline: AsyncState & {
+      refs: Array<{id: string, kind: string, event: string, date: string}>,
+      fetch: () => Promise<void>,
+      search: (query?: string, options?: any) => Promise<Array<{id: string, kind: string, event: string, date: string}>>
+    },
+
+    shelf: AsyncState & {
+      refs: Ref[],
+      fetch: () => Promise<void>,
+      replace: (refs: Ref[]) => Promise<void>
+    },
+
+    desk: AsyncState & {
+      refs: Ref[],
+      fetch: () => Promise<void>,
+      replace: (refs: Ref[]) => Promise<void>
+    },
+
+    saveItem: AsyncOperation<Item>,
+    deleteItem: AsyncOperation<Item>,
+    importFile: AsyncOperation<Item[]>
+  }} StoreState
+*/
 
 
 const miniSearch = new MiniSearch({
@@ -16,7 +75,7 @@ const miniSearch = new MiniSearch({
 window.miniSearch = miniSearch
 
 
-/** 
+/**
   @type {import('zustand').UseBoundStore<import('zustand').StoreApi<StoreState>>}
 */
 export const useStore = zs.create((set, get) => {
