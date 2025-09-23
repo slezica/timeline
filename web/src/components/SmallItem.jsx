@@ -32,6 +32,7 @@ export default function SmallItem({ item, onClick, onRemove }) {
   />
 }
 
+
 function SmallItemView({ item, onClick, onRemove, onDragStart }) {
   return (
     <article

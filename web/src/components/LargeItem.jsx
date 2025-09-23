@@ -47,6 +47,7 @@ export default function LargeItem({ entries, item, onClick }) {
   />
 }
 
+
 function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart, canDrop }) {
   return (
     <DropTarget onDrop={onDrop} canDrop={canDrop}>

@@ -71,6 +71,7 @@ export default function Shelf({ onClick }) {
   />
 }
 
+
 function ShelfView({ refs, items, onSelfDrop, onEntryDrop, onItemClick }) {
   return (
     <DropTarget onDrop={onSelfDrop}>
@@ -87,6 +88,7 @@ function ShelfView({ refs, items, onSelfDrop, onEntryDrop, onItemClick }) {
     </DropTarget>
   )
 }
+
 
 function ShelfEntryView({ item, style, onDrop, onClick }) {
   return (
