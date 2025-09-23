@@ -171,14 +171,15 @@ body, #app {
   flex-direction: column;
   gap: 1.25rem;
 
-  header {
+  & > header {
     display: flex;
     margin-bottom: 0;
     gap: 0.5rem;
     align-items: center;
+    transition: filter 0.2s ease;
   }
 
-  header .title {
+  & > header .title {
     flex: 1;
     text-wrap: nowrap;
     text-overflow: ellipsis;
@@ -186,9 +187,13 @@ body, #app {
     font-weight: 600;
   }
 
-  header .tag {
+  & > header .tag {
     height: 1.8rem;
     background-color: color-mix(in oklch, var(--pico-card-background-color), white 10%);
+  }
+
+  & > header:hover {
+    filter: brightness(120%);
   }
 
   .dot {
@@ -228,15 +233,16 @@ body, #app {
 /* ---------------------------------------------------------------------------------------------- */
 
 .item.large {
-  transition: filter 0.2s ease;
 
-  &:hover {
-    filter: brightness(120%);
+  & > header {
+    transition: filter 0.2s ease;
   }
 
   & > header .title {
     font-size: 1.3em;
   }
+
+
 
   .extras .tags {
     display: grid;
@@ -447,8 +453,9 @@ body, #app {
 /* ---------------------------------------------------------------------------------------------- */
 
 .tag {
+  height: 3rem;
   display: flex;
-  padding: 0 var(--pico-block-spacing-horizontal);
+  padding: 0.5rem var(--pico-block-spacing-horizontal);
 
   gap: 0.5rem;
   align-items: center;
