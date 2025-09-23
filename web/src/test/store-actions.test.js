@@ -48,6 +48,17 @@ vi.mock('../utils', async () => {
 })
 
 
+// Test helper to create items with default values:
+const createItem = (overrides = {}) => ({
+  type: 'item',
+  kind: 'task',
+  title: 'Test Task',
+  createdDate: new Date().toISOString(),
+  refs: [],
+  ...overrides
+})
+
+
 describe('Store actions', () => {
   let store
 
@@ -72,14 +83,7 @@ describe('Store actions', () => {
 
   describe('saveItem', () => {
     it('should create a new item and store it', async () => {
-      const newItem = {
-        type: 'item',
-        kind: 'task',
-        title: 'Test Task',
-        body: 'Test description',
-        createdDate: new Date().toISOString(),
-        refs: []
-      }
+      const newItem = createItem({ body: 'Test description' })
 
       const result = await store.saveItem.run(newItem)
 
@@ -99,14 +103,10 @@ describe('Store actions', () => {
 
     it('should update existing item', async () => {
       // First create an item:
-      const newItem = {
-        type: 'item',
-        kind: 'note',
+      const newItem = createItem({
         title: 'Original Title',
-        body: 'Original body',
-        createdDate: new Date().toISOString(),
-        refs: []
-      }
+        body: 'Original body'
+      })
 
       const created = await store.saveItem.run(newItem)
 
@@ -138,8 +138,8 @@ describe('Store actions', () => {
 
       // Create multiple items:
       const items = [
-        { type: 'item', kind: 'task', title: 'Task 1', createdDate: now, refs: [] },
-        { type: 'item', kind: 'note', title: 'Note 1', createdDate: now, refs: [] }
+        createItem({ title: 'Task 1', createdDate: now }),
+        createItem({ kind: 'note', title: 'Note 1', createdDate: now })
       ]
 
       await Promise.all(items.map(store.saveItem.run))
@@ -158,13 +158,7 @@ describe('Store actions', () => {
 
     it('should handle database conflicts properly', async () => {
       // Create an item:
-      const newItem = {
-        type: 'item',
-        kind: 'task',
-        title: 'Original',
-        createdDate: new Date().toISOString(),
-        refs: []
-      }
+      const newItem = createItem({ title: 'Original' })
 
       const created = await store.saveItem.run(newItem)
 
@@ -189,13 +183,7 @@ describe('Store actions', () => {
       const originalPut = testDb.put
       testDb.put = vi.fn().mockRejectedValue(new Error('Connection failed'))
 
-      const newItem = {
-        type: 'item',
-        kind: 'task',
-        title: 'Should fail',
-        createdDate: new Date().toISOString(),
-        refs: []
-      }
+      const newItem = createItem({ title: 'Should fail' })
 
       // This should handle the error gracefully:
       await store.saveItem.run(newItem)
@@ -206,6 +194,80 @@ describe('Store actions', () => {
 
       // Restore original method:
       testDb.put = originalPut
+    })
+  })
+
+  describe('deleteItem', () => {
+    it('should mark item as deleted and store it', async () => {
+      // First create an item:
+      const newItem = createItem()
+
+      const created = await store.saveItem.run(newItem)
+
+      // Then delete it:
+      const deleted = await store.deleteItem.run(created)
+
+      // Verify the result:
+      expect(deleted).toBeDefined()
+      expect(deleted._id).toBe(created._id)
+      expect(deleted._rev).not.toBe(created._rev)
+      expect(deleted.deleted).toBe(true)
+
+      // Verify it's actually stored with deleted flag:
+      const storedItem = await testDb.get(deleted._id)
+      expect(storedItem.deleted).toBe(true)
+      expect(storedItem._rev).toBe(deleted._rev)
+    })
+
+    it('should handle deleting already deleted item', async () => {
+      // Create and delete an item:
+      const newItem = createItem()
+
+      const created = await store.saveItem.run(newItem)
+      const deleted = await store.deleteItem.run(created)
+
+      // Delete it again:
+      const deletedAgain = await store.deleteItem.run(deleted)
+
+      // Verify the result:
+      expect(deletedAgain._id).toBe(deleted._id)
+      expect(deletedAgain._rev).not.toBe(deleted._rev)
+      expect(deletedAgain.deleted).toBe(true)
+    })
+
+    it('should handle database errors during deletion', async () => {
+      // Create an item first:
+      const newItem = createItem()
+
+      const created = await store.saveItem.run(newItem)
+
+      // Mock the put method to simulate a database error:
+      const originalPut = testDb.put
+      testDb.put = vi.fn().mockRejectedValue(new Error('Database error'))
+
+      // Try to delete:
+      await store.deleteItem.run(created)
+
+      // The store should have handled the error:
+      const state = useStore.getState().deleteItem
+      expect(state.loading).toBe(false)
+      expect(state.error).toBeDefined()
+      expect(state.result).toBe(null)
+
+      // Restore original method:
+      testDb.put = originalPut
+    })
+
+    it('should return updated item', async () => {
+      const newItem = createItem()
+
+      const created = await store.saveItem.run(newItem)
+      const deleted = await store.deleteItem.run(created)
+
+      expect(deleted).toBeDefined()
+      expect(deleted._id).toBeDefined()
+      expect(deleted._rev).toBeDefined()
+      expect(deleted.deleted).toBe(true)
     })
   })
 })
