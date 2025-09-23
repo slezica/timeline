@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 
 export function throttle(fn, ms) {
   let pending = false
@@ -91,5 +90,5 @@ export function getTransferData(ev) {
 }
 
 export function genId() {
-  return crypto.randomUUID()
+  return Math.random().toString(36).substr(2)
 }
