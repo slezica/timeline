@@ -4,7 +4,7 @@ import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import RefItem from './RefItem'
 import Tag from './Tag'
-import { setTransferData } from '../utils'
+import { getTransferData, setTransferData } from '../utils'
 
 
 export default function LargeItem({ entries, item, onClick }) {
@@ -17,21 +17,25 @@ export default function LargeItem({ entries, item, onClick }) {
     }
   }
 
-  const handleDrop = (data) => {
-    if (canDrop(data)) {
-      saveItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
-    }
-  }
-
-  const canDrop = (data) => {
-    return data
-      && data.id
-      && data.id !== item.id
-      && !item.refs.some(ref => ref.id == data.id)
-  }
-
   const handleDragStart = (ev) => {
+    ev.stopPropagation()
     setTransferData(ev, { id: item._id })
+  }
+
+  const getValidTransferData = (ev) => {
+    const data = getTransferData(ev)
+    return (data?.id && items.byId[data.id]) ? data : null
+  }
+
+  const handleDrop = (ev) => {
+    const data = getValidTransferData(ev)
+    if (!data) { return }
+
+    const ref = { id: data.id }
+    if (item._id == ref.id) { return }
+    if (item.refs.find(it => it.id == ref.id )) { return }
+
+    saveItem.run({ ...item, refs: [...item.refs, ref] })
   }
 
   const refItems = item.refs?.map(ref => items.byId[ref.id]).filter(Boolean) || []
@@ -43,14 +47,13 @@ export default function LargeItem({ entries, item, onClick }) {
     onClick={handleClick}
     onDrop={handleDrop}
     onDragStart={handleDragStart}
-    canDrop={canDrop}
   />
 }
 
 
-function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart, canDrop }) {
+function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart }) {
   return (
-    <DropTarget onDrop={onDrop} canDrop={canDrop}>
+    <DropTarget onDrop={onDrop}>
       <article
         className={"item large " + item.kind}
         data-id={item.id}

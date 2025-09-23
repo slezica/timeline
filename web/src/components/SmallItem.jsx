@@ -23,6 +23,7 @@ export default function SmallItem({ item, onClick, onRemove, onDiscard }) {
   }
 
   const handleDragStart = (ev) => {
+    ev.stopPropagation()
     setTransferData(ev, { id: item._id })
   }
 

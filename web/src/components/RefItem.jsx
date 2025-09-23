@@ -12,10 +12,9 @@ export default function RefItem({ item, onClick, onRemove }) {
     onRemove(item)
   }
 
-  const ref = { id: item._id }
-
   const handleDragStart = (ev) => {
-    setTransferData(ev, ref)
+    ev.stopPropagation()
+    setTransferData(ev, { id: item._id })
   }
 
   return (

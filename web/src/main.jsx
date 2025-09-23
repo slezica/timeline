@@ -10,7 +10,9 @@ import './samples'
   let draggedEl = null
 
   window.addEventListener('dragstart', (ev) => {
-    draggedEl = ev.target.closest('[draggable="true"]') || null
+    if (ev.target) {
+      draggedEl = ev.target.closest('[draggable="true"]') || null
+    }
   }, true)
 
   window.addEventListener('dragend', (ev) => {
@@ -28,7 +30,7 @@ import './samples'
 
     ev.preventDefault()
     draggedEl.dispatchEvent(new CustomEvent('discard', { bubbles: false }))
-  }, true)
+  })
 })()
 
 const container = document.body
