@@ -69,7 +69,7 @@ export default function App() {
         <Timeline timeline={queryIndex} onItemClick={handleItemClick} />
       </main>
 
-      <aside class="right">
+      <aside className="right">
         <Shelf onItemClick={handleItemClick} />
       </aside>
 
