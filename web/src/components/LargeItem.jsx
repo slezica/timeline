@@ -7,7 +7,7 @@ import Tag from './Tag'
 import { setTransferData } from '../utils'
 
 
-export default function LargeItem({ group, item, onClick, items }) {
+export default function LargeItem({ entries, item, onClick, items }) {
   const handleClick = (e) => {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
       onClick?.(item)
@@ -32,7 +32,7 @@ export default function LargeItem({ group, item, onClick, items }) {
   }
 
   return <LargeItemView
-    group={group}
+    entries={entries}
     item={item}
     items={items}
     onClick={handleClick}
@@ -42,7 +42,7 @@ export default function LargeItem({ group, item, onClick, items }) {
   />
 }
 
-function LargeItemView({ group, item, items, onClick, onDrop, onDragStart, canDrop }) {
+function LargeItemView({ entries, item, items, onClick, onDrop, onDragStart, canDrop }) {
   return (
     <DropTarget onDrop={onDrop} canDrop={canDrop}>
       <article
@@ -56,7 +56,7 @@ function LargeItemView({ group, item, items, onClick, onDrop, onDragStart, canDr
             <i className="dot circle" />
             <strong className="title">{item.title || 'Untitled'}</strong>
 
-            {group.map(entry =>
+            {entries.map(entry =>
               <span className="tags" key={entry.event}>
                 <kbd className={"tag " + entry.event}>{entry.event}</kbd>
               </span>
