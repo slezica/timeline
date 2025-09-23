@@ -18,7 +18,15 @@ export default function SearchForm({ onQueryChange }) {
     return () => window.removeEventListener('keydown', handleKey)
   }, [])
 
-  const handleSearchInput = (ev) => {
+  const handleKeyDown = (ev) => {
+    ev.preventDefault()
+
+    if (ev.key === 'Escape') {
+      ev.target.blur()
+    }
+  }
+
+  const handleInput = (ev) => {
     ev.preventDefault()
     const query = ev.target.value
 
@@ -36,7 +44,8 @@ export default function SearchForm({ onQueryChange }) {
         <input
           type="text"
           value={query}
-          onInput={handleSearchInput}
+          onInput={handleInput}
+          onKeyDown={handleKeyDown}
           placeholder="Search"
           ref={inputRef}
         />
