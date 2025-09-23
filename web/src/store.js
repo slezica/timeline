@@ -33,7 +33,9 @@ export const useStore = zs.create((set, get) => {
 
     items: {
       ready: false, error: null, loading: false,
-      byId: {}
+      byId: {},
+
+      fetch: fetchItems
     },
 
     timeline: {
@@ -66,33 +68,29 @@ export const useStore = zs.create((set, get) => {
     await initializeDb()
 
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
-      .on('change', () => get().timeline.fetch()) // scheduled
+      .on('change', () => {
+        fetchItems()
+        fetchTimeline()
+      }) // scheduled
 
-    await get().desk.fetch()
-    await get().shelf.fetch()
-    await get().timeline.fetch()
+    await fetchCollection('desk')
+    await fetchCollection('shelf')
+    await fetchItems()
+    await fetchTimeline()
 
     set({ ready: true })
   }
 
-  const fetchTimeline = scheduled(async () => {
-    const timelineScope = scope('timeline')
-    const itemsScope = scope('items')
+  const fetchItems = scheduled(async () => {
+    const { set } = scope('items')
 
-    timelineScope.set({ loading: true })
+    set({ loading: true })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
 
-      const refs = []
       const byId = {}
-
       for (let row of byDateQ.rows) {
-        const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
-
-        // Sorted index:
-        refs.push(entry)
-
         // ID Lookup:
         byId[row.doc._id] = row.doc
 
@@ -101,14 +99,35 @@ export const useStore = zs.create((set, get) => {
         miniSearch.has(searchDoc.id) ? miniSearch.replace(searchDoc) : miniSearch.add(searchDoc)
       }
 
-      refs.reverse() // TODO query desc or sort in-place
-
-      timelineScope.set({ loading: false, error: null, ready: true, refs })
-      itemsScope.set({ loading: false, error: null, ready: true, byId })
+      set({ loading: false, error: null, ready: true, byId })
 
     } catch (err) {
       console.error(err)
-      timelineScope.set({ error: JSON.stringify(err) })
+      set({ error: JSON.stringify(err) })
+    }
+  })
+
+  const fetchTimeline = scheduled(async () => {
+    const { set } = scope('timeline')
+
+    set({ loading: true })
+
+    try {
+      const byDateQ = await db.query('index/byDate', { include_docs: true })
+
+      const refs = []
+      for (let row of byDateQ.rows) {
+        const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
+
+        // Sorted index:
+        refs.unshift(entry)
+      }
+
+      set({ loading: false, error: null, ready: true, refs })
+
+    } catch (err) {
+      console.error(err)
+      set({ error: JSON.stringify(err) })
     }
   })
 
@@ -166,6 +185,7 @@ export const useStore = zs.create((set, get) => {
       item._rev = putQ.rev
 
       set({ loading: false, error: null, result: item })
+      await fetchItems()
       await fetchTimeline()
 
     } catch (err) {
