@@ -89,3 +89,7 @@ export function getTransferData(ev) {
     return null
   }
 }
+
+export function genId() {
+  return crypto.randomUUID()
+}

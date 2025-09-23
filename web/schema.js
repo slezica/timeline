@@ -166,20 +166,17 @@ export const statusSchema = {
 }
 
 
-export const shelfSchema = {
+export const collectionSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'refs'],
 
   properties: {
     ...baseDocSchema.properties,
-    type: { type: 'string', enum: ['shelf'] },
-    
-    refs: {
-      type: 'array',
-      items: refSchema,
-    }
+    type: { type: 'string', enum: ['collection'] },
+    refs: { type: 'array', items: refSchema }
   }
 }
+
 
 
 export const designSchema = {
@@ -191,7 +188,7 @@ export const designSchema = {
 
 
 export const docSchema = {
-  oneOf: [itemSchema, shelfSchema, statusSchema, designSchema]
+  oneOf: [itemSchema, collectionSchema, statusSchema, designSchema]
 }
 
 

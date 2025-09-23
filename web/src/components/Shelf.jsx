@@ -19,14 +19,13 @@ export default function Shelf({ onClick }) {
     const itemRef = getValidTransferData(ev)
     if (!itemRef) { return }
 
-    const newShelfOrder = [...shelf.inOrder]
+    const newShelfOrder = [...shelf.refs]
 
     const prevIndex = newShelfOrder.findIndex(it => it.id == itemRef.id)
     if (prevIndex != -1) {
       newShelfOrder.splice(prevIndex, 1)
     }
     newShelfOrder.push(itemRef)
-    console.log('moving self', prevIndex, newShelfOrder.length)
     shelf.replace(newShelfOrder)
   }
 
@@ -37,18 +36,18 @@ export default function Shelf({ onClick }) {
     ev.stopPropagation()
 
     const item = index.byId[ref.id]
-    const newShelfOrder = [...shelf.inOrder]
+    const newShelfOrder = [...shelf.refs]
 
     const entry = findParentEntry(ev.target)
     const newIndex = [...entry.parentElement.children].indexOf(entry)
-    const oldIndex = shelf.inOrder.findIndex(it => it.id == ref.id)
+    const oldIndex = shelf.refs.findIndex(it => it.id == ref.id)
 
     newShelfOrder.splice(newIndex, 0, ref)
 
     if (oldIndex != -1) {
       newShelfOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
     }
-
+    console.log(newShelfOrder)
     shelf.replace(newShelfOrder)
   }
 
@@ -57,16 +56,16 @@ export default function Shelf({ onClick }) {
   }
 
   const handleItemRemove = (ref) => {
-    const i = shelf.inOrder.findIndex(it => it.id == ref.id)
+    const i = shelf.refs.findIndex(it => it.id == ref.id)
     if (i == -1) { return }
 
-    shelf.replace([...shelf.inOrder.slice(0, i), ...shelf.inOrder.slice(i + 1)])
+    shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
   }
 
   return (
     <DropTarget onDrop={handleSelfDrop}>
       <section className="shelf">
-        {shelf.inOrder.map((ref, position) => {
+        {shelf.refs.map((ref, position) => {
           return <ShelfEntry
             key={ref.id}
             item={index.byId[ref.id]}

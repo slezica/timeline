@@ -1,7 +1,8 @@
 import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
-import { scheduled } from './utils'
+import { genId, scheduled } from './utils'
+import { collectionSchema } from '../schema'
 
 
 const miniSearch = new MiniSearch({
@@ -27,27 +28,30 @@ export const useStore = zs.create((set, get) => {
 
   // Store factory (member functions defined below):
   const createStore = () => ({
+    ready: false,
     initialize: initializeStore,
 
     index: {
-      inOrder: [],
+      ready: false, error: null, loading: false,
       byId: {},
-      ready: false,
-      error: null,
-      loading: false,
+      inOrder: [],
 
       fetch: fetchIndex,
       search: searchIndex
     },
 
     shelf: {
-      inOrder: [],
-      ready: false,
-      error: null,
-      loading: false,
+      ready: false, error: null, loading: false, 
+      refs: [],
+      fetch: () => fetchCollection('shelf'),
+      replace: (refs) => replaceCollection('shelf', refs)
+    },
 
-      fetch: fetchShelf,
-      replace: replaceShelf
+    desk: {
+      ready: false, error: null, loading: false, 
+      refs: [],
+      fetch: () => fetchCollection('desk'),
+      replace: (refs) => replaceCollection('desk', refs)
     },
 
     saveItem: { loading: false, error: null, result: null, run: saveItem },
@@ -60,8 +64,11 @@ export const useStore = zs.create((set, get) => {
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
       .on('change', () => get().index.fetch()) // scheduled
 
-    get().index.fetch()
-    get().shelf.fetch()
+    await get().desk.fetch()
+    await get().shelf.fetch()
+    await get().index.fetch()
+
+    set({ ready: true })
   }
 
   const fetchIndex = scheduled(async () => {
@@ -117,14 +124,15 @@ export const useStore = zs.create((set, get) => {
     }
   }
 
-  const fetchShelf = async () => {
-    const { set } = scope('shelf')
+  const fetchCollection = async (id) => {
+    const { set } = scope(id)
 
     set({ loading: true })
 
     try {
-      const shelf = await db.get('shelf')
-      set({ loading: false, error: null, ready: true, inOrder: shelf.refs })
+      const collection = await db.get(id)
+      set({ loading: false, error: null, ready: true, refs: collection.refs })
+      set(console.log)
 
     } catch (err) {
       console.error(err)
@@ -132,13 +140,13 @@ export const useStore = zs.create((set, get) => {
     }
   }
 
-  const replaceShelf = async (inOrder) => {
-    const { set } = scope('shelf')
-    set({ inOrder })
+  const replaceCollection = async (id, refs) => {
+    const { set } = scope(id)
+    set({ refs })
 
-    const shelf = await db.get('shelf')
-    shelf.refs = inOrder
-    await db.put(shelf)
+    const collection = await db.get(id)
+    collection.refs = refs
+    await db.put(collection)
   }
 
   const saveItem = async (item) => {
@@ -147,7 +155,7 @@ export const useStore = zs.create((set, get) => {
     set({ loading: false, error: null, result: null })
 
     try {
-      item._id ??= crypto.randomUUID()
+      item._id ??= genId()
 
       const putQ = await db.put(item) // TODO actually check `.ok`
       item._rev = putQ.rev

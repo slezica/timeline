@@ -1,5 +1,6 @@
 import PouchDB from 'pouchdb'
 import { validateDoc, validateItem } from '../schema'
+import { genId } from './utils'
 
 const pouchDb = new PouchDB('test')
 const couchDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
@@ -81,15 +82,24 @@ const migrations = [
     index.views.byRef = { map: mapRefs }
   }],
 
-  ["Add shelf", async () => {
-    const shelf = {
-      _id: 'shelf',
-      type: 'shelf',
-      refs: []
-    }
+  ["Add basic collections", async () => {
+    const collections = [
+      { _id: 'desk', type: 'collection', refs: [] },
+      { _id: 'shelf', type: 'collection', refs: [] },
+    ]
 
-    await db.put(shelf)
-  }]
+    await db.bulkDocs(collections)
+  }],
+  //
+  // ["Add desk", async () => {
+  //   const shelf = {
+  //     _id: 'desk',
+  //     type: 'desk',
+  //     refs: []
+  //   }
+  //
+  //   await db.put(shelf)
+  // }]
 ]
 
 
