@@ -1,6 +1,6 @@
 import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
-
+import addKeywords from "ajv-keywords"
 
 const ajv = new Ajv({
   allErrors: true,
@@ -8,6 +8,7 @@ const ajv = new Ajv({
 })
 
 addFormats(ajv)
+addKeywords(ajv, ["uniqueItemProperties"])
 
 
 export const refSchema = {
@@ -77,6 +78,7 @@ export const baseItemSchema = {
     refs: {
       type: 'array',
       items: refSchema,
+      uniqueItemProperties: ['id']
     },
 
     deleted: {
