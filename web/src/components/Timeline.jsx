@@ -63,10 +63,9 @@ export default function Timeline({ timeline, onItemClick }) {
 
             {items.byId[entry.id]
               ? <LargeItem
-                group={group}
+                entries={group}
                 item={items.byId[entry.id]}
                 onClick={onItemClick}
-                items={items}
               />
               : <div>placeholder</div>
             }
