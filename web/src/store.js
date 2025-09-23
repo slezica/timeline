@@ -5,6 +5,9 @@ import { genId, scheduled } from './utils'
 import { validateItem } from './schema'
 
 
+/** @typedef {{ ready: true }} StoreState */
+
+
 const miniSearch = new MiniSearch({
   fields: ['title', 'body', 'createdDate', 'dueDate', 'doneDate'],
   storeFields: ['id'],
@@ -13,6 +16,9 @@ const miniSearch = new MiniSearch({
 window.miniSearch = miniSearch
 
 
+/** 
+  @type {import('zustand').UseBoundStore<import('zustand').StoreApi<StoreState>>}
+*/
 export const useStore = zs.create((set, get) => {
   const scope = (key) => ({
     ctx: () => get(),
