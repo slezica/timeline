@@ -14,10 +14,14 @@ vi.mock('../database', () => ({
   initializeDb: vi.fn()
 }))
 
-vi.mock('../utils', () => ({
-  scheduled: (fn) => fn,
-  genId: () => 'test-id-123'
-}))
+vi.mock('../utils', async () => {
+  const actual = await vi.importActual('../utils')
+  return {
+    ...actual,
+    scheduled: (fn) => fn, // Remove scheduling for tests
+    genId: () => 'test-id-123' // Fixed ID for predictable tests
+  }
+})
 
 
 describe('Store', () => {

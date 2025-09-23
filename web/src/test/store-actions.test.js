@@ -1,10 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import PouchDB from 'pouchdb'
-import memoryAdapter from 'pouchdb-adapter-memory'
 import { useStore } from '../store'
-
-// Configure PouchDB with memory adapter
-PouchDB.plugin(memoryAdapter)
 
 
 let testDb
