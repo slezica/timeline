@@ -1,5 +1,5 @@
 import PouchDB from 'pouchdb'
-import { validateDoc } from '../schema'
+import { validateDoc } from './schema'
 
 
 const pouchDb = new PouchDB('test')

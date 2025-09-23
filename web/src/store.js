@@ -2,7 +2,7 @@ import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { genId, scheduled } from './utils'
-import { validateItem } from '../schema'
+import { validateItem } from './schema'
 
 
 const miniSearch = new MiniSearch({

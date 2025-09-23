@@ -10,6 +10,10 @@ const ajv = new Ajv({
 addFormats(ajv)
 addKeywords(ajv, ["uniqueItemProperties"])
 
+/** @typedef {{
+  id  : string,
+  name: string
+}} Ref */
 
 export const refSchema = {
   type: 'object',
