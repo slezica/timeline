@@ -195,10 +195,6 @@ body, #app {
     color: var(--item-color);
   }
 
-  .body {
-    min-height: 1.5em;
-  }
-
   .extras {
     display: flex;
     flex-direction: column;
@@ -250,6 +246,10 @@ body, #app {
   .ref {
     height: 3rem;
   } 
+  
+  .body {
+    min-height: 1.5em;
+  }
 }
 
 .item.large.contact {

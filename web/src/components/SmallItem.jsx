@@ -34,23 +34,25 @@ export default function SmallItem({ item, onClick, onRemove }) {
       draggable={true}
       onDragStart={handleDragStart}
     >
-        <header>
-          <i className="dot circle" />
-          <strong className="title">{item.title || 'Untitled'}</strong>
-          { onRemove &&
-            <span className="remove" onClick={handleRemove}>X</span>
-          }
-        </header>
+      <header>
+        <i className="dot circle" />
+        <strong className="title">{item.title || 'Untitled'}</strong>
+        {onRemove &&
+          <span className="remove" onClick={handleRemove}>X</span>
+        }
+      </header>
 
+      {item.body && (
         <p className="body">
-          { item.body }
+          {item.body}
         </p>
+      )}
 
-        {
-          item.kind == 'task' ? <TaskItemExtras item={item} /> :
+      {
+        item.kind == 'task' ? <TaskItemExtras item={item} /> :
           item.kind == 'note' ? <NoteItemExtras item={item} /> :
             null
-        }
+      }
     </article>
   )
 }
