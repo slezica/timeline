@@ -79,11 +79,9 @@ export default function Shelf({ onClick }) {
 }
 
 function ShelfEntry({ item, style, onDrop, onClick }) {
-  const selfRef = useRef()
-
   return (
     <DropTarget onDrop={onDrop}>
-      <div className="entry" ref={selfRef} style={style}>
+      <div className="entry" style={style}>
         {item != null
           ? <SmallItem item={item} onClick={onClick} />
           : <PlaceholderItem />
