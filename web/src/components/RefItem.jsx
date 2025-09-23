@@ -4,7 +4,8 @@ import { setTransferData } from '../utils'
 
 export default function RefItem({ item, onClick, children }) {
 
-  const handleClick = () => {
+  const handleClick = (ev) => {
+    ev.stopPropagation()
     onClick?.(item)
   }
 
@@ -22,7 +23,7 @@ export default function RefItem({ item, onClick, children }) {
       onDragStart={handleDragStart}
     >
       <header>
-        <i className="dot circle" />
+        <i className={`circle dot ${item.kind}`} />
         <strong className="title">{item.title || 'Untitled'}</strong>
         {children}
       </header>

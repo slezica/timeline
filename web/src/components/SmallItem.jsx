@@ -60,7 +60,7 @@ function SmallItemView({ item, onClick, onRemove, onDragStart, onDiscard, dragga
       data-id     = {item.id}
     >
       <header>
-        <i className="dot circle" />
+        <i className={`circle dot ${item.kind}`} />
         <strong className="title">{item.title || 'Untitled'}</strong>
         {onRemove &&
           <span className="remove" onClick={onRemove}>X</span>

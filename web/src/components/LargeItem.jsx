@@ -7,14 +7,16 @@ import Tag from './Tag'
 import { getTransferData, setTransferData } from '../utils'
 
 
-export default function LargeItem({ entries, item, onClick }) {
+export default function LargeItem({ entries, item, onClick, onRefClick }) {
   const items = useStore(state => state.items)
   const saveItem = useStore(state => state.saveItem)
 
-  const handleClick = (e) => {
-    if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
-      onClick?.(item)
-    }
+  const handleClick = (ev) => {
+    onClick?.(item)
+  }
+
+  const handleRefClick = (item) => {
+    onRefClick?.(item)
   }
 
   const handleDragStart = (ev) => {
@@ -45,13 +47,18 @@ export default function LargeItem({ entries, item, onClick }) {
     item={item}
     refItems={refItems}
     onClick={handleClick}
+    onRefClick={handleRefClick}
     onDrop={handleDrop}
     onDragStart={handleDragStart}
   />
 }
 
 
-function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart }) {
+function LargeItemView({ entries, item, refItems, onClick, onRefClick, onDrop, onDragStart }) {
+  const refClickHandler = (refItem) => (ev) => {
+    onRefClick?.(refItem)
+  }
+
   return (
     <DropTarget onDrop={onDrop}>
       <article
@@ -60,9 +67,10 @@ function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart }
         style={{ cursor: 'pointer' }}
         draggable={true}
         onDragStart={onDragStart}
+        onClick={onClick}
       >
-          <header onClick={onClick}>
-            <i className="dot circle" />
+          <header>
+            <i className={`circle ${item.kind} dot`} />
             <strong className="title">{item.title || 'Untitled'}</strong>
 
             {entries.map(entry =>
@@ -105,7 +113,7 @@ function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart }
 
           <div className="refs">
             {refItems.map(refItem =>
-              <RefItem key={refItem._id} item={refItem} onClick={onClick} />
+              <RefItem key={refItem._id} item={refItem} onClick={refClickHandler(refItem)} />
             )}
           </div>
 

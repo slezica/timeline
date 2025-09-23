@@ -46,7 +46,7 @@ export default function App() {
 
   const handleItemCreate = (item) => { setEditingItem(item) }
   const handleItemSave   = (item) => { setEditingItem(null) }
-  const handleItemClick  = (item) => { setEditingItem(item) }
+  const handleItemClick  = (item) => { console.log('i', item) ?? setEditingItem(item) }
   const handleModalClose = () => { setEditingItem(null) }
 
   return (

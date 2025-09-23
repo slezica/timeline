@@ -65,6 +65,7 @@ fieldset {
 
 fieldset.inline {
   flex-direction: row;
+  align-items: center;
   * { flex: 1; }
 }
 
@@ -192,16 +193,6 @@ body, #app {
     background-color: color-mix(in oklch, var(--pico-card-background-color), white 10%);
   }
 
-  & > header:hover {
-    filter: brightness(120%);
-  }
-
-  .dot {
-    height: 1.1em;
-    width: 1.1em;
-    color: var(--item-color);
-  }
-
   .extras {
     display: flex;
     flex-direction: column;
@@ -229,6 +220,12 @@ body, #app {
   }
 }
 
+  .item:has(> header:hover), 
+  .item:has(.body:hover) {
+    filter: brightness(120%);
+  }
+
+
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -242,8 +239,6 @@ body, #app {
     font-size: 1.3em;
   }
 
-
-
   .extras .tags {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -251,6 +246,8 @@ body, #app {
   }
 
   .body {
+    margin-top: -1.5rem;
+    padding-top: 1.5rem;
     min-height: 1.5em;
   }
 }
@@ -341,19 +338,6 @@ body, #app {
   button.delete {
     color: var(--pico-accordion-open-summary-color);
     &:hover { color: var(--pico-del-color); }
-  }
-}
-
-
-/* ---------------------------------------------------------------------------------------------- */
-
-.item.editable {
-  .title {
-    flex: 1;
-  }
-
-  .kind {
-    flex: 0 0 8em;
   }
 }
 
@@ -539,6 +523,19 @@ form.edit-item {
 
   .delete { background-color: var(--pico-form-element-active-background-color); }
   .cancel { background-color: var(--pico-form-element-active-background-color); }
+
+  .title {
+    flex: 1;
+  }
+
+  .dot {
+    flex: 0 0 1.3em;
+    height: 1.3em;
+  }
+
+  .kind {
+    flex: 0 0 8em;
+  }
 }
 
 button.corner {
@@ -547,4 +544,12 @@ button.corner {
   right: 0;
   background-color: gray;
   border-radius: 100%;
+}
+
+i.dot {
+  height: 1.1em;
+  width: 1.1em;
+  &.note    { color: var(--green); }
+  &.task    { color: var(--red); }
+  &.contact { color: var(--blue); }
 }

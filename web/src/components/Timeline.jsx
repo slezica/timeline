@@ -42,6 +42,9 @@ export default function Timeline({ timeline, onItemClick }) {
 
   }, [timeline])
 
+  const handleItemClick = (ref) => {
+    onItemClick?.(items.byId[ref])
+  }
 
   const scrollToElement = useCallback((el) => {
     if (el) {
@@ -63,10 +66,11 @@ export default function Timeline({ timeline, onItemClick }) {
 
             {items.byId[entry.id]
               ? <LargeItem
-                entries={group}
-                item={items.byId[entry.id]}
-                onClick={onItemClick}
-              />
+                  entries={group}
+                  item={items.byId[entry.id]}
+                  onClick={onItemClick}
+                  onRefClick={onItemClick}
+                />
               : <div>placeholder</div>
             }
           </div>

@@ -113,6 +113,7 @@ function TopItemFields({ item, data, onChange }) {
         <option value="note">Note</option>
         <option value="contact">Contact</option>
       </select>
+      <i class={`circle dot ${data.kind}`} />
     </fieldset>
   )
 }
