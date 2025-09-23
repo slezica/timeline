@@ -3,6 +3,7 @@ import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import RefItem from './RefItem'
 import { useStore } from '../store'
+import CornerButton from './CornerButton'
 
 
 export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
@@ -178,7 +179,13 @@ function ReferenceFields({ items, data, onRemove }) {
       <div className="refs">
         { data.refs.map(ref =>
           items.byId[ref.id] && (
-            <RefItem key={ref.id} item={items.byId[ref.id]} onRemove={handleRemove} />
+            <RefItem key={ref.id} item={items.byId[ref.id]} onRemove={handleRemove}>
+              <button
+                type="button"
+                class="delete action"
+                onClick={() => onRemove(ref)}
+              ><i class="cross" /></button>
+            </RefItem>
           )
         )}
       </div>

@@ -2,14 +2,10 @@ import React from 'react'
 import { setTransferData } from '../utils'
 
 
-export default function RefItem({ item, onClick, onRemove }) {
+export default function RefItem({ item, onClick, children }) {
 
   const handleClick = () => {
     onClick?.(item)
-  }
-
-  const handleRemove = () => {
-    onRemove(item)
   }
 
   const handleDragStart = (ev) => {
@@ -28,10 +24,7 @@ export default function RefItem({ item, onClick, onRemove }) {
       <header>
         <i className="dot circle" />
         <strong className="title">{item.title || 'Untitled'}</strong>
-
-        { onRemove &&
-          <span className="remove" onClick={handleRemove}>X</span>
-        }
+        {children}
       </header>
     </article>
   )
