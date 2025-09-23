@@ -132,7 +132,6 @@ export const useStore = zs.create((set, get) => {
     try {
       const collection = await db.get(id)
       set({ loading: false, error: null, ready: true, refs: collection.refs })
-      set(console.log)
 
     } catch (err) {
       console.error(err)
