@@ -73,7 +73,7 @@ export default function App() {
         <Shelf onItemClick={handleItemClick} />
       </aside>
 
-      <Modal showing={editingItem !== null} onClose={handleModalClose}>
+      <Modal open={editingItem !== null} onClose={handleModalClose}>
         {editingItem && (
           <EditItemForm
             item={editingItem}

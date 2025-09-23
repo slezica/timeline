@@ -1,30 +1,23 @@
 import React, { useEffect } from 'react'
 
-export default function Modal({ showing, onClose, children }) {
+
+export default function Modal({ open, onClose, children }) {
   useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') {
-        onClose()
-      }
+    const handleEscape = (ev) => {
+      if (ev.key === 'Escape') { onClose() }
     }
 
-    if (showing) {
-      document.addEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'hidden'
-    }
+    if (open) { document.addEventListener('keydown', handleEscape) }
+    return () => { document.removeEventListener('keydown', handleEscape) }
 
-    return () => {
-      document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
-    }
-  }, [showing, onClose])
+  }, [open, onClose])
 
-  if (!showing) {
+  if (!open) {
     return null
   }
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
+  const handleBackdropClick = (ev) => {
+    if (ev.target === ev.currentTarget) {
       onClose()
     }
   }

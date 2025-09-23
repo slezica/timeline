@@ -408,26 +408,21 @@ body, #app {
 /* ---------------------------------------------------------------------------------------------- */
 
 .modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  padding: 2rem;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .modal-content {
-  background-color: var(--black);
-  border: 1px solid var(--black-light);
-  border-radius: 8px;
-  max-width: 600px;
   width: 100%;
+  max-width: min(800px, 80vw);
   max-height: 80vh;
+  border-radius: 4px;
   overflow-y: auto;
 }
 
