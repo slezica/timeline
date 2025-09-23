@@ -88,13 +88,12 @@ body, #app {
 #app {
   display: grid;
   margin: auto;
-  max-width: 1250px;
   gap: 0 1rem;
   grid-template-areas: 
-    "h h h"
-    "l m r"
+    "h h h h h"
+    "a l m r b"
   ;
-  grid-template-columns: var(--aside-width) var(--main-width) var(--aside-width);
+  grid-template-columns: 1fr var(--aside-width) var(--main-width) var(--aside-width) 1fr;
   grid-template-rows: auto 1fr;
 }
 
@@ -102,7 +101,8 @@ body, #app {
   grid-area: h;
   display: flex;
   justify-content: center;
-  padding: 1rem;
+  padding: 0.75rem;
+  background-color: rgb(17, 20, 26); /* TODO */
 
   .toolbar {
     width: var(--main-width)
