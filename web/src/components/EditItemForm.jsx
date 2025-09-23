@@ -3,7 +3,6 @@ import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import RefItem from './RefItem'
 import { useStore } from '../store'
-import CornerButton from './CornerButton'
 
 
 export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
