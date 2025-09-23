@@ -34,10 +34,12 @@ export default function LargeItem({ entries, item, onClick }) {
     setTransferData(ev, { id: item._id })
   }
 
+  const refItems = item.refs?.map(ref => items.byId[ref.id]).filter(Boolean) || []
+
   return <LargeItemView
     entries={entries}
     item={item}
-    items={items}
+    refItems={refItems}
     onClick={handleClick}
     onDrop={handleDrop}
     onDragStart={handleDragStart}
@@ -45,7 +47,7 @@ export default function LargeItem({ entries, item, onClick }) {
   />
 }
 
-function LargeItemView({ entries, item, items, onClick, onDrop, onDragStart, canDrop }) {
+function LargeItemView({ entries, item, refItems, onClick, onDrop, onDragStart, canDrop }) {
   return (
     <DropTarget onDrop={onDrop} canDrop={canDrop}>
       <article
@@ -98,9 +100,8 @@ function LargeItemView({ entries, item, items, onClick, onDrop, onDragStart, can
           </div>
 
           <div className="refs">
-            {item.refs.map(ref =>
-              items.byId[ref.id] &&
-              <RefItem key={ref.id} item={items.byId[ref.id]} onClick={onClick} />
+            {refItems.map(refItem =>
+              <RefItem key={refItem._id} item={refItem} onClick={onClick} />
             )}
           </div>
 
