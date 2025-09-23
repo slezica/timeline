@@ -420,10 +420,11 @@ body, #app {
 
 .modal-content {
   width: 100%;
-  max-width: min(800px, 80vw);
+  max-width: min(650px, 80vw);
   max-height: 80vh;
   border-radius: 4px;
   overflow-y: auto;
+  background-color: var(--pico-card-background-color);
 }
 
 
@@ -502,3 +503,7 @@ i {
   }
 }
 
+form.edit-item {
+  .delete { background-color: var(--pico-form-element-active-background-color); }
+  .cancel { background-color: var(--pico-form-element-active-background-color); }
+}

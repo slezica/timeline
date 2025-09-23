@@ -65,8 +65,8 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
   return (
     <DropTarget onDrop={handleDrop} canDrop={canDrop}>
-      <article className={"item editable " + item.kind} data-id={item.id}>
-        <form onSubmit={handleSubmit}>
+      <article>
+        <form className={item.kind} data-id={item.id} class="edit-item" onSubmit={handleSubmit}>
           <TopItemFields item={item} data={data} onChange={handleChange} />
 
           {
@@ -84,8 +84,8 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
           {/* Footer with buttons */}
           <fieldset className="inline">
-            <button type="button" onClick={handleDelete}>Delete</button>
-            <button type="button" onClick={handleCancel}>Cancel</button>
+            <button class="delete" type="button" onClick={handleDelete}>Delete</button>
+            <button class="cancel" type="button" onClick={handleCancel}>Cancel</button>
             <button type="submit">Save</button>
           </fieldset>
         </form>
