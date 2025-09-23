@@ -185,8 +185,6 @@ export const useStore = zs.create((set, get) => {
       item._rev = putQ.rev
 
       set({ loading: false, error: null, result: item })
-      fetchItems()
-      fetchTimeline()
 
     } catch (err) {
       console.error(err)
@@ -211,8 +209,6 @@ export const useStore = zs.create((set, get) => {
       updatedItem._rev = putQ.rev
 
       set({ loading: false, error: null, result: updatedItem })
-      fetchItems()
-      fetchTimeline()
 
       return updatedItem
 
