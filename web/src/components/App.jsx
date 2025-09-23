@@ -39,25 +39,15 @@ export default function App() {
 
   }, [timeline, query])
 
-  const handleItemClick = (item) => {
-    setEditingItem(item)
-  }
 
   const handleSearch = (query) => {
     setQuery(query)
   }
 
-  const handleItemCreate = (item) => {
-    setEditingItem(item)
-  }
-
-  const handleModalClose = () => {
-    setEditingItem(null)
-  }
-
-  const handleItemSave = (item) => {
-    setEditingItem(null)
-  }
+  const handleItemCreate = (item) => { setEditingItem(item) }
+  const handleItemSave   = (item) => { setEditingItem(null) }
+  const handleItemClick  = (item) => { setEditingItem(item) }
+  const handleModalClose = () => { setEditingItem(null) }
 
   return (
     <div id="app">
