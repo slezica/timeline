@@ -61,6 +61,7 @@ export const useStore = zs.create((set, get) => {
     },
 
     saveItem: { loading: false, error: null, result: null, run: saveItem },
+    deleteItem: { loading: false, error: null, result: null, run: deleteItem },
     importFile: { loading: false, error: null, result: null, run: importFile },
   })
 
@@ -73,9 +74,9 @@ export const useStore = zs.create((set, get) => {
         fetchTimeline()
       }) // scheduled
 
+    await fetchItems()
     await fetchCollection('desk')
     await fetchCollection('shelf')
-    await fetchItems()
     await fetchTimeline()
 
     set({ ready: true })
@@ -185,8 +186,8 @@ export const useStore = zs.create((set, get) => {
       item._rev = putQ.rev
 
       set({ loading: false, error: null, result: item })
-      await fetchItems()
-      await fetchTimeline()
+      fetchItems()
+      fetchTimeline()
 
     } catch (err) {
       console.error(err)
@@ -194,6 +195,32 @@ export const useStore = zs.create((set, get) => {
     }
 
     return item
+  }
+
+  const deleteItem = async (item) => {
+    const { set } = scope('deleteItem')
+
+    set({ loading: true, error: null, result: null })
+
+    try {
+      const updatedItem = {
+        ...item,
+        deleted: true
+      }
+
+      const putQ = await db.put(updatedItem)
+      updatedItem._rev = putQ.rev
+
+      set({ loading: false, error: null, result: updatedItem })
+      fetchItems()
+      fetchTimeline()
+
+    } catch (err) {
+      console.error(err)
+      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
+    }
+
+    return updatedItem
   }
 
   const importFile = async (file) => {
