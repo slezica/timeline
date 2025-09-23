@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useStore } from '../store'
+import { useStore, actions } from '../store'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import PlaceholderItem from "./PlaceholderItem";
@@ -26,7 +26,7 @@ export default function Shelf({ onClick }) {
       newShelfOrder.splice(prevIndex, 1)
     }
     newShelfOrder.push(itemRef)
-    shelf.replace(newShelfOrder)
+    actions.replaceCollection('shelf', newShelfOrder)
   }
 
   const handleEntryDrop = (ev) => {
@@ -48,7 +48,7 @@ export default function Shelf({ onClick }) {
       newShelfOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
     }
     console.log(newShelfOrder)
-    shelf.replace(newShelfOrder)
+    actions.replaceCollection('shelf', newShelfOrder)
   }
 
   const handleItemClick = (item) => {
@@ -59,26 +59,36 @@ export default function Shelf({ onClick }) {
     const i = shelf.refs.findIndex(it => it.id == ref.id)
     if (i == -1) { return }
 
-    shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
+    actions.replaceCollection('shelf', [...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
   }
 
+  return <ShelfView
+    refs={shelf.refs}
+    items={items.byId}
+    onSelfDrop={handleSelfDrop}
+    onEntryDrop={handleEntryDrop}
+    onItemClick={handleItemClick}
+  />
+}
+
+function ShelfView({ refs, items, onSelfDrop, onEntryDrop, onItemClick }) {
   return (
-    <DropTarget onDrop={handleSelfDrop}>
+    <DropTarget onDrop={onSelfDrop}>
       <section className="shelf">
-        {shelf.refs.map((ref, position) => {
-          return <ShelfEntry
+        {refs.map((ref, position) => {
+          return <ShelfEntryView
             key={ref.id}
-            item={items.byId[ref.id]}
-            onClick={handleItemClick}
-            onDrop={handleEntryDrop} />;
-        }
-        )}
+            item={items[ref.id]}
+            onDrop={onEntryDrop}
+            onClick={onItemClick}
+          />
+        })}
       </section>
     </DropTarget>
   )
 }
 
-function ShelfEntry({ item, style, onDrop, onClick }) {
+function ShelfEntryView({ item, style, onDrop, onClick }) {
   return (
     <DropTarget onDrop={onDrop}>
       <div className="entry" style={style}>
