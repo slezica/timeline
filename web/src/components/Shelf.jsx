@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useStore, actions } from '../store'
+import { useStore } from '../store'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import PlaceholderItem from "./PlaceholderItem";
@@ -26,7 +26,7 @@ export default function Shelf({ onClick }) {
       newShelfOrder.splice(prevIndex, 1)
     }
     newShelfOrder.push(itemRef)
-    actions.replaceCollection('shelf', newShelfOrder)
+    shelf.replace(newShelfOrder)
   }
 
   const handleEntryDrop = (ev) => {
@@ -48,7 +48,7 @@ export default function Shelf({ onClick }) {
       newShelfOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
     }
     console.log(newShelfOrder)
-    actions.replaceCollection('shelf', newShelfOrder)
+    shelf.replace(newShelfOrder)
   }
 
   const handleItemClick = (item) => {
@@ -59,7 +59,7 @@ export default function Shelf({ onClick }) {
     const i = shelf.refs.findIndex(it => it.id == ref.id)
     if (i == -1) { return }
 
-    actions.replaceCollection('shelf', [...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
+    shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
   }
 
   return <ShelfView
