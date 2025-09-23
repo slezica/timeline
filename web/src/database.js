@@ -1,9 +1,9 @@
 import PouchDB from 'pouchdb'
-import { validateDoc, validateItem } from '../schema'
-import { genId } from './utils'
+import { validateDoc } from '../schema'
+
 
 const pouchDb = new PouchDB('test')
-const couchDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
+// const couchDb = new PouchDB('http://admin:admin2@localhost:5984/timeline')
 
 let emit // shut up, linter
 
@@ -135,8 +135,8 @@ export async function initializeDb() {
     status._rev = statusUpdated.rev
   }
 
-  console.log('[db]', "Starting sync")
-  pouchDb.sync(couchDb, { live: true, retry: true })
+  // console.log('[db]', "Starting sync")
+  // pouchDb.sync(couchDb, { live: true, retry: true })
 
   console.log('[db]', "Initialized")
 }
