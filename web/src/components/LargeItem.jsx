@@ -1,13 +1,16 @@
 import React from 'react'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
-import { useStore, actions } from '../store'
+import { useStore } from '../store'
 import RefItem from './RefItem'
 import Tag from './Tag'
 import { setTransferData } from '../utils'
 
 
-export default function LargeItem({ entries, item, onClick, items }) {
+export default function LargeItem({ entries, item, onClick }) {
+  const items = useStore(state => state.items)
+  const saveItem = useStore(state => state.saveItem)
+
   const handleClick = (e) => {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
       onClick?.(item)
@@ -16,7 +19,7 @@ export default function LargeItem({ entries, item, onClick, items }) {
 
   const handleDrop = (data) => {
     if (canDrop(data)) {
-      actions.saveItem({ ...item, refs: [...item.refs, { id: data.id }] })
+      saveItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
     }
   }
 
