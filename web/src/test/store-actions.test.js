@@ -270,4 +270,64 @@ describe('Store actions', () => {
       expect(deleted.deleted).toBe(true)
     })
   })
+
+  describe('replaceCollection', () => {
+    it('should update collection refs in store and database', async () => {
+      const newRefs = [
+        { id: 'item1', kind: 'task', event: 'created', date: '2023-01-01' },
+        { id: 'item2', kind: 'note', event: 'created', date: '2023-01-02' }
+      ]
+
+      await store.shelf.replace(newRefs)
+
+      // Verify store state is updated:
+      const shelfState = useStore.getState().shelf
+      expect(shelfState.refs).toEqual(newRefs)
+
+      // Verify database is updated:
+      const shelfDoc = await testDb.get('shelf')
+      expect(shelfDoc.refs).toEqual(newRefs)
+      expect(shelfDoc.type).toBe('collection')
+    })
+
+    it('should handle empty refs array', async () => {
+      const emptyRefs = []
+
+      await store.desk.replace(emptyRefs)
+
+      // Verify store state:
+      const deskState = useStore.getState().desk
+      expect(deskState.refs).toEqual([])
+
+      // Verify database:
+      const deskDoc = await testDb.get('desk')
+      expect(deskDoc.refs).toEqual([])
+    })
+
+    it('should preserve collection document properties', async () => {
+      const newRefs = [{ id: 'test', kind: 'task', event: 'created', date: '2023-01-01' }]
+
+      await store.shelf.replace(newRefs)
+
+      const shelfDoc = await testDb.get('shelf')
+      expect(shelfDoc._id).toBe('shelf')
+      expect(shelfDoc.type).toBe('collection')
+      expect(shelfDoc._rev).toBeDefined()
+      expect(shelfDoc.refs).toEqual(newRefs)
+    })
+
+    it('should handle database errors during replacement', async () => {
+      // Mock testDb.get to simulate error:
+      const originalGet = testDb.get
+      testDb.get = vi.fn().mockRejectedValue(new Error('Database error'))
+
+      const newRefs = [{ id: 'test', kind: 'task', event: 'created', date: '2023-01-01' }]
+
+      // This should throw since replaceCollection doesn't have error handling:
+      await expect(store.shelf.replace(newRefs)).rejects.toThrow('Database error')
+
+      // Restore original method:
+      testDb.get = originalGet
+    })
+  })
 })
