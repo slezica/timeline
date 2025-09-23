@@ -1,15 +1,13 @@
 import React from 'react'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
-import { useStore } from '../store'
+import { useStore, actions } from '../store'
 import RefItem from './RefItem'
 import Tag from './Tag'
 import { setTransferData } from '../utils'
 
 
 export default function LargeItem({ group, item, onClick, items }) {
-  const store = useStore()
-
   const handleClick = (e) => {
     if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'BUTTON') {
       onClick?.(item)
@@ -18,7 +16,7 @@ export default function LargeItem({ group, item, onClick, items }) {
 
   const handleDrop = (data) => {
     if (canDrop(data)) {
-      store.updateItem.run({ ...item, refs: [...item.refs, { id: data.id }] })
+      actions.saveItem({ ...item, refs: [...item.refs, { id: data.id }] })
     }
   }
 
@@ -29,22 +27,32 @@ export default function LargeItem({ group, item, onClick, items }) {
       && !item.refs.some(ref => ref.id == data.id)
   }
 
-  const draggableData = { id: item._id }
-
   const handleDragStart = (ev) => {
-    setTransferData(ev, draggableData)
+    setTransferData(ev, { id: item._id })
   }
 
+  return <LargeItemView
+    group={group}
+    item={item}
+    items={items}
+    onClick={handleClick}
+    onDrop={handleDrop}
+    onDragStart={handleDragStart}
+    canDrop={canDrop}
+  />
+}
+
+function LargeItemView({ group, item, items, onClick, onDrop, onDragStart, canDrop }) {
   return (
-    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
+    <DropTarget onDrop={onDrop} canDrop={canDrop}>
       <article
         className={"item large " + item.kind}
         data-id={item.id}
         style={{ cursor: 'pointer' }}
         draggable={true}
-        onDragStart={handleDragStart}
+        onDragStart={onDragStart}
       >
-          <header onClick={handleClick}>
+          <header onClick={onClick}>
             <i className="dot circle" />
             <strong className="title">{item.title || 'Untitled'}</strong>
 
