@@ -95,6 +95,7 @@ body, #app {
     "l m r"
   ;
   grid-template-columns: var(--aside-width) var(--main-width) var(--aside-width);
+  grid-template-rows: auto 1fr;
 }
 
 #app > header {
