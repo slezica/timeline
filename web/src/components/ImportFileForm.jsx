@@ -7,7 +7,6 @@ export default function ImportFileForm() {
   const [file, setFile] = useState(null)
   const inputRef = useRef(null)
 
-
   const handleSubmit = async (ev) => {
     ev.preventDefault()
     inputRef.current.click()
@@ -26,29 +25,39 @@ export default function ImportFileForm() {
     }
   }
 
+  return <ImportFileFormView
+    loading={importFile.loading}
+    error={importFile.error}
+    onSubmit={handleSubmit}
+    onChange={handleChange}
+    inputRef={inputRef}
+  />
+}
+
+
+function ImportFileFormView({ loading, error, onSubmit, onChange, inputRef }) {
   return (
-    <form className="import-file" onSubmit={handleSubmit}>
+    <form className="import-file" onSubmit={onSubmit}>
       <fieldset>
         <input
           type="file"
           accept="application.json"
           multiple={false}
-          onChange={handleChange}
-          disabled={importFile.loading}
-          aria-busy={importFile.loading}
+          onChange={onChange}
+          disabled={loading}
+          aria-busy={loading}
           ref={inputRef}
           style={{ display: 'none' }}
         />
       </fieldset>
 
-      <button type="submit" disabled={importFile.loading}>
-          {importFile.loading ? 'Importing...' : 'Import'}
+      <button type="submit" disabled={loading}>
+          {loading ? 'Importing...' : 'Import'}
       </button>
 
-
-      {importFile.error && (
+      {error && (
         <div role="alert">
-          Error: {importFile.error}
+          Error: {error}
         </div>
       )}
     </form>
