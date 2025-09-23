@@ -15,7 +15,7 @@ import { Toolbar } from './Toolbar'
 
 export default function App() {
   const store = useStore()
-  const index = useStore(state => state.index)
+  const timeline = useStore(state => state.timeline)
 
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
@@ -32,12 +32,12 @@ export default function App() {
       prefix: true
     }
 
-    index.search(query, searchOptions).then(inOrder => {
-      inOrder.sort((a, b) => a.date < b.date)
-      setQueryIndex({ ...index, inOrder })
+    timeline.search(query, searchOptions).then(refs => {
+      refs.sort((a, b) => a.date < b.date)
+      setQueryIndex({ ...timeline, refs })
     })
 
-  }, [index, query])
+  }, [timeline, query])
 
   const handleItemClick = (item) => {
     setEditingItem(item)
@@ -66,7 +66,7 @@ export default function App() {
       </header>
 
       <main>
-        <Timeline index={queryIndex} onItemClick={handleItemClick} />
+        <Timeline timeline={queryIndex} onItemClick={handleItemClick} />
       </main>
 
       <aside class="right">

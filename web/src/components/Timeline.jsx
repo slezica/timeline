@@ -6,19 +6,20 @@ import LargeItem from './LargeItem'
 const SENTINEL_SPACING = 50
 
 
-export default function Timeline({ index, onItemClick }) {
+export default function Timeline({ timeline, onItemClick }) {
   const [ groups, setGroups ] = useState([])
+  const items = useStore(state => state.items)
 
   useEffect(() => {
-    if (!index.ready) { return }
+    if (!timeline.ready) { return }
 
     // Merge consecutive same-ID entries, mark entry closest to present:
     const groups = []
     const present = new Date().toISOString()
     let mostRecentEntry = null
 
-    for (let i = index.inOrder.length - 1; i > 0; i--) {
-      const entry = index.inOrder[i]
+    for (let i = timeline.refs.length - 1; i > 0; i--) {
+      const entry = timeline.refs[i]
       const lastGroup = groups[groups.length - 1]
 
       if (entry.date < present) {
@@ -39,7 +40,7 @@ export default function Timeline({ index, onItemClick }) {
 
     setGroups(groups)
 
-  }, [index])
+  }, [timeline])
 
 
   const scrollToElement = useCallback((el) => {
@@ -60,12 +61,12 @@ export default function Timeline({ index, onItemClick }) {
             { isMostRecent && <div className="present"><hr />Present<hr /></div> }
             { isMostRecent && <div className="anchor" ref={scrollToElement} /> }
 
-            {index.byId[entry.id]
+            {items.byId[entry.id]
               ? <LargeItem
                 group={group}
-                item={index.byId[entry.id]}
+                item={items.byId[entry.id]}
                 onClick={onItemClick}
-                index={index}
+                items={items}
               />
               : <div>placeholder</div>
             }
@@ -73,13 +74,13 @@ export default function Timeline({ index, onItemClick }) {
         )
       })}
 
-      {index.loading && (
+      {timeline.loading && (
         <div aria-busy="true">Loading...</div>
       )}
 
-      {index.error && (
+      {timeline.error && (
         <div role="alert">
-          Error: {index.error}
+          Error: {timeline.error}
         </div>
       )}
     </section>

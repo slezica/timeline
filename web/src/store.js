@@ -31,13 +31,17 @@ export const useStore = zs.create((set, get) => {
     ready: false,
     initialize: initializeStore,
 
-    index: {
+    items: {
       ready: false, error: null, loading: false,
-      byId: {},
-      inOrder: [],
+      byId: {}
+    },
 
-      fetch: fetchIndex,
-      search: searchIndex
+    timeline: {
+      ready: false, error: null, loading: false,
+      refs: [],
+
+      fetch: fetchTimeline,
+      search: searchTimeline
     },
 
     shelf: {
@@ -62,31 +66,32 @@ export const useStore = zs.create((set, get) => {
     await initializeDb()
 
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
-      .on('change', () => get().index.fetch()) // scheduled
+      .on('change', () => get().timeline.fetch()) // scheduled
 
     await get().desk.fetch()
     await get().shelf.fetch()
-    await get().index.fetch()
+    await get().timeline.fetch()
 
     set({ ready: true })
   }
 
-  const fetchIndex = scheduled(async () => {
-    const { set } = scope('index')
+  const fetchTimeline = scheduled(async () => {
+    const timelineScope = scope('timeline')
+    const itemsScope = scope('items')
 
-    set({ loading: true })
+    timelineScope.set({ loading: true })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
 
-      const inOrder = []
+      const refs = []
       const byId = {}
 
       for (let row of byDateQ.rows) {
         const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
 
         // Sorted index:
-        inOrder.push(entry)
+        refs.push(entry)
 
         // ID Lookup:
         byId[row.doc._id] = row.doc
@@ -96,18 +101,19 @@ export const useStore = zs.create((set, get) => {
         miniSearch.has(searchDoc.id) ? miniSearch.replace(searchDoc) : miniSearch.add(searchDoc)
       }
 
-      inOrder.reverse() // TODO query desc or sort in-place
+      refs.reverse() // TODO query desc or sort in-place
 
-      set({ loading: false, error: null, ready: true, inOrder, byId })
+      timelineScope.set({ loading: false, error: null, ready: true, refs })
+      itemsScope.set({ loading: false, error: null, ready: true, byId })
 
     } catch (err) {
       console.error(err)
-      set({ error: JSON.stringify(err) })
+      timelineScope.set({ error: JSON.stringify(err) })
     }
   })
 
-  const searchIndex = async (query="", options) => {
-    const { get } = scope('index')
+  const searchTimeline = async (query="", options) => {
+    const { get } = scope('timeline')
 
     if (query) {
       const results = miniSearch.search(query, options)
@@ -117,10 +123,10 @@ export const useStore = zs.create((set, get) => {
         ids.add(result.id)
       }
 
-      return get().inOrder.filter(it => ids.has(it.id))
+      return get().refs.filter(it => ids.has(it.id))
 
     } else {
-      return get().inOrder
+      return get().refs
     }
   }
 
@@ -160,7 +166,7 @@ export const useStore = zs.create((set, get) => {
       item._rev = putQ.rev
 
       set({ loading: false, error: null, result: item })
-      await fetchIndex()
+      await fetchTimeline()
 
     } catch (err) {
       console.error(err)

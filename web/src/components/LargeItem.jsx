@@ -7,7 +7,7 @@ import Tag from './Tag'
 import { setTransferData } from '../utils'
 
 
-export default function LargeItem({ group, item, onClick, index }) {
+export default function LargeItem({ group, item, onClick, items }) {
   const store = useStore()
 
   const handleClick = (e) => {
@@ -88,8 +88,8 @@ export default function LargeItem({ group, item, onClick, index }) {
 
           <div className="refs">
             {item.refs.map(ref =>
-              index.byId[ref.id] &&
-              <RefItem key={ref.id} item={index.byId[ref.id]} onClick={onClick} />
+              items.byId[ref.id] &&
+              <RefItem key={ref.id} item={items.byId[ref.id]} onClick={onClick} />
             )}
           </div>
 

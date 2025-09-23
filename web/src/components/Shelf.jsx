@@ -8,11 +8,11 @@ import { getTransferData } from '../utils';
 
 export default function Shelf({ onClick }) {
   const shelf = useStore(state => state.shelf)
-  const index = useStore(state => state.index)
+  const items = useStore(state => state.items)
 
   const getValidTransferData = (ev) => {
     const data = getTransferData(ev)
-    return (data?.id && index.byId[data.id]) ? data : null
+    return (data?.id && items.byId[data.id]) ? data : null
   }
 
   const handleSelfDrop = (ev) => {
@@ -35,7 +35,7 @@ export default function Shelf({ onClick }) {
 
     ev.stopPropagation()
 
-    const item = index.byId[ref.id]
+    const item = items.byId[ref.id]
     const newShelfOrder = [...shelf.refs]
 
     const entry = findParentEntry(ev.target)
@@ -68,7 +68,7 @@ export default function Shelf({ onClick }) {
         {shelf.refs.map((ref, position) => {
           return <ShelfEntry
             key={ref.id}
-            item={index.byId[ref.id]}
+            item={items.byId[ref.id]}
             onClick={handleItemClick}
             onDrop={handleEntryDrop} />;
         }

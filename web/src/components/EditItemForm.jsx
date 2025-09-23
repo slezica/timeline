@@ -7,7 +7,7 @@ import { useStore } from '../store'
 
 export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...item })
-  const index = useStore(state => state.index)
+  const items = useStore(state => state.items)
   const updateItem = useStore(state => state.updateItem)
   const saveItem = useStore(state => state.saveItem)
 
@@ -78,8 +78,8 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
           <BottomItemFields item={item} data={data} onChange={handleChange} />
 
           {/* References section */}
-          { (index.ready && data.refs && data.refs.length > 0) &&
-              <ReferenceFields onRemove={handleRemoveRef} index={index} data={data} />
+          { (items.ready && data.refs && data.refs.length > 0) &&
+              <ReferenceFields onRemove={handleRemoveRef} items={items} data={data} />
           }
 
           {/* Footer with buttons */}
@@ -156,7 +156,7 @@ function NoteItemFields({ item, data, onChange }) {
 }
 
 
-function ReferenceFields({ index, data, onRemove }) {
+function ReferenceFields({ items, data, onRemove }) {
   const handleDragOver = (ev) => {
     ev.preventDefault() // necessary for drop to work
   }
@@ -176,9 +176,9 @@ function ReferenceFields({ index, data, onRemove }) {
   return (
     <fieldset>
       <div className="refs">
-        { data.refs.map(ref => 
-          index.byId[ref.id] && (
-            <RefItem key={ref.id} item={index.byId[ref.id]} onRemove={handleRemove} />
+        { data.refs.map(ref =>
+          items.byId[ref.id] && (
+            <RefItem key={ref.id} item={items.byId[ref.id]} onRemove={handleRemove} />
           )
         )}
       </div>
