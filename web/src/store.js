@@ -214,12 +214,12 @@ export const useStore = zs.create((set, get) => {
       fetchItems()
       fetchTimeline()
 
+      return updatedItem
+
     } catch (err) {
       console.error(err)
       set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
     }
-
-    return updatedItem
   }
 
   const importFile = async (file) => {
