@@ -124,6 +124,7 @@ body, #app {
   max-height: 100vh;
   overflow-y: scroll;
   transition: opacity 0.15s ease;
+  padding-top: 0.7rem;
 }
 
 #app > aside.left {
@@ -135,7 +136,7 @@ body, #app {
 }
 
 #app > aside:not(:hover):not(:has(:focus)):not(:has(.dragover)) {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 /* ---------------------------------------------------------------------------------------------- */
