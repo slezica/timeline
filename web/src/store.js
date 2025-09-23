@@ -2,6 +2,7 @@ import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { genId, scheduled } from './utils'
+import { validateItem } from '../schema'
 
 
 const miniSearch = new MiniSearch({
@@ -91,6 +92,10 @@ export const useStore = zs.create((set, get) => {
 
       const byId = {}
       for (let row of byDateQ.rows) {
+        if (!validateItem(row.doc)) {
+          console.warn(validateItem.errors)
+        }
+
         // ID Lookup:
         byId[row.doc._id] = row.doc
 
