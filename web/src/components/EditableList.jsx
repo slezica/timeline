@@ -16,7 +16,6 @@ export default function EditableList({ entries, toChild, fromEvent, onDrop, onCh
     }
 
     newOrder.push(entry)
-    console.log('self', newOrder)
     onChange?.(newOrder)
   }
 
@@ -41,7 +40,6 @@ export default function EditableList({ entries, toChild, fromEvent, onDrop, onCh
       newOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
     }
 
-    console.log('child', newOrder)
     onChange?.(newOrder)
   }
 
