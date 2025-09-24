@@ -20,8 +20,15 @@ export default [
 
     rules: {
       ...js.configs.recommended.rules,
+
       'indent': ['error', 2, {
         offsetTernaryExpressions: true,
+      }],
+
+      'no-unused-vars': ['warn', {
+        args: 'none',
+        ignoreRestSiblings: true,
+        caughtErrors: 'none',
       }],
 
       'react/jsx-uses-vars': 'error',

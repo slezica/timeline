@@ -1,9 +1,6 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useInView } from "react-intersection-observer"
+import { useCallback, useEffect, useState } from 'react'
 import { useStore } from '../store'
 import LargeRecord from './LargeRecord'
-
-const SENTINEL_SPACING = 50
 
 
 export default function Timeline({ timeline, onRecordClick }) {
@@ -42,9 +39,6 @@ export default function Timeline({ timeline, onRecordClick }) {
 
   }, [timeline])
 
-  const handleRecordClick = (ref) => {
-    onRecordClick?.(records.byId[ref])
-  }
 
   const scrollToElement = useCallback((el) => {
     if (el) {

@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { useStore } from '../store'
+import { useEffect, useRef, useState } from 'react'
 
 
 export default function SearchForm({ onQueryChange }) {

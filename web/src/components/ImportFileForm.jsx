@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useStore } from '../store'
 
 
 export default function ImportFileForm() {
   const importFile = useStore(state => state.importFile)
-  const [file, setFile] = useState(null)
   const inputRef = useRef(null)
 
   const handleSubmit = async (ev) => {
@@ -17,7 +16,6 @@ export default function ImportFileForm() {
 
     try {
       await importFile.run(ev.target.files[0])
-      setFile(null)
 
     } catch (error) {
       console.error(error)
@@ -51,7 +49,7 @@ function ImportFileFormView({ loading, error, onSubmit, onChange, inputRef }) {
       </fieldset>
 
       <button type="submit" disabled={loading}>
-          {loading ? 'Importing...' : 'Import'}
+        {loading ? 'Importing...' : 'Import'}
       </button>
 
       {error && (

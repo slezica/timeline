@@ -1,10 +1,7 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
-import DropTarget from './DropTarget'
-import PlaceholderRecord from "./PlaceholderRecord";
-import { getTransferData } from '../utils';
-import EditableList from './EditableList';
+import { getTransferData } from '../utils'
+import EditableList from './EditableList'
 
 
 export default function Shelf({ onClick }) {
@@ -15,12 +12,6 @@ export default function Shelf({ onClick }) {
     onClick?.(record)
   }
 
-  const handleRecordRemove = (ref) => {
-    const i = shelf.refs.findIndex(it => it.id == ref.id)
-    if (i == -1) { return }
-
-    shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
-  }
 
   const handleRecordDiscard = (ref) => {
     const newRefs = [...shelf.refs]

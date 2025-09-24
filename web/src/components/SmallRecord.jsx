@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
+import { useLayoutEffect, useRef } from 'react'
 import { setTransferData } from '../utils'
 
 function TaskRecordExtras({ record }) {

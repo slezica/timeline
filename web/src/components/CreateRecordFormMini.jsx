@@ -1,9 +1,7 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { useStore } from '../store'
+import { useLayoutEffect, useRef } from 'react'
 
 
 export default function CreateRecordFormMini({ onRecordCreate }) {
-  const createRecord = useStore(state => state.createRecord)
   const shortcutRef = useRef()
 
   useLayoutEffect(() => {

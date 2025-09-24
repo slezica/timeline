@@ -1,5 +1,4 @@
-import React, { useLayoutEffect, useRef, useState } from 'react'
-import SmallRecord from './SmallRecord'
+import { useState } from 'react'
 import DropTarget from './DropTarget'
 import RefRecord from './RefRecord'
 import { useStore } from '../store'
@@ -17,9 +16,6 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
     setData(prev => ({ ...prev, [name]: value }))
   }
 
-  const changeHandler = (name) => (ev) => {
-    handleChange(name, ev.target.value)
-  }
 
   const handleSubmit = (ev) => {
     ev.preventDefault()
@@ -83,8 +79,8 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
 
           {
             data.kind == 'task' ? <TaskRecordFields record={record} data={data} onChange={handleChange} /> :
-            data.kind == 'note' ? <NoteRecordFields record={record} data={data} onChange={handleChange} /> :
-            null
+              data.kind == 'note' ? <NoteRecordFields record={record} data={data} onChange={handleChange} /> :
+                null
           }
 
           <BottomRecordFields record={record} data={data} onChange={handleChange} />

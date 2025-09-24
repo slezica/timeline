@@ -1,5 +1,3 @@
-import React from 'react'
-import SmallRecord from './SmallRecord'
 import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import RefRecord from './RefRecord'
@@ -69,55 +67,55 @@ function LargeRecordView({ entries, record, refRecords, onClick, onRefClick, onD
         onDragStart={onDragStart}
         onClick={onClick}
       >
-          <header>
-            <i className={`circle ${record.kind} dot`} />
-            <strong className="title">{record.title || 'Untitled'}</strong>
+        <header>
+          <i className={`circle ${record.kind} dot`} />
+          <strong className="title">{record.title || 'Untitled'}</strong>
 
-            {entries.map(entry =>
-              <span className="tags" key={entry.event}>
-                <kbd className={"tag " + entry.event}>{entry.event}</kbd>
-              </span>
-            )}
-          </header>
-
-          {record.body && (
-            <div className="body">
-              {record.body}
-            </div>
+          {entries.map(entry =>
+            <span className="tags" key={entry.event}>
+              <kbd className={"tag " + entry.event}>{entry.event}</kbd>
+            </span>
           )}
+        </header>
 
-          <div className="extras">
-            {record.kind == 'contact' &&
+        {record.body && (
+          <div className="body">
+            {record.body}
+          </div>
+        )}
+
+        <div className="extras">
+          {record.kind == 'contact' &&
               <div className="picture">
                 <img src={record.picture} />
               </div>
-            }
+          }
 
-            {record.kind == 'task' &&
+          {record.kind == 'task' &&
               <div className="tags">
                 <Tag icon="calendar" name="Due">{formatDisplayDate(record.dueDate) || '–'}</Tag>
                 <Tag icon="calendar" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
               </div>
-            }
+          }
 
-            {record.kind == 'contact' &&
+          {record.kind == 'contact' &&
               <div className="tags">
                 <Tag icon="envelope">{record.email || '–'}</Tag>
 
-                {...[record.phones.length > 0
+                {record.phones.length > 0
                   ? record.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)
                   : <Tag icon="phone"><em>Unknown</em></Tag>
-                ]}
+                }
               </div>}
-          </div>
+        </div>
 
-          <div className="refs">
-            {refRecords.map(refRecord =>
-              <RefRecord key={refRecord._id} record={refRecord} onClick={refClickHandler(refRecord)} />
-            )}
-          </div>
+        <div className="refs">
+          {refRecords.map(refRecord =>
+            <RefRecord key={refRecord._id} record={refRecord} onClick={refClickHandler(refRecord)} />
+          )}
+        </div>
 
-          {window.DEBUG && <pre>{JSON.stringify(record, null, 2)}</pre>}
+        {window.DEBUG && <pre>{JSON.stringify(record, null, 2)}</pre>}
       </article>
     </DropTarget>
   )
