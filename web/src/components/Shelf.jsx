@@ -47,7 +47,6 @@ export default function Shelf({ onClick }) {
     if (oldIndex != -1) {
       newShelfOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
     }
-    console.log(newShelfOrder)
     shelf.replace(newShelfOrder)
   }
 

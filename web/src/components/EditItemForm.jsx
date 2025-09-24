@@ -3,6 +3,7 @@ import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import RefItem from './RefItem'
 import { useStore } from '../store'
+import { getTransferData } from '../utils'
 
 
 export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
@@ -50,23 +51,49 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
     setData(prev => ({ ...prev, refs: prev.refs.filter(it => it.id !== ref.id) }))
   }
 
-  const handleDrop = (data) => {
-    if (canDrop(data)) {
-      setData(prev => ({ ...prev, refs: [...prev.refs, { id: data.id }] }))
-    }
+  const getValidTransferData = (ev) => {
+    const data = getTransferData(ev)
+    return (data?.id && items.byId[data.id]) ? data : null
   }
 
-  const canDrop = (data) => {
-    return data
-      && data.id
-      && data.id !== item.id
-      && !item.refs.some(ref => ref.id == data.id)
+  const handleSelfDrop = (ev) => {
+    const itemRef = getValidTransferData(ev)
+    if (!itemRef) { return }
+
+    const newRefOrder = [...data.refs]
+
+    const prevIndex = newRefOrder.findIndex(it => it.id == itemRef.id)
+    if (prevIndex != -1) {
+      newRefOrder.splice(prevIndex, 1)
+    }
+    newRefOrder.push(itemRef)
+    setData(prev => ({ ...data, refs: newRefOrder }))
+  }
+
+  const handleRefDrop = (ev) => {
+    const ref = getValidTransferData(ev)
+    if (!ref) { return }
+
+    ev.stopPropagation()
+    const newRefOrder = [...data.refs]
+
+    const refEl = ev.target.closest('.ref-entry')
+    const newIndex = [...refEl.parentElement.children].indexOf(refEl)
+    const oldIndex = data.refs.findIndex(it => it.id == ref.id)
+
+    newRefOrder.splice(newIndex, 0, ref)
+
+    if (oldIndex != -1) {
+      newRefOrder.splice(oldIndex < newIndex ? oldIndex : oldIndex + 1, 1)
+    }
+
+    setData(prev => ({ ...data, refs: newRefOrder }))
   }
 
   return (
-    <DropTarget onDrop={handleDrop} canDrop={canDrop}>
+    <DropTarget onDrop={handleSelfDrop}>
       <article>
-        <form className={item.kind} data-id={item.id} class="edit-item" onSubmit={handleSubmit}>
+        <form className={`edit-item ${item.kind}`} data-id={item.id} onSubmit={handleSubmit}>
           <TopItemFields item={item} data={data} onChange={handleChange} />
 
           {
@@ -79,13 +106,13 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
           {/* References section */}
           { (items.ready && data.refs && data.refs.length > 0) &&
-              <ReferenceFields onRemove={handleRemoveRef} items={items} data={data} />
+              <ReferenceFields onRemove={handleRemoveRef} items={items} data={data} onDrop={handleRefDrop} />
           }
 
           {/* Footer with buttons */}
           <fieldset className="inline">
-            <button class="delete" type="button" onClick={handleDelete}>Delete</button>
-            <button class="cancel" type="button" onClick={handleCancel}>Cancel</button>
+            <button className="delete" type="button" onClick={handleDelete}>Delete</button>
+            <button className="cancel" type="button" onClick={handleCancel}>Cancel</button>
             <button type="submit">Save</button>
           </fieldset>
         </form>
@@ -113,7 +140,7 @@ function TopItemFields({ item, data, onChange }) {
         <option value="note">Note</option>
         <option value="contact">Contact</option>
       </select>
-      <i class={`circle dot ${data.kind}`} />
+      <i className={`circle dot ${data.kind}`} />
     </fieldset>
   )
 }
@@ -157,17 +184,14 @@ function NoteItemFields({ item, data, onChange }) {
 }
 
 
-function ReferenceFields({ items, data, onRemove }) {
+function ReferenceFields({ items, data, onRemove, onDrop }) {
   const handleDragOver = (ev) => {
     ev.preventDefault() // necessary for drop to work
   }
 
   const handleDrop = (ev) => {
-    e.preventDefault()
-
-    if (e.dataTransfer.getData('application/x-item-remove')) {
-      window._itemDropped = true
-    }
+    ev.preventDefault()
+    onDrop?.(ev)
   }
 
   const handleRemove = (item) => {
@@ -177,15 +201,15 @@ function ReferenceFields({ items, data, onRemove }) {
   return (
     <fieldset>
       <div className="refs">
-        { data.refs.map(ref =>
+        {data.refs.map(ref =>
           items.byId[ref.id] && (
-            <RefItem key={ref.id} item={items.byId[ref.id]} onRemove={handleRemove}>
-              <button
-                type="button"
-                class="delete action"
-                onClick={() => onRemove(ref)}
-              ><i class="cross" /></button>
-            </RefItem>
+            <DropTarget key={ref.id} onDrop={handleDrop}>
+              <div className="ref-entry">
+                <RefItem item={items.byId[ref.id]} onRemove={handleRemove}>
+                  <button type="button" className="delete action" onClick={() => onRemove(ref)}><i className="cross" /></button>
+                </RefItem>
+              </div>
+            </DropTarget>
           )
         )}
       </div>
