@@ -386,14 +386,8 @@ body, #app {
   border-radius: 8px;
   transition: all 0.2s ease;
 
-  .entry {
-    padding-bottom: 1rem;
-  }
-
-  .entry.dragover {
-    padding-top: calc(0.5rem - 3px);
-    margin-top: -0.5rem;
-    border-top: 3px solid red;
+  .list {
+    height: 100%;
   }
 }
 
@@ -548,6 +542,8 @@ i.dot {
   &.contact { color: var(--blue); }
 }
 
+
+/* ---------------------------------------------------------------------------------------------- */
 
 .editable.list {
   margin-bottom: -1rem;
