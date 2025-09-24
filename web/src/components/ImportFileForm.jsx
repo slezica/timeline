@@ -13,7 +13,6 @@ export default function ImportFileForm() {
   }
 
   const handleChange = async (ev) => {
-    console.log(ev)
     if (ev.target.files?.length == 0) { return }
 
     try {
