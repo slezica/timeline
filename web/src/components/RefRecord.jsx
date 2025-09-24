@@ -2,41 +2,41 @@ import React from 'react'
 import { setTransferData } from '../utils'
 
 
-export default function RefItem({ item, onClick, children }) {
+export default function RefRecord({ record, onClick, children }) {
   const handleClick = (ev) => {
     ev.stopPropagation()
-    onClick?.(item)
+    onClick?.(record)
   }
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: item._id })
+    setTransferData(ev, { id: record._id })
   }
 
   return (
-    <RefItemView
-      item={item}
+    <RefRecordView
+      record={record}
       onClick={handleClick}
       onDragStart={handleDragStart}
     >
       {children}
-    </RefItemView>
+    </RefRecordView>
   )
 }
 
 
-function RefItemView({ item, children, onClick, onDragStart }) {
+function RefRecordView({ record, children, onClick, onDragStart }) {
   return (
     <article
-      className={"item ref " + item.kind}
-      data-id={item.id}
+      className={"record ref " + record.kind}
+      data-id={record.id}
       onClick={onClick}
       draggable={true}
       onDragStart={onDragStart}
     >
       <header>
-        <i className={`circle dot ${item.kind}`} />
-        <strong className="title">{item.title || 'Untitled'}</strong>
+        <i className={`circle dot ${record.kind}`} />
+        <strong className="title">{record.title || 'Untitled'}</strong>
         {children}
       </header>
     </article>

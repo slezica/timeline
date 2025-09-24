@@ -2,8 +2,8 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
 
 
-export default function CreateItemFormMini({ onItemCreate }) {
-  const createItem = useStore(state => state.createItem)
+export default function CreateRecordFormMini({ onRecordCreate }) {
+  const createRecord = useStore(state => state.createRecord)
   const shortcutRef = useRef()
 
   useLayoutEffect(() => {
@@ -23,7 +23,7 @@ export default function CreateItemFormMini({ onItemCreate }) {
     const now = new Date().toISOString()
 
     try {
-      const item = {
+      const record = {
         title: "",
         kind: 'note',
         body: "",
@@ -32,7 +32,7 @@ export default function CreateItemFormMini({ onItemCreate }) {
         updatedDate: now
       }
 
-      onItemCreate?.(item)
+      onRecordCreate?.(record)
 
     } catch (error) {
       console.error(error)

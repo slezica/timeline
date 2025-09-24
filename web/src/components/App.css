@@ -167,7 +167,7 @@ body, #app {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item {
+.record {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
@@ -205,13 +205,13 @@ body, #app {
     gap: 1rem;
   }
 
-  &.note    { --item-color: var(--green); }
-  &.task    { --item-color: var(--red); }
-  &.contact { --item-color: var(--blue); }
+  &.note    { --record-color: var(--green); }
+  &.task    { --record-color: var(--red); }
+  &.contact { --record-color: var(--blue); }
 }
 
 
-.item:has(> header:only-child) {
+.record:has(> header:only-child) {
   padding: 0;
 
   > header {
@@ -220,8 +220,8 @@ body, #app {
   }
 }
 
-  .item:has(> header:hover), 
-  .item:has(.body:hover) {
+  .record:has(> header:hover),
+  .record:has(.body:hover) {
     filter: brightness(120%);
   }
 
@@ -229,7 +229,7 @@ body, #app {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item.large {
+.record.large {
 
   & > header {
     transition: filter 0.2s ease;
@@ -252,7 +252,7 @@ body, #app {
   }
 }
 
-.item.large.contact {
+.record.large.contact {
   .extras {
     display: flex;
     flex-direction: row;
@@ -278,7 +278,7 @@ body, #app {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item.small {
+.record.small {
   gap: 1rem;
 
   header {
@@ -295,7 +295,7 @@ body, #app {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item.ref {
+.record.ref {
   height: 3rem;
   overflow: hidden; /* for ellipsis */
 
@@ -368,12 +368,12 @@ body, #app {
 
 /* ---------------------------------------------------------------------------------------------- */
 
-.item.dragging {
+.record.dragging {
   opacity: 0.5;
   cursor: grabbing;
 }
 
-.item[draggable="true"] {
+.record[draggable="true"] {
   cursor: grab;
 }
 
@@ -493,7 +493,7 @@ i {
   }
 }
 
-form.edit-item {
+form.edit-record {
   position: relative;
 
   .delete { background-color: var(--pico-form-element-active-background-color); }

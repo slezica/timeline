@@ -31,18 +31,18 @@ export async function fetchIndex(order) {
   return apiRequest(`/api/index?${params}`)
 }
 
-export async function fetchItems(ids) {
+export async function fetchRecords(ids) {
   const params = new URLSearchParams({
     ids: ids.join(',')
   })
-  
-  return apiRequest(`/api/items?${params}`)
+
+  return apiRequest(`/api/records?${params}`)
 }
 
-export async function createItem({ title, kind, createdAt, ...extras }) {
+export async function createRecord({ title, kind, createdAt, ...extras }) {
   const body = { title, kind, createdAt, ...extras }
-  
-  return apiRequest('/api/items', {
+
+  return apiRequest('/api/records', {
     method: 'POST',
     body: JSON.stringify(body)
   })

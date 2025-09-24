@@ -1,17 +1,17 @@
 import React, { useLayoutEffect, useRef, useState } from 'react'
-import SmallItem from './SmallItem'
+import SmallRecord from './SmallRecord'
 import DropTarget from './DropTarget'
-import RefItem from './RefItem'
+import RefRecord from './RefRecord'
 import { useStore } from '../store'
 import { getTransferData } from '../utils'
 import EditableList from './EditableList'
 
 
-export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
-  const [data, setData] = useState({ ...item })
-  const items = useStore(state => state.items)
-  const updateItem = useStore(state => state.updateItem)
-  const saveItem = useStore(state => state.saveItem)
+export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
+  const [data, setData] = useState({ ...record })
+  const records = useStore(state => state.records)
+  const updateItem = useStore(state => state.updateRecord)
+  const saveItem = useStore(state => state.saveRecord)
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -25,7 +25,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
     ev.preventDefault()
 
     const updatedItem = {
-      ...item,
+      ...record,
       ...data,
       title: data.title
     }
@@ -40,7 +40,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
   const handleDelete = () => {
     const updatedItem = {
-      ...item,
+      ...record,
       deleted: true
     }
 
@@ -54,7 +54,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
   const getValidTransferData = (ev) => {
     const data = getTransferData(ev)
-    return (data?.id && items.byId[data.id]) ? data : null
+    return (data?.id && records.byId[data.id]) ? data : null
   }
 
   const handleSelfDrop = (ev) => {
@@ -78,20 +78,20 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
   return (
     <DropTarget onDrop={handleSelfDrop}>
       <article>
-        <form className={`edit-item ${item.kind}`} data-id={item.id} onSubmit={handleSubmit}>
-          <TopItemFields item={item} data={data} onChange={handleChange} />
+        <form className={`edit-record ${record.kind}`} data-id={record.id} onSubmit={handleSubmit}>
+          <TopRecordFields record={record} data={data} onChange={handleChange} />
 
           {
-            data.kind == 'task' ? <TaskItemFields item={item} data={data} onChange={handleChange} /> :
-            data.kind == 'note' ? <NoteItemFields item={item} data={data} onChange={handleChange} /> :
+            data.kind == 'task' ? <TaskRecordFields record={record} data={data} onChange={handleChange} /> :
+            data.kind == 'note' ? <NoteRecordFields record={record} data={data} onChange={handleChange} /> :
             null
           }
 
-          <BottomItemFields item={item} data={data} onChange={handleChange} />
+          <BottomRecordFields record={record} data={data} onChange={handleChange} />
 
           {/* References section */}
-          { (items.ready && data.refs && data.refs.length > 0) &&
-              <ReferenceFields onRemove={handleRemoveRef} items={items} data={data} onChange={handleChangeRefs} />
+          { (records.ready && data.refs && data.refs.length > 0) &&
+              <ReferenceFields onRemove={handleRemoveRef} records={records} data={data} onChange={handleChangeRefs} />
           }
 
           {/* Footer with buttons */}
@@ -107,7 +107,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 }
 
 
-function TopItemFields({ item, data, onChange }) {
+function TopRecordFields({ record, data, onChange }) {
   const handleTitleRef = (el) => {
     el?.focus()
   }
@@ -135,7 +135,7 @@ function TopItemFields({ item, data, onChange }) {
 }
 
 
-function BottomItemFields({ item, data, onChange }) {
+function BottomRecordFields({ record, data, onChange }) {
   const changeHandler = (name) => (ev) => { onChange(name, ev.target.value) }
 
   return (
@@ -146,7 +146,7 @@ function BottomItemFields({ item, data, onChange }) {
 }
 
 
-function TaskItemFields({ item, data, onChange }) {
+function TaskRecordFields({ record, data, onChange }) {
   const changeHandler = (name) => (ev) => { onChange(name, ev.target.value) }
 
   const dueDate = formatDatetime(data.dueDate)
@@ -168,21 +168,21 @@ function TaskItemFields({ item, data, onChange }) {
 }
 
 
-function NoteItemFields({ item, data, onChange }) {
+function NoteRecordFields({ record, data, onChange }) {
   return null
 }
 
 
-function ReferenceFields({ items, data, onRemove, onDrop, onChange }) {
+function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
   const eventToRef = (ev) => {
     const data = getTransferData(ev)
-    return (data?.id && items.byId[data.id]) ? data : null
+    return (data?.id && records.byId[data.id]) ? data : null
   }
 
   const refToChild = (ref) => (
-    <RefItem item={items.byId[ref.id]} onRemove={onRemove}>
+    <RefRecord record={records.byId[ref.id]} onRemove={onRemove}>
       <button type="button" className="delete action" onClick={() => onRemove(ref)}><i className="cross" /></button>
-    </RefItem>
+    </RefRecord>
   )
 
   return (

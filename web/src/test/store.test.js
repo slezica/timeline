@@ -21,7 +21,7 @@ vi.mock('../database', () => {
         views: {
           byDate: {
             map: function(doc) {
-              if (doc.type != 'item') { return }
+              if (doc.type != 'record') { return }
               emit(doc.createdDate, { event: 'created' })
               emit(doc.updatedDate, { event: 'updated' })
               if (doc.dueDate) { emit(doc.dueDate, { event: 'due' }) }
@@ -61,9 +61,9 @@ vi.mock('minisearch', () => {
   }
 })
 
-// Test helper to create items with default values:
-const createItem = (overrides = {}) => ({
-  type: 'item',
+// Test helper to create records with default values:
+const createRecord = (overrides = {}) => ({
+  type: 'record',
   kind: 'task',
   title: 'Test Task',
   createdDate: new Date().toISOString(),
@@ -119,12 +119,12 @@ describe('Store', () => {
       const state = useStore.getState()
 
       expect(state.ready).toBe(true) // After initialization
-      expect(state.items.byId).toBeDefined()
+      expect(state.records.byId).toBeDefined()
       expect(state.timeline.refs).toBeDefined()
       expect(state.shelf.refs).toEqual([])
       expect(state.desk.refs).toEqual([])
 
-      for (let entry of ['items', 'timeline', 'shelf', 'desk']) {
+      for (let entry of ['records', 'timeline', 'shelf', 'desk']) {
         expect(state[entry].ready).toBe(true)
         expect(state[entry].loading).toBe(false)
         expect(state[entry].error).toBe(null)
@@ -133,11 +133,11 @@ describe('Store', () => {
   })
 
   describe('Store Actions', () => {
-    describe('saveItem', () => {
-      it('should create a new item and store it', async () => {
-        const newItem = createItem({ body: 'Test description' })
+    describe('saveRecord', () => {
+      it('should create a new record and store it', async () => {
+        const newRecord = createRecord({ body: 'Test description' })
 
-        const result = await store.saveItem.run(newItem)
+        const result = await store.saveRecord.run(newRecord)
 
         // Verify the result:
         expect(result).toBeDefined()
@@ -146,28 +146,28 @@ describe('Store', () => {
         expect(result.title).toBe('Test Task')
 
         // Verify it's actually stored:
-        const storedItem = await testDb.get(result._id)
-        expect(storedItem.title).toBe('Test Task')
-        expect(storedItem.body).toBe('Test description')
-        expect(storedItem.type).toBe('item')
-        expect(storedItem.kind).toBe('task')
+        const storedRecord = await testDb.get(result._id)
+        expect(storedRecord.title).toBe('Test Task')
+        expect(storedRecord.body).toBe('Test description')
+        expect(storedRecord.type).toBe('record')
+        expect(storedRecord.kind).toBe('task')
       })
 
-      it('should update existing item', async () => {
-        // First create an item:
-        const newItem = createItem({
+      it('should update existing record', async () => {
+        // First create a record:
+        const newRecord = createRecord({
           title: 'Original Title',
           body: 'Original body'
         })
 
-        const created = await store.saveItem.run(newItem)
+        const created = await store.saveRecord.run(newRecord)
 
         // Verify it exists:
         const stored = await testDb.get(created._id)
         expect(stored.title).toBe('Original Title')
 
         // Now update it:
-        const updated = await store.saveItem.run({
+        const updated = await store.saveRecord.run({
           ...created,
           title: 'Updated Title',
           body: 'Updated body'
@@ -188,13 +188,13 @@ describe('Store', () => {
       it('should work with database queries', async () => {
         const now = new Date().toISOString()
 
-        // Create multiple items:
-        const items = [
-          createItem({ title: 'Task 1', createdDate: now }),
-          createItem({ kind: 'note', title: 'Note 1', createdDate: now })
+        // Create multiple records:
+        const records = [
+          createRecord({ title: 'Task 1', createdDate: now }),
+          createRecord({ kind: 'note', title: 'Note 1', createdDate: now })
         ]
 
-        await Promise.all(items.map(store.saveItem.run))
+        await Promise.all(records.map(store.saveRecord.run))
 
         // Query the database using the view:
         const queryResult = await testDb.query('index/byDate', {
@@ -209,10 +209,10 @@ describe('Store', () => {
       })
 
       it('should handle database conflicts properly', async () => {
-        // Create an item:
-        const newItem = createItem({ title: 'Original' })
+        // Create a record:
+        const newRecord = createRecord({ title: 'Original' })
 
-        const created = await store.saveItem.run(newItem)
+        const created = await store.saveRecord.run(newRecord)
 
         // Simulate a conflict by modifying the doc directly:
         const doc = await testDb.get(created._id)
@@ -235,13 +235,13 @@ describe('Store', () => {
         const originalPut = testDb.put
         testDb.put = vi.fn().mockRejectedValue(new Error('Connection failed'))
 
-        const newItem = createItem({ title: 'Should fail' })
+        const newRecord = createRecord({ title: 'Should fail' })
 
         // This should handle the error gracefully:
-        await store.saveItem.run(newItem)
+        await store.saveRecord.run(newRecord)
 
         // The store should have handled the error:
-        const state = useStore.getState().saveItem
+        const state = useStore.getState().saveRecord
         expect(state.error).toBeDefined()
 
         // Restore original method:
@@ -249,15 +249,15 @@ describe('Store', () => {
       })
     })
 
-    describe('deleteItem', () => {
-      it('should mark item as deleted and store it', async () => {
-        // First create an item:
-        const newItem = createItem()
+    describe('deleteRecord', () => {
+      it('should mark record as deleted and store it', async () => {
+        // First create a record:
+        const newRecord = createRecord()
 
-        const created = await store.saveItem.run(newItem)
+        const created = await store.saveRecord.run(newRecord)
 
         // Then delete it:
-        const deleted = await store.deleteItem.run(created)
+        const deleted = await store.deleteRecord.run(created)
 
         // Verify the result:
         expect(deleted).toBeDefined()
@@ -266,20 +266,20 @@ describe('Store', () => {
         expect(deleted.deleted).toBe(true)
 
         // Verify it's actually stored with deleted flag:
-        const storedItem = await testDb.get(deleted._id)
-        expect(storedItem.deleted).toBe(true)
-        expect(storedItem._rev).toBe(deleted._rev)
+        const storedRecord = await testDb.get(deleted._id)
+        expect(storedRecord.deleted).toBe(true)
+        expect(storedRecord._rev).toBe(deleted._rev)
       })
 
-      it('should handle deleting already deleted item', async () => {
-        // Create and delete an item:
-        const newItem = createItem()
+      it('should handle deleting already deleted record', async () => {
+        // Create and delete a record:
+        const newRecord = createRecord()
 
-        const created = await store.saveItem.run(newItem)
-        const deleted = await store.deleteItem.run(created)
+        const created = await store.saveRecord.run(newRecord)
+        const deleted = await store.deleteRecord.run(created)
 
         // Delete it again:
-        const deletedAgain = await store.deleteItem.run(deleted)
+        const deletedAgain = await store.deleteRecord.run(deleted)
 
         // Verify the result:
         expect(deletedAgain._id).toBe(deleted._id)
@@ -288,20 +288,20 @@ describe('Store', () => {
       })
 
       it('should handle database errors during deletion', async () => {
-        // Create an item first:
-        const newItem = createItem()
+        // Create a record first:
+        const newRecord = createRecord()
 
-        const created = await store.saveItem.run(newItem)
+        const created = await store.saveRecord.run(newRecord)
 
         // Mock the put method to simulate a database error:
         const originalPut = testDb.put
         testDb.put = vi.fn().mockRejectedValue(new Error('Database error'))
 
         // Try to delete:
-        await store.deleteItem.run(created)
+        await store.deleteRecord.run(created)
 
         // The store should have handled the error:
-        const state = useStore.getState().deleteItem
+        const state = useStore.getState().deleteRecord
         expect(state.loading).toBe(false)
         expect(state.error).toBeDefined()
         expect(state.result).toBe(null)
@@ -310,11 +310,11 @@ describe('Store', () => {
         testDb.put = originalPut
       })
 
-      it('should return updated item', async () => {
-        const newItem = createItem()
+      it('should return updated record', async () => {
+        const newRecord = createRecord()
 
-        const created = await store.saveItem.run(newItem)
-        const deleted = await store.deleteItem.run(created)
+        const created = await store.saveRecord.run(newRecord)
+        const deleted = await store.deleteRecord.run(created)
 
         expect(deleted).toBeDefined()
         expect(deleted._id).toBeDefined()
@@ -326,8 +326,8 @@ describe('Store', () => {
     describe('replaceCollection', () => {
       it('should update collection refs in store and database', async () => {
         const newRefs = [
-          { id: 'item1', kind: 'task', event: 'created', date: '2023-01-01' },
-          { id: 'item2', kind: 'note', event: 'created', date: '2023-01-02' }
+          { id: 'record1', kind: 'task', event: 'created', date: '2023-01-01' },
+          { id: 'record2', kind: 'note', event: 'created', date: '2023-01-02' }
         ]
 
         await store.shelf.replace(newRefs)
@@ -385,51 +385,51 @@ describe('Store', () => {
   })
 
   describe('Store Fetchers', () => {
-    describe('fetchItems', () => {
-      it('should load items into byId map and search index', async () => {
-        // Seed database with test items:
-        const items = [
-          createItem({ _id: 'item1', title: 'Task 1' }),
-          createItem({ _id: 'item2', title: 'Task 2', kind: 'note' })
+    describe('fetchRecords', () => {
+      it('should load records into byId map and search index', async () => {
+        // Seed database with test records:
+        const records = [
+          createRecord({ _id: 'record1', title: 'Task 1' }),
+          createRecord({ _id: 'record2', title: 'Task 2', kind: 'note' })
         ]
 
-        for (const item of items) {
-          await testDb.put(item)
+        for (const record of records) {
+          await testDb.put(record)
         }
 
-        // Fetch items:
-        await store.items.fetch()
+        // Fetch records:
+        await store.records.fetch()
 
         // Verify store state:
-        const itemsState = useStore.getState().items
-        expect(itemsState.ready).toBe(true)
-        expect(itemsState.loading).toBe(false)
-        expect(itemsState.error).toBe(null)
-        expect(itemsState.byId.item1).toBeDefined()
-        expect(itemsState.byId.item1.title).toBe('Task 1')
-        expect(itemsState.byId.item2).toBeDefined()
-        expect(itemsState.byId.item2.title).toBe('Task 2')
+        const recordsState = useStore.getState().records
+        expect(recordsState.ready).toBe(true)
+        expect(recordsState.loading).toBe(false)
+        expect(recordsState.error).toBe(null)
+        expect(recordsState.byId.record1).toBeDefined()
+        expect(recordsState.byId.record1.title).toBe('Task 1')
+        expect(recordsState.byId.record2).toBeDefined()
+        expect(recordsState.byId.record2.title).toBe('Task 2')
 
         // Verify MiniSearch operations:
         expect(mockMiniSearch.add).toHaveBeenCalled()
       })
 
       it('should handle empty database', async () => {
-        await store.items.fetch()
+        await store.records.fetch()
 
-        const itemsState = useStore.getState().items
-        expect(itemsState.ready).toBe(true)
-        expect(itemsState.byId).toEqual({})
+        const recordsState = useStore.getState().records
+        expect(recordsState.ready).toBe(true)
+        expect(recordsState.byId).toEqual({})
         expect(mockMiniSearch.add).not.toHaveBeenCalled()
       })
 
       it('should update existing search index entries', async () => {
         mockMiniSearch.has.mockReturnValue(true)
 
-        const item = createItem({ _id: 'item1', title: 'Updated Task' })
-        await testDb.put(item)
+        const record = createRecord({ _id: 'record1', title: 'Updated Task' })
+        await testDb.put(record)
 
-        await store.items.fetch()
+        await store.records.fetch()
 
         // Should replace existing entry:
         expect(mockMiniSearch.replace).toHaveBeenCalled()
@@ -440,10 +440,10 @@ describe('Store', () => {
         const originalQuery = testDb.query
         testDb.query = vi.fn().mockRejectedValue(new Error('Query failed'))
 
-        await store.items.fetch()
+        await store.records.fetch()
 
-        const itemsState = useStore.getState().items
-        expect(itemsState.error).toBeDefined()
+        const recordsState = useStore.getState().records
+        expect(recordsState.error).toBeDefined()
 
         // Restore original method:
         testDb.query = originalQuery

@@ -2,18 +2,18 @@ import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { genId, scheduled } from './utils'
-import { validateItem } from './schema'
+import { validateRecord } from './schema'
 
 
 /**
   @typedef {import('./schema').Phone} Phone
   @typedef {import('./schema').Ref} Ref
   @typedef {import('./schema').BaseDoc} BaseDoc
-  @typedef {import('./schema').BaseItem} BaseItem
+  @typedef {import('./schema').BaseRecord} BaseRecord
   @typedef {import('./schema').Task} Task
   @typedef {import('./schema').Note} Note
   @typedef {import('./schema').Contact} Contact
-  @typedef {import('./schema').Item} Item
+  @typedef {import('./schema').Record} Record
   @typedef {import('./schema').Status} Status
   @typedef {import('./schema').Collection} Collection
   @typedef {import('./schema').Doc} Doc
@@ -37,8 +37,8 @@ import { validateItem } from './schema'
     ready: boolean,
     initialize: () => Promise<void>,
 
-    items: AsyncState & {
-      byId: Record<string, Item>,
+    records: AsyncState & {
+      byId: Record<string, Record>,
       fetch: () => Promise<void>
     },
 
@@ -60,9 +60,9 @@ import { validateItem } from './schema'
       replace: (refs: Ref[]) => Promise<void>
     },
 
-    saveItem: AsyncOperation<Item>,
-    deleteItem: AsyncOperation<Item>,
-    importFile: AsyncOperation<Item[]>
+    saveRecord: AsyncOperation<Record>,
+    deleteRecord: AsyncOperation<Record>,
+    importFile: AsyncOperation<Record[]>
   }} StoreState
 */
 
@@ -96,11 +96,11 @@ export const useStore = zs.create((set, get) => {
     ready: false,
     initialize: initializeStore,
 
-    items: {
+    records: {
       ready: false, error: null, loading: false,
       byId: {},
 
-      fetch: fetchItems
+      fetch: fetchRecords
     },
 
     timeline: {
@@ -125,8 +125,8 @@ export const useStore = zs.create((set, get) => {
       replace: (refs) => replaceCollection('desk', refs)
     },
 
-    saveItem: { loading: false, error: null, result: null, run: saveItem },
-    deleteItem: { loading: false, error: null, result: null, run: deleteItem },
+    saveRecord: { loading: false, error: null, result: null, run: saveRecord },
+    deleteRecord: { loading: false, error: null, result: null, run: deleteRecord },
     importFile: { loading: false, error: null, result: null, run: importFile },
   })
 
@@ -135,11 +135,11 @@ export const useStore = zs.create((set, get) => {
 
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
       .on('change', () => {
-        fetchItems()
+        fetchRecords()
         fetchTimeline()
       }) // scheduled
 
-    await fetchItems()
+    await fetchRecords()
     await fetchCollection('desk')
     await fetchCollection('shelf')
     await fetchTimeline()
@@ -147,8 +147,8 @@ export const useStore = zs.create((set, get) => {
     set({ ready: true })
   }
 
-  const fetchItems = scheduled(async () => {
-    const { set } = scope('items')
+  const fetchRecords = scheduled(async () => {
+    const { set } = scope('records')
 
     set({ loading: true })
 
@@ -157,8 +157,8 @@ export const useStore = zs.create((set, get) => {
 
       const byId = {}
       for (let row of byDateQ.rows) {
-        if (!validateItem(row.doc)) {
-          console.warn(validateItem.errors)
+        if (!validateRecord(row.doc)) {
+          console.warn(validateRecord.errors)
         }
 
         // ID Lookup:
@@ -243,44 +243,44 @@ export const useStore = zs.create((set, get) => {
     await db.put(collection)
   }
 
-  const saveItem = async (item) => {
-    const { set } = scope('createItem')
+  const saveRecord = async (record) => {
+    const { set } = scope('createRecord')
 
     set({ loading: false, error: null, result: null })
 
     try {
-      item._id ??= genId()
+      record._id ??= genId()
 
-      const putQ = await db.put(item) // TODO actually check `.ok`
-      item._rev = putQ.rev
+      const putQ = await db.put(record) // TODO actually check `.ok`
+      record._rev = putQ.rev
 
-      set({ loading: false, error: null, result: item })
+      set({ loading: false, error: null, result: record })
 
     } catch (err) {
       console.error(err)
       set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
     }
 
-    return item
+    return record
   }
 
-  const deleteItem = async (item) => {
-    const { set } = scope('deleteItem')
+  const deleteRecord = async (record) => {
+    const { set } = scope('deleteRecord')
 
     set({ loading: true, error: null, result: null })
 
     try {
-      const updatedItem = {
-        ...item,
+      const updatedRecord = {
+        ...record,
         deleted: true
       }
 
-      const putQ = await db.put(updatedItem)
-      updatedItem._rev = putQ.rev
+      const putQ = await db.put(updatedRecord)
+      updatedRecord._rev = putQ.rev
 
-      set({ loading: false, error: null, result: updatedItem })
+      set({ loading: false, error: null, result: updatedRecord })
 
-      return updatedItem
+      return updatedRecord
 
     } catch (err) {
       console.error(err)
@@ -303,8 +303,8 @@ export const useStore = zs.create((set, get) => {
     const data = JSON.parse(fileContent)
 
     try {
-      await db.bulkDocs(data.items)
-      set({ loading: false, error: null, result: data.items })
+      await db.bulkDocs(data.records)
+      set({ loading: false, error: null, result: data.records })
 
     } catch (err) {
       console.error(err)

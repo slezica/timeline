@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useInView } from "react-intersection-observer"
 import { useStore } from '../store'
-import LargeItem from './LargeItem'
+import LargeRecord from './LargeRecord'
 
 const SENTINEL_SPACING = 50
 
 
-export default function Timeline({ timeline, onItemClick }) {
+export default function Timeline({ timeline, onRecordClick }) {
   const [ groups, setGroups ] = useState([])
-  const items = useStore(state => state.items)
+  const records = useStore(state => state.records)
 
   useEffect(() => {
     if (!timeline.ready) { return }
@@ -42,8 +42,8 @@ export default function Timeline({ timeline, onItemClick }) {
 
   }, [timeline])
 
-  const handleItemClick = (ref) => {
-    onItemClick?.(items.byId[ref])
+  const handleRecordClick = (ref) => {
+    onRecordClick?.(records.byId[ref])
   }
 
   const scrollToElement = useCallback((el) => {
@@ -55,16 +55,16 @@ export default function Timeline({ timeline, onItemClick }) {
   return (
     <TimelineView
       groups={groups}
-      items={items}
+      records={records}
       timeline={timeline}
-      onItemClick={onItemClick}
+      onRecordClick={onRecordClick}
       scrollToElement={scrollToElement}
     />
   )
 }
 
 
-function TimelineView({ groups, items, timeline, onItemClick, scrollToElement }) {
+function TimelineView({ groups, records, timeline, onRecordClick, scrollToElement }) {
   return (
     <section className="timeline">
       { groups.map(group => {
@@ -77,12 +77,12 @@ function TimelineView({ groups, items, timeline, onItemClick, scrollToElement })
             { isMostRecent && <div className="present"><hr />Present<hr /></div> }
             { isMostRecent && <div className="anchor" ref={scrollToElement} /> }
 
-            {items.byId[entry.id]
-              ? <LargeItem
+            {records.byId[entry.id]
+              ? <LargeRecord
                   entries={group}
-                  item={items.byId[entry.id]}
-                  onClick={onItemClick}
-                  onRefClick={onItemClick}
+                  record={records.byId[entry.id]}
+                  onClick={onRecordClick}
+                  onRefClick={onRecordClick}
                 />
               : <div>placeholder</div>
             }

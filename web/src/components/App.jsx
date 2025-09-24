@@ -4,7 +4,7 @@ import { useStore } from '../store'
 import Timeline from './Timeline'
 import SearchOrCreateForm from './SearchForm'
 import Modal from './Modal'
-import EditItemForm from './EditItemForm'
+import EditRecordForm from './EditRecordForm'
 
 import './App.css'
 import Shelf from './Shelf'
@@ -19,7 +19,7 @@ export default function App() {
 
   const [query, setQuery] = useState("")
   const [queryIndex, setQueryIndex] = useState([])
-  const [editingItem, setEditingItem] = useState(null)
+  const [editingRecord, setEditingRecord] = useState(null)
 
   useEffect(() => {
     store.initialize()
@@ -44,30 +44,30 @@ export default function App() {
     setQuery(query)
   }
 
-  const handleItemCreate = (item) => { setEditingItem(item) }
-  const handleItemSave   = (item) => { setEditingItem(null) }
-  const handleItemClick  = (item) => { setEditingItem(item) }
-  const handleModalClose = () => { setEditingItem(null) }
+  const handleRecordCreate = (record) => { setEditingRecord(record) }
+  const handleRecordSave   = (record) => { setEditingRecord(null) }
+  const handleRecordClick  = (record) => { setEditingRecord(record) }
+  const handleModalClose = () => { setEditingRecord(null) }
 
   return (
     <div id="app">
       <header>
-        <Toolbar onSearch={handleSearch} onItemCreate={handleItemCreate} />
+        <Toolbar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
       </header>
 
       <main>
-        <Timeline timeline={queryIndex} onItemClick={handleItemClick} />
+        <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
       </main>
 
       <aside className="right">
-        <Shelf onItemClick={handleItemClick} />
+        <Shelf onRecordClick={handleRecordClick} />
       </aside>
 
-      <Modal open={editingItem !== null} onClose={handleModalClose}>
-        {editingItem && (
-          <EditItemForm
-            item={editingItem}
-            onSave={handleItemSave}
+      <Modal open={editingRecord !== null} onClose={handleModalClose}>
+        {editingRecord && (
+          <EditRecordForm
+            record={editingRecord}
+            onSave={handleRecordSave}
             onCancel={handleModalClose}
             onDelete={handleModalClose}
           />

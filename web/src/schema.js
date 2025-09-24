@@ -62,7 +62,7 @@ export const baseDocSchema = {
 
 
 /** @typedef {BaseDoc & {
-  type: 'item',
+  type: 'record',
   kind: string,
   createdDate: string,
   updatedDate: string,
@@ -70,15 +70,15 @@ export const baseDocSchema = {
   body: string,
   refs: Ref[],
   deleted?: boolean
-}} BaseItem */
-export const baseItemSchema = {
+}} BaseRecord */
+export const baseRecordSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
   additionalProperties: false,
 
   properties: {
     ...baseDocSchema.properties,
-    type: { type: 'string', enum: ['item'] },
+    type: { type: 'string', enum: ['record'] },
 
     // Dates:
     createdDate: { type: 'string', format: 'date-time' },
@@ -110,17 +110,17 @@ export const baseItemSchema = {
 }
 
 
-/** @typedef {BaseItem & {
+/** @typedef {BaseRecord & {
   kind: 'task',
   dueDate: string | null,
   doneDate: string | null
 }} Task */
 export const taskSchema = {
-  ...baseItemSchema,
-  required: [...baseItemSchema.required, 'dueDate', 'doneDate'],
+  ...baseRecordSchema,
+  required: [...baseRecordSchema.required, 'dueDate', 'doneDate'],
 
   properties: {
-    ...baseItemSchema.properties,
+    ...baseRecordSchema.properties,
 
     kind: { type: 'string', enum: ['task'] },
     dueDate: { type: ['string', 'null'], format: 'date-time' },
@@ -129,21 +129,21 @@ export const taskSchema = {
 }
 
 
-/** @typedef {BaseItem & {
+/** @typedef {BaseRecord & {
   kind: 'note'
 }} Note */
 export const noteSchema = {
-  ...baseItemSchema,
+  ...baseRecordSchema,
 
   properties: {
-    ...baseItemSchema.properties,
+    ...baseRecordSchema.properties,
 
     kind: { type: 'string', enum: ['note'] },
   }
 }
 
 
-/** @typedef {BaseItem & {
+/** @typedef {BaseRecord & {
   kind: 'contact',
   email?: string | null,
   phones?: Phone[],
@@ -152,11 +152,11 @@ export const noteSchema = {
   picture?: string | null
 }} Contact */
 export const contactSchema = {
-  ...baseItemSchema,
-  required: [...baseItemSchema.required ],
+  ...baseRecordSchema,
+  required: [...baseRecordSchema.required ],
 
   properties: {
-    ...baseItemSchema.properties,
+    ...baseRecordSchema.properties,
 
     kind: { type: 'string', enum: ['contact'] },
 
@@ -175,7 +175,7 @@ export const contactSchema = {
   },
 
   allOf: [
-    ...baseItemSchema.allOf,
+    ...baseRecordSchema.allOf,
 
     { anyOf: [
       { "required": ["email"] },
@@ -185,8 +185,8 @@ export const contactSchema = {
 }
 
 
-/** @typedef {Task | Note | Contact} Item */
-export const itemSchema = {
+/** @typedef {Task | Note | Contact} Record */
+export const recordSchema = {
   oneOf: [taskSchema, noteSchema, contactSchema]
 }
 
@@ -238,12 +238,12 @@ export const designSchema = {
 }
 
 
-/** @typedef {Item | Collection | Status | Design} Doc */
+/** @typedef {Record | Collection | Status | Design} Doc */
 export const docSchema = {
-  oneOf: [itemSchema, collectionSchema, statusSchema, designSchema]
+  oneOf: [recordSchema, collectionSchema, statusSchema, designSchema]
 }
 
 
 export const validateStatus = ajv.compile(statusSchema)
-export const validateItem = ajv.compile(itemSchema)
+export const validateRecord = ajv.compile(recordSchema)
 export const validateDoc = ajv.compile(docSchema)

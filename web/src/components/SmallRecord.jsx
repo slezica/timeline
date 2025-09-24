@@ -1,35 +1,35 @@
 import React, { forwardRef, useEffect, useLayoutEffect, useRef } from 'react'
 import { setTransferData } from '../utils'
 
-function TaskItemExtras({ item }) {
+function TaskRecordExtras({ record }) {
   return null
 }
 
-function NoteItemExtras({ item }) {
+function NoteRecordExtras({ record }) {
   return null
 }
 
-export default function SmallItem({ item, onClick, onRemove, onDiscard }) {
+export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
   const draggableRef = useRef()
 
   const handleClick = () => {
-    onClick?.(item)
+    onClick?.(record)
   }
 
   const handleRemove = (ev) => {
     ev.preventDefault()
     ev.stopPropagation()
-    onRemove?.({ id: item._id })
+    onRemove?.({ id: record._id })
   }
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: item._id })
+    setTransferData(ev, { id: record._id })
   }
 
   useLayoutEffect(() => {
     const handleDiscard = (ev) => {
-      onDiscard?.({ id: item._id })
+      onDiscard?.({ id: record._id })
     }
 
     // The 'discard' event is custom, indicating this element was dropped outside
@@ -39,8 +39,8 @@ export default function SmallItem({ item, onClick, onRemove, onDiscard }) {
 
   }, [onDiscard])
 
-  return <SmallItemView
-    item         = {item}
+  return <SmallRecordView
+    record       = {record}
     onClick      = {handleClick}
     onRemove     = {onRemove ? handleRemove : null}
     onDragStart  = {handleDragStart}
@@ -49,33 +49,33 @@ export default function SmallItem({ item, onClick, onRemove, onDiscard }) {
 }
 
 
-function SmallItemView({ item, onClick, onRemove, onDragStart, onDiscard, draggableRef }) {
+function SmallRecordView({ record, onClick, onRemove, onDragStart, onDiscard, draggableRef }) {
   return (
     <article
       ref         = {draggableRef}
-      className   = {"item small " + item.kind}
+      className   = {"record small " + record.kind}
       draggable   = {true}
       onClick     = {onClick}
       onDragStart = {onDragStart}
-      data-id     = {item.id}
+      data-id     = {record.id}
     >
       <header>
-        <i className={`circle dot ${item.kind}`} />
-        <strong className="title">{item.title || 'Untitled'}</strong>
+        <i className={`circle dot ${record.kind}`} />
+        <strong className="title">{record.title || 'Untitled'}</strong>
         {onRemove &&
           <span className="remove" onClick={onRemove}>X</span>
         }
       </header>
 
-      {item.body && (
+      {record.body && (
         <p className="body">
-          {item.body}
+          {record.body}
         </p>
       )}
 
       {
-        item.kind == 'task' ? <TaskItemExtras item={item} /> :
-          item.kind == 'note' ? <NoteItemExtras item={item} /> :
+        record.kind == 'task' ? <TaskRecordExtras record={record} /> :
+          record.kind == 'note' ? <NoteRecordExtras record={record} /> :
             null
       }
     </article>

@@ -1,5 +1,5 @@
 
-export default function PlaceholderItem() {
+export default function PlaceholderRecord() {
   return (
     <div className="placeholder" />
   )

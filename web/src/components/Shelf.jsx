@@ -1,28 +1,28 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { useStore } from '../store'
-import SmallItem from './SmallItem'
+import SmallRecord from './SmallRecord'
 import DropTarget from './DropTarget'
-import PlaceholderItem from "./PlaceholderItem";
+import PlaceholderRecord from "./PlaceholderRecord";
 import { getTransferData } from '../utils';
 import EditableList from './EditableList';
 
 
 export default function Shelf({ onClick }) {
   const shelf = useStore(state => state.shelf)
-  const items = useStore(state => state.items)
+  const records = useStore(state => state.records)
 
-  const handleItemClick = (item) => {
-    onClick?.(item)
+  const handleRecordClick = (record) => {
+    onClick?.(record)
   }
 
-  const handleItemRemove = (ref) => {
+  const handleRecordRemove = (ref) => {
     const i = shelf.refs.findIndex(it => it.id == ref.id)
     if (i == -1) { return }
 
     shelf.replace([...shelf.refs.slice(0, i), ...shelf.refs.slice(i + 1)])
   }
 
-  const handleItemDiscard = (ref) => {
+  const handleRecordDiscard = (ref) => {
     const newRefs = [...shelf.refs]
 
     const refIndex = newRefs.findIndex(it => it.id == ref.id)
@@ -37,23 +37,23 @@ export default function Shelf({ onClick }) {
 
   return <ShelfView
     refs={shelf.refs}
-    items={items}
+    records={records}
     onListChange={handleListChange}
-    onItemDiscard={handleItemDiscard}
-    onItemClick={handleItemClick}
+    onRecordDiscard={handleRecordDiscard}
+    onRecordClick={handleRecordClick}
   />
 }
 
 
-function ShelfView({ refs, items, onListChange, onItemDiscard, onItemClick }) {
+function ShelfView({ refs, records, onListChange, onRecordDiscard, onRecordClick }) {
   const eventToRef = (ev) => {
     const data = getTransferData(ev)
-    return (data?.id && items.byId[data.id]) ? data : null
+    return (data?.id && records.byId[data.id]) ? data : null
   }
 
   const refToChild = (ref) => (
-    items.byId[ref.id] != null
-      ? <SmallItem item={items.byId[ref.id]} onClick={onItemClick} onDiscard={onItemDiscard} />
+    records.byId[ref.id] != null
+      ? <SmallRecord record={records.byId[ref.id]} onClick={onRecordClick} onDiscard={onRecordDiscard} />
       : <div>Placeholder</div>
   )
 

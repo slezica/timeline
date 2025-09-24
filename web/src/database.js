@@ -11,12 +11,12 @@ const migrations = [
   ["Create indices design doc", async () => {
 
     function mapKind(doc) {
-      if (doc.type != 'item') { return }
+      if (doc.type != 'record') { return }
       emit(doc.kind, doc._id)
     }
 
     function mapDate(doc) {
-      if (doc.type != 'item') { return }
+      if (doc.type != 'record') { return }
 
       for (let key in doc) {
         if (key.endsWith('Date') && doc[key] != null) {
@@ -45,12 +45,12 @@ const migrations = [
     await db.put(index)
   }],
 
-  ["Add body to items", async () => {
+  ["Add body to records", async () => {
     const allDocsQ = await db.allDocs({ include_docs: true })
 
     const docs = []
     for (let row of allDocsQ.rows) {
-      if (row?.doc?.type != 'item') { continue }
+      if (row?.doc?.type != 'record') { continue }
       row.doc.body ??= ''
       docs.push(row.doc)
     }
@@ -58,13 +58,13 @@ const migrations = [
     await db.bulkDocs(docs)
   }],
 
-  ["Add references to items", async () => {
+  ["Add references to records", async () => {
     const index = await db.get('_design/index')
     const allDocsQ = await db.allDocs({ include_docs: true })
 
     const docs = []
     for (let row of allDocsQ.rows) {
-      if (row?.doc?.type != 'item') { continue }
+      if (row?.doc?.type != 'record') { continue }
       row.doc.refs ??= []
       docs.push(row.doc)
     }
@@ -72,7 +72,7 @@ const migrations = [
     await db.bulkDocs(docs)
 
     function mapRefs(doc) {
-      if (doc.type != 'item') { return }
+      if (doc.type != 'record') { return }
 
       for (let ref of doc.refs) {
         emit(ref.id, doc)
