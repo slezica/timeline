@@ -39,13 +39,26 @@ export default function SearchForm({ onQueryChange }) {
   }
 
   return (
-    <form className="search" onSubmit={handleSearchSubmit}>
+    <SearchFormView
+      query={query}
+      inputRef={inputRef}
+      onInput={handleInput}
+      onKeyDown={handleKeyDown}
+      onSubmit={handleSearchSubmit}
+    />
+  )
+}
+
+
+function SearchFormView({ query, inputRef, onInput, onKeyDown, onSubmit }) {
+  return (
+    <form className="search" onSubmit={onSubmit}>
       <fieldset>
         <input
           type="text"
           value={query}
-          onInput={handleInput}
-          onKeyDown={handleKeyDown}
+          onInput={onInput}
+          onKeyDown={onKeyDown}
           placeholder="Search"
           ref={inputRef}
         />
