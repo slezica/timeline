@@ -3,7 +3,6 @@ import { setTransferData } from '../utils'
 
 
 export default function RefItem({ item, onClick, children }) {
-
   const handleClick = (ev) => {
     ev.stopPropagation()
     onClick?.(item)
@@ -15,12 +14,25 @@ export default function RefItem({ item, onClick, children }) {
   }
 
   return (
+    <RefItemView
+      item={item}
+      onClick={handleClick}
+      onDragStart={handleDragStart}
+    >
+      {children}
+    </RefItemView>
+  )
+}
+
+
+function RefItemView({ item, children, onClick, onDragStart }) {
+  return (
     <article
       className={"item ref " + item.kind}
       data-id={item.id}
-      onClick={handleClick}
+      onClick={onClick}
       draggable={true}
-      onDragStart={handleDragStart}
+      onDragStart={onDragStart}
     >
       <header>
         <i className={`circle dot ${item.kind}`} />
