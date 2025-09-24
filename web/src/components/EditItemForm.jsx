@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useLayoutEffect, useRef, useState } from 'react'
 import SmallItem from './SmallItem'
 import DropTarget from './DropTarget'
 import RefItem from './RefItem'
@@ -27,7 +27,7 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
     const updatedItem = {
       ...item,
       ...data,
-      title: data.title || "Untitled"
+      title: data.title
     }
 
     saveItem.run(updatedItem)
@@ -108,6 +108,10 @@ export default function EditItemForm({ item, onSave, onCancel, onDelete }) {
 
 
 function TopItemFields({ item, data, onChange }) {
+  const handleTitleRef = (el) => {
+    el?.focus()
+  }
+
   const changeHandler = (name) => (ev) => { onChange(name, ev.target.value) }
 
   return (
@@ -117,7 +121,7 @@ function TopItemFields({ item, data, onChange }) {
         type="text"
         value={data.title}
         onChange={changeHandler('title')}
-        placeholder="Untitled"
+        ref={handleTitleRef}
       />
 
       <select className="kind" value={data.kind} onChange={changeHandler('kind')}>

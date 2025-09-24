@@ -24,7 +24,7 @@ export default function CreateItemFormMini({ onItemCreate }) {
 
     try {
       const item = {
-        title: "Untitled",
+        title: "",
         kind: 'note',
         body: "",
         refs: [],

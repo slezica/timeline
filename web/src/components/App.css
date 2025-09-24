@@ -391,19 +391,6 @@ body, #app {
   }
 }
 
-.shelf.dragover:not(:has(.dragover)) .entry:last-child {
-  padding-bottom: calc(1rem - 3px);
-  border-bottom: 3px solid red;
-}
-
-/* .shelf-entry.dragover::before { */
-/*   content: ''; */
-/*   position: absolute; */
-/*   pointer-events: none; */
-/*   height: 3px; */
-/*   background-color: solid var(--yellow); */
-/* } */
-
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -556,13 +543,13 @@ i.dot {
   .entry.dragover {
     padding-top: calc(0.5rem - 3px);
     margin-top: -0.5rem;
-    border-top: 3px solid red;
+    border-top: 3px solid var(--yellow);
   }
 }
 
 .editable.list.dragover:not(:has(.dragover)) .entry:last-child {
   margin-bottom: calc(-0.5rem);
   padding-bottom: calc(0.5rem - 3px);
-  border-bottom: 3px solid red;
+  border-bottom: 3px solid var(--yellow);
 }
 
