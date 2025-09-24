@@ -53,6 +53,19 @@ export default function Timeline({ timeline, onItemClick }) {
   }, [])
 
   return (
+    <TimelineView
+      groups={groups}
+      items={items}
+      timeline={timeline}
+      onItemClick={onItemClick}
+      scrollToElement={scrollToElement}
+    />
+  )
+}
+
+
+function TimelineView({ groups, items, timeline, onItemClick, scrollToElement }) {
+  return (
     <section className="timeline">
       { groups.map(group => {
         const entry = group[0]
@@ -89,33 +102,3 @@ export default function Timeline({ timeline, onItemClick }) {
     </section>
   )
 }
-
-// function Sentinel({ position, onFirstReveal, onReveal }) {
-//   const ref = useRef()
-//   const [revealedOnce, setRevealedOnce] = useState(false)
-//
-//   useEffect(() => {
-//     const el = ref.current
-//
-//     const observer = new IntersectionObserver(
-//       (entries) => {
-//         for (let entry of entries) {
-//           if (!entry.isIntersecting) { continue }
-//
-//           if (!revealedOnce) {
-//             setRevealedOnce(true)
-//             onFirstReveal?.(position)
-//           }
-//
-//           onReveal?.(position)
-//           return
-//         }
-//       },
-//       { rootMargin: '1024px' }
-//     )
-//
-//     observer.observe(el)
-//   }, [])
-//
-//   return <div data-position={position} className="sentinel" ref={ref} />
-// }
