@@ -2,6 +2,7 @@ import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
 import { getTransferData, indexInParent, RefType } from '../utils'
 import DropTarget from './DropTarget'
+import WidgetRecord from './WidgetRecord'
 
 
 export default function Shelf({ onClick }) {
@@ -56,7 +57,7 @@ function ShelfView({ refs, records, onRefDrop, onRecordDiscard, onRecordClick })
         {refs.map(ref =>
           <DropTarget key={ref.id} onDrop={onRefDrop}>
             <li className="ref">
-              <SmallRecord
+              <WidgetRecord
                 record    = {records.byId[ref.id]}
                 onClick   = {ev => onRecordClick(records.byId[ref.id])}
                 onDiscard = {onRecordDiscard}

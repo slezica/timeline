@@ -1,41 +1,63 @@
 import { useLayoutEffect } from "react"
 
 
-// debounce implementation that:
-// 1. Fires immediately.
-// 2. Fires again with the latest parameters after a delay.
-// 3. If the function is async, it awaits before firing again to avoid concurrency.
+funct
+
+
+
+
 export function debounce(delay, fn) {
-  let timer = null
+  // 1. Fires immediately.
+  // 2. Fires again with the latest parameters after a delay.
+  // 3. If the function is async, it awaits before firing again to avoid concurrency.
+
   let latestArgs, latestThis
   let running = false
   let pending = false
+  let timer = null
+  let waiters = []
 
-  const invoke = async () => {
+  const schedule = () => {
+    clearTimeout(timer)
+    timer = setTimeout(run, delay)
+    pending = false
+  }
+
+  const run = async () => {
     running = true
-    await Promise.resolve(fn.apply(latestThis, latestArgs))
-    running = false
 
-    if (pending) {
-      pending = false
-      timer = setTimeout(invoke, delay)
-    } else {
-      timer = null
+    try {
+      const value = await Promise.resolve(fn.apply(latestThis, latestArgs))
+      for (let waiter of waiters) {
+        waiter.resolve(value)
+      }
+
+    } catch (err) {
+      for (let waiter of waiters) {
+        waiter.reject(err)
+      }
+
+    } finally {
+      running = false
+      waiters = []
+      if (pending) { schedule() }
     }
   }
 
-  return async function (...args) {
+  return function debounced(...args) {
     latestArgs = args
     latestThis = this
 
-    if (!timer && !running) {
-      await invoke()
+    const { promise, resolve, reject } = Promise.withResolvers()
+    waiters.push({ resolve, reject })
 
-    } else {
-      pending = true
-      clearTimeout(timer)
-      if (!running) { timer = setTimeout(invoke, delay) }
+    if (!running && !pending) {
+      run()
+    } else if (!pending) {
+      schedule()
     }
+
+    return promise
   }
 }
 
