@@ -1,7 +1,6 @@
 import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
 import { getTransferData, indexInParent, RefType, useDiscardEvent } from '../utils'
-import EditableList from './EditableList'
 import DropTarget from './DropTarget'
 
 

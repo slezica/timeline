@@ -555,6 +555,10 @@ form.edit-record {
   .kind {
     flex: 0 0 8em;
   }
+
+  .refs {
+    --item-spacing: 0.5rem;
+  }
 }
 
 button.corner {

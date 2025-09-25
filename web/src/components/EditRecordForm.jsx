@@ -173,14 +173,17 @@ function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
 
   return (
     <fieldset>
-      <EditableList
-        className="refs"
-        entries={data.refs}
-        isEqual={(a, b) => a._id == b._id}
-        fromEvent={ev => getTransferData(ev, RefType)}
-        toChild={refToChild}
-        onChange={onChange}
-      />
+      <ol className="refs">
+        {data.refs.map(ref =>
+          <DropTarget key={ref.id} onDrop={onDrop}>
+            <li className="ref">
+              <TinyRecord record = {records.byId[ref.id]} />
+            </li>
+          </DropTarget>
+        )}
+
+        <DropTarget onDrop={onDrop}><div className="sentinel" /></DropTarget>
+      </ol>
     </fieldset>
   )
 }
