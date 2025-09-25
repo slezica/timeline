@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import DropTarget from './DropTarget'
-import RefRecord from './RefRecord'
+import TinyRecord from './TinyRecord'
 import { useStore } from '../store'
 import { getTransferData, RefType } from '../utils'
 import EditableList from './EditableList'
@@ -166,9 +166,9 @@ function NoteRecordFields({ record, data, onChange }) {
 
 function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
   const refToChild = (ref) => (
-    <RefRecord record={records.byId[ref.id]} onRemove={onRemove}>
+    <TinyRecord record={records.byId[ref.id]} onRemove={onRemove}>
       <button type="button" className="delete action" onClick={() => onRemove(ref)}><i className="cross" /></button>
-    </RefRecord>
+    </TinyRecord>
   )
 
   return (

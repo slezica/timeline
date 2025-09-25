@@ -1,7 +1,7 @@
 import { RefType, setTransferData } from '../utils'
 
 
-export default function RefRecord({ record, onClick, children }) {
+export default function TinyRecord({ record, onClick, children }) {
   const handleClick = (ev) => {
     ev.stopPropagation()
     onClick?.(record)
@@ -13,21 +13,21 @@ export default function RefRecord({ record, onClick, children }) {
   }
 
   return (
-    <RefRecordView
+    <TinyRecordView
       record={record}
       onClick={handleClick}
       onDragStart={handleDragStart}
     >
       {children}
-    </RefRecordView>
+    </TinyRecordView>
   )
 }
 
 
-function RefRecordView({ record, children, onClick, onDragStart }) {
+function TinyRecordView({ record, children, onClick, onDragStart }) {
   return (
     <article
-      className={"record ref " + record.kind}
+      className={"record tiny " + record.kind}
       data-id={record.id}
       onClick={onClick}
       draggable={true}
