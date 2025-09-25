@@ -1,8 +1,13 @@
 import React, { useRef, useState } from 'react'
 
+
 export default function DropTarget({ onDragEnter, onDragLeave, onDragOver, onDrop, children }) {
   const [draggingOver, setDraggingOver] = useState(false)
   const counter = useRef(0)
+
+  if (typeof React.Children.only(children).type !== 'string') {
+    throw new Error("DropTarget can only have one child, and it must be an element")
+  }
 
   const handleDragEnterCapture = (ev) => {
     counter.current = Math.max(0, counter.current + 1)
