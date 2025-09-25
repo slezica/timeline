@@ -69,8 +69,8 @@ function SmallRecordView({ record, onClick, onRemove, onDragStart, rootRef }) {
 
       {
         record.kind == 'task' ? <TaskRecordExtras record={record} /> :
-          record.kind == 'note' ? <NoteRecordExtras record={record} /> :
-            null
+        record.kind == 'note' ? <NoteRecordExtras record={record} /> :
+        null
       }
     </article>
   )

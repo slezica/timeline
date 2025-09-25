@@ -72,8 +72,8 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
 
           {
             data.kind == 'task' ? <TaskRecordFields record={record} data={data} onChange={handleChange} /> :
-              data.kind == 'note' ? <NoteRecordFields record={record} data={data} onChange={handleChange} /> :
-                null
+            data.kind == 'note' ? <NoteRecordFields record={record} data={data} onChange={handleChange} /> :
+            null
           }
 
           <BottomRecordFields record={record} data={data} onChange={handleChange} />
