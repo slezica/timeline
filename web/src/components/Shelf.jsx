@@ -1,6 +1,6 @@
 import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
-import { getTransferData, indexInParent, RefType, useDiscardEvent } from '../utils'
+import { getTransferData, indexInParent, RefType } from '../utils'
 import DropTarget from './DropTarget'
 
 

@@ -163,12 +163,6 @@ function NoteRecordFields({ record, data, onChange }) {
 
 
 function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
-  const refToChild = (ref) => (
-    <TinyRecord record={records.byId[ref.id]} onRemove={onRemove}>
-      <button type="button" className="delete action" onClick={() => onRemove(ref)}><i className="cross" /></button>
-    </TinyRecord>
-  )
-
   return (
     <fieldset>
       <ol className="refs">
