@@ -1,13 +1,6 @@
 import {  useRef } from 'react'
 import { RefType, setTransferData, useDiscardEvent } from '../utils'
 
-function TaskRecordExtras({ record }) {
-  return null
-}
-
-function NoteRecordExtras({ record }) {
-  return null
-}
 
 export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
   const rootRef = useRef()
@@ -66,12 +59,6 @@ function SmallRecordView({ record, onClick, onRemove, onDragStart, rootRef }) {
           {record.body}
         </p>
       )}
-
-      {
-        record.kind == 'task' ? <TaskRecordExtras record={record} /> :
-        record.kind == 'note' ? <NoteRecordExtras record={record} /> :
-        null
-      }
     </article>
   )
 }
