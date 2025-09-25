@@ -2,7 +2,7 @@ import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import RefRecord from './RefRecord'
 import Tag from './Tag'
-import { getTransferData, setTransferData } from '../utils'
+import { getTransferData, RefType, setTransferData } from '../utils'
 
 
 export default function LargeRecord({ entries, record, onClick, onRefClick }) {
@@ -19,16 +19,11 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id })
-  }
-
-  const getValidTransferData = (ev) => {
-    const data = getTransferData(ev)
-    return (data?.id && records.byId[data.id]) ? data : null
+    setTransferData(ev, { id: record._id }, RefType)
   }
 
   const handleDrop = (ev) => {
-    const data = getValidTransferData(ev)
+    const data = getTransferData(ev, RefType)
     if (!data) { return }
 
     const ref = { id: data.id }

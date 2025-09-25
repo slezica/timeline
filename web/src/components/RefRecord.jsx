@@ -1,4 +1,4 @@
-import { setTransferData } from '../utils'
+import { RefType, setTransferData } from '../utils'
 
 
 export default function RefRecord({ record, onClick, children }) {
@@ -9,7 +9,7 @@ export default function RefRecord({ record, onClick, children }) {
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id })
+    setTransferData(ev, { id: record._id }, RefType)
   }
 
   return (

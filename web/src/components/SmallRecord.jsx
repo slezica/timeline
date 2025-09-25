@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { setTransferData } from '../utils'
+import { RefType, setTransferData } from '../utils'
 
 function TaskRecordExtras({ record }) {
   return null
@@ -24,7 +24,7 @@ export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id })
+    setTransferData(ev, { id: record._id }, RefType)
   }
 
   useLayoutEffect(() => {

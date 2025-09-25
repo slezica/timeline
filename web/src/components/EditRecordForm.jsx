@@ -2,7 +2,7 @@ import { useState } from 'react'
 import DropTarget from './DropTarget'
 import RefRecord from './RefRecord'
 import { useStore } from '../store'
-import { getTransferData } from '../utils'
+import { getTransferData, RefType } from '../utils'
 import EditableList from './EditableList'
 
 
@@ -48,13 +48,8 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
     setData(prev => ({ ...prev, refs: prev.refs.filter(it => it.id !== ref.id) }))
   }
 
-  const getValidTransferData = (ev) => {
-    const data = getTransferData(ev)
-    return (data?.id && records.byId[data.id]) ? data : null
-  }
-
   const handleSelfDrop = (ev) => {
-    const itemRef = getValidTransferData(ev)
+    const itemRef = getTransferData(ev, RefType)
     if (!itemRef) { return }
 
     const newRefOrder = [...data.refs]
@@ -170,11 +165,6 @@ function NoteRecordFields({ record, data, onChange }) {
 
 
 function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
-  const eventToRef = (ev) => {
-    const data = getTransferData(ev)
-    return (data?.id && records.byId[data.id]) ? data : null
-  }
-
   const refToChild = (ref) => (
     <RefRecord record={records.byId[ref.id]} onRemove={onRemove}>
       <button type="button" className="delete action" onClick={() => onRemove(ref)}><i className="cross" /></button>
@@ -187,7 +177,7 @@ function ReferenceFields({ records, data, onRemove, onDrop, onChange }) {
         className="refs"
         entries={data.refs}
         isEqual={(a, b) => a._id == b._id}
-        fromEvent={eventToRef}
+        fromEvent={ev => getTransferData(ev, RefType)}
         toChild={refToChild}
         onChange={onChange}
       />

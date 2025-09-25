@@ -1,6 +1,6 @@
 import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
-import { getTransferData } from '../utils'
+import { getTransferData, RefType } from '../utils'
 import EditableList from './EditableList'
 
 
@@ -38,7 +38,7 @@ export default function Shelf({ onClick }) {
 
 function ShelfView({ refs, records, onListChange, onRecordDiscard, onRecordClick }) {
   const eventToRef = (ev) => {
-    const data = getTransferData(ev)
+    const data = getTransferData(ev, RefType)
     return (data?.id && records.byId[data.id]) ? data : null
   }
 

@@ -76,14 +76,16 @@ export function scheduled(asyncFn) {
 }
 
 
-export function setTransferData(ev, data) {
+export const RefType =  'application/vnd.garden.ref+json'
+
+export function setTransferData(ev, data, mimeType) {
   ev.dataTransfer.effectAllowed = 'copy'
-  ev.dataTransfer.setData('application/json', JSON.stringify(data))
+  ev.dataTransfer.setData(mimeType, JSON.stringify(data))
 }
 
-export function getTransferData(ev) {
+export function getTransferData(ev, mimeType='unknown') {
   try {
-    return JSON.parse(ev.dataTransfer.getData('application/json'))
+    return JSON.parse(ev.dataTransfer.getData(mimeType))
   } catch {
     return null
   }
