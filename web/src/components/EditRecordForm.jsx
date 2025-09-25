@@ -3,7 +3,6 @@ import DropTarget from './DropTarget'
 import TinyRecord from './TinyRecord'
 import { useStore } from '../store'
 import { getTransferData, RefType } from '../utils'
-import EditableList from './EditableList'
 
 
 export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
@@ -15,7 +14,6 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
   }
-
 
   const handleSubmit = (ev) => {
     ev.preventDefault()
