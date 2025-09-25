@@ -33,12 +33,10 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
     saveRecord.run({ ...record, refs: [...record.refs, ref] })
   }
 
-  const refRecords = record.refs?.map(ref => records.byId[ref.id]).filter(Boolean) || []
-
   return <LargeRecordView
     entries={entries}
     record={record}
-    refRecords={refRecords}
+    records={records}
     onClick={handleClick}
     onRefClick={handleRefClick}
     onDrop={handleDrop}
@@ -47,11 +45,7 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
 }
 
 
-function LargeRecordView({ entries, record, refRecords, onClick, onRefClick, onDrop, onDragStart }) {
-  const refClickHandler = (refRecord) => (ev) => {
-    onRefClick?.(refRecord)
-  }
-
+function LargeRecordView({ entries, record, records, onClick, onRefClick, onDrop, onDragStart }) {
   return (
     <DropTarget onDrop={onDrop}>
       <article
@@ -105,8 +99,8 @@ function LargeRecordView({ entries, record, refRecords, onClick, onRefClick, onD
         </div>
 
         <div className="refs">
-          {refRecords.map(refRecord =>
-            <RefRecord key={refRecord._id} record={refRecord} onClick={refClickHandler(refRecord)} />
+          {record.refs.map(ref =>
+            <RefRecord key={ref.id} record={records.byId[ref.id]} onClick={ev => onItemClick(records.byId[ref.id])} />
           )}
         </div>
 
