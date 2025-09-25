@@ -9,8 +9,8 @@ import EditableList from './EditableList'
 export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...record })
   const records = useStore(state => state.records)
-  const updateItem = useStore(state => state.updateRecord)
-  const saveItem = useStore(state => state.saveRecord)
+  const updateRecord = useStore(state => state.updateRecord)
+  const saveRecord = useStore(state => state.saveRecord)
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -20,13 +20,13 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   const handleSubmit = (ev) => {
     ev.preventDefault()
 
-    const updatedItem = {
+    const updatedRecord = {
       ...record,
       ...data,
       title: data.title
     }
 
-    saveItem.run(updatedItem)
+    saveRecord.run(updatedRecord)
     onSave?.()
   }
 
@@ -35,12 +35,12 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   }
 
   const handleDelete = () => {
-    const updatedItem = {
+    const updatedRecord = {
       ...record,
       deleted: true
     }
 
-    updateItem.run(updatedItem)
+    updateRecord.run(updatedRecord)
     onDelete?.()
   }
 
@@ -49,16 +49,16 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   }
 
   const handleSelfDrop = (ev) => {
-    const itemRef = getTransferData(ev, RefType)
-    if (!itemRef) { return }
+    const ref = getTransferData(ev, RefType)
+    if (!ref) { return }
 
     const newRefOrder = [...data.refs]
 
-    const prevIndex = newRefOrder.findIndex(it => it.id == itemRef.id)
+    const prevIndex = newRefOrder.findIndex(it => it.id == ref.id)
     if (prevIndex != -1) {
       newRefOrder.splice(prevIndex, 1)
     }
-    newRefOrder.push(itemRef)
+    newRefOrder.push(ref)
     setData(prev => ({ ...data, refs: newRefOrder }))
   }
 
