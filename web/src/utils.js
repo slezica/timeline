@@ -1,3 +1,4 @@
+import { useLayoutEffect } from "react"
 
 export function throttle(fn, ms) {
   let pending = false
@@ -93,4 +94,22 @@ export function getTransferData(ev, mimeType='unknown') {
 
 export function genId() {
   return Math.random().toString(36).substr(2)
+}
+
+
+export function useDiscardEvent(el, onDiscard) {
+  useLayoutEffect(() => {
+    if (!el) { return }
+
+    // The 'discard' event is custom, indicating this element was dropped outside
+    // any drop area. It's fired in main.jsx.
+    el.addEventListener('discard', onDiscard)
+    return () => { el.removeEventListener('discard', onDiscard) }
+
+  }, [onDiscard])
+}
+
+
+export function indexInParent(el) {
+  return [...el.parentElement.children].indexOf(el)
 }

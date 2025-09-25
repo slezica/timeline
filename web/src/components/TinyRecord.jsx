@@ -1,7 +1,10 @@
-import { RefType, setTransferData } from '../utils'
+import { useRef } from 'react'
+import { RefType, setTransferData, useDiscardEvent } from '../utils'
 
 
-export default function TinyRecord({ record, onClick, children }) {
+export default function TinyRecord({ record, onClick, onDiscard, children }) {
+  const rootRef = useRef()
+
   const handleClick = (ev) => {
     ev.stopPropagation()
     onClick?.(record)
@@ -12,11 +15,18 @@ export default function TinyRecord({ record, onClick, children }) {
     setTransferData(ev, { id: record._id }, RefType)
   }
 
+  const handleDiscard = (ev) => {
+    onDiscard?.(ev)
+  }
+
+  useDiscardEvent(rootRef.current, handleDiscard)
+
   return (
     <TinyRecordView
-      record={record}
-      onClick={handleClick}
-      onDragStart={handleDragStart}
+      record      = {record}
+      rootRef     = {rootRef}
+      onClick     = {handleClick}
+      onDragStart = {handleDragStart}
     >
       {children}
     </TinyRecordView>
@@ -24,14 +34,15 @@ export default function TinyRecord({ record, onClick, children }) {
 }
 
 
-function TinyRecordView({ record, children, onClick, onDragStart }) {
+function TinyRecordView({ record, onClick, onDragStart, rootRef, children }) {
   return (
     <article
-      className={"record tiny " + record.kind}
-      data-id={record.id}
-      onClick={onClick}
-      draggable={true}
-      onDragStart={onDragStart}
+      className   = {"record tiny " + record.kind}
+      ref         = {rootRef}
+      data-id     = {record.id}
+      onClick     = {onClick}
+      draggable   = {true}
+      onDragStart = {onDragStart}
     >
       <header>
         <i className={`circle dot ${record.kind}`} />

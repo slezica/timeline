@@ -2,7 +2,7 @@ import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import TinyRecord from './TinyRecord'
 import Tag from './Tag'
-import { getTransferData, RefType, setTransferData } from '../utils'
+import { getTransferData, indexInParent, RefType, setTransferData } from '../utils'
 
 
 export default function LargeRecord({ entries, record, onClick, onRefClick }) {
@@ -27,7 +27,7 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
     if (!ref || ref.id == record.id) { return }
     ev.stopPropagation()
 
-    const index = [...ev.currentTarget.parentElement.children].indexOf(ev.currentTarget)
+    const index = indexInParent(ev.currentTarget)
 
     const newRefs = [
       ...record.refs.slice(0, index).filter(it => it.id != ref.id),
@@ -38,19 +38,31 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
     saveRecord.run({ ...record, refs: newRefs })
   }
 
+  const handleRefDiscard = (ev) => {
+    const index = indexInParent(ev.currentTarget)
+
+    const newRefs = [
+      ...record.refs.slice(0, index),
+      ...record.refs.slice(index + 1),
+    ]
+
+    saveRecord.run({ ...record, refs: newRefs })
+  }
+
   return <LargeRecordView
-    entries={entries}
-    record={record}
-    records={records}
-    onClick={handleClick}
-    onRefClick={handleRefClick}
-    onRefDrop={handleRefDrop}
-    onDragStart={handleDragStart}
+    entries      = {entries}
+    record       = {record}
+    records      = {records}
+    onClick      = {handleClick}
+    onRefClick   = {handleRefClick}
+    onRefDrop    = {handleRefDrop}
+    onRefDiscard = {handleRefDiscard}
+    onDragStart  = {handleDragStart}
   />
 }
 
 
-function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefDrop, onDragStart }) {
+function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefDrop, onRefDiscard, onDragStart }) {
   return (
     <article
       className   = {"record large " + record.kind}
@@ -105,7 +117,11 @@ function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefD
         {record.refs.map(ref =>
           <DropTarget key={ref.id} onDrop={onRefDrop}>
             <li className="ref">
-              <TinyRecord record={records.byId[ref.id]} onClick={ev => onRefClick(records.byId[ref.id])} />
+              <TinyRecord
+                record    = {records.byId[ref.id]}
+                onClick   = {ev => onRefClick(records.byId[ref.id])}
+                onDiscard = {onRefDiscard}
+              />
             </li>
           </DropTarget>
         )}

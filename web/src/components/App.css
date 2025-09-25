@@ -50,8 +50,6 @@ p {
   margin: 0;
 }
 
-
-
 form {
   display: flex;
   flex-direction: column;
@@ -207,36 +205,7 @@ body, #app {
   }
 
   .refs {
-    display: flex;
-    flex-direction: column;
-
-    --space: 0.75rem;
-    --line-mid: calc(var(--space) / 2);
-    --line-start: calc(var(--line-mid) - 1px);
-    --line-end: calc(var(--line-mid) + 1px);
-
-    margin-top: calc(-1 * var(--space));
-  }
-
-  .refs .dragover {
-    padding-top: var(--space);
-    background: linear-gradient(
-      to bottom,
-      transparent var(--line-start),
-      var(--yellow) var(--line-start),
-      var(--yellow) var(--line-end),
-      transparent var(--line-end)
-    );
-    background-repeat: no-repeat;
-  }
-
-  .refs > .ref {
-    padding-top: var(--space);
-  }
-
-  .refs .sentinel {
-    height: 1rem;
-    margin-bottom: -1rem;
+    --item-spacing: 0.75rem;
   }
 
   &.note    { --record-color: var(--green); }
@@ -420,8 +389,49 @@ body, #app {
   border-radius: 8px;
   transition: all 0.2s ease;
 
-  .list {
+  .refs {
+    --item-spacing: 0.75rem;
+    --sentinel-height: 100%;
     height: 100%;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------------------------- */
+
+ol.refs {
+  display: flex;
+  flex-direction: column;
+
+  --line-mid: calc(var(--item-spacing) / 2);
+  --line-start: calc(var(--line-mid) - 1px);
+  --line-end: calc(var(--line-mid) + 1px);
+  --sentinel-height: 1rem;
+
+  margin-top: calc(-1 * var(--item-spacing));
+
+  & > .ref {
+    padding: 0;
+    padding-top: var(--item-spacing);
+  }
+
+  & > .dragover {
+    padding-top: var(--item-spacing);
+
+    background: linear-gradient(
+      to bottom,
+      transparent var(--line-start),
+      var(--yellow) var(--line-start),
+      var(--yellow) var(--line-end),
+      transparent var(--line-end)
+    );
+
+    background-repeat: no-repeat;
+  }
+
+  & > .sentinel {
+    height: var(--sentinel-height);
+    margin-bottom: -1rem;
   }
 }
 
@@ -463,17 +473,17 @@ body, #app {
   background-color: color-mix(in oklch, var(--pico-card-sectioning-background-color), white 3.5%);
   border-radius: 4px;
   overflow: hidden;
-}
 
-.tag .content {
-  text-wrap: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
+  .tag .content {
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-.tag i {
-  flex: 0 0 1.1em;
-  height: 1.1em;
+  .tag i {
+    flex: 0 0 1.1em;
+    height: 1.1em;
+  }
 }
 
 /* ---------------------------------------------------------------------------------------------- */
@@ -563,27 +573,4 @@ i.dot {
   &.contact { color: var(--blue); }
 }
 
-
-/* ---------------------------------------------------------------------------------------------- */
-
-.editable.list {
-  margin-bottom: -1rem;
-  padding-bottom: 1rem;
-
-  .entry:not(:last-child) {
-    padding-bottom: 0.75rem;
-  }
-
-  .entry.dragover {
-    padding-top: calc(0.5rem - 3px);
-    margin-top: -0.5rem;
-    border-top: 3px solid var(--yellow);
-  }
-}
-
-.editable.list.dragover:not(:has(.dragover)) .entry:last-child {
-  margin-bottom: calc(-0.5rem);
-  padding-bottom: calc(0.5rem - 3px);
-  border-bottom: 3px solid var(--yellow);
-}
 

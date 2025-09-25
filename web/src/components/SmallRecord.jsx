@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
-import { RefType, setTransferData } from '../utils'
+import { RefType, setTransferData, useDiscardEvent } from '../utils'
 
 function TaskRecordExtras({ record }) {
   return null
@@ -10,7 +10,7 @@ function NoteRecordExtras({ record }) {
 }
 
 export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
-  const draggableRef = useRef()
+  const rootRef = useRef()
 
   const handleClick = () => {
     onClick?.(record)
@@ -27,32 +27,26 @@ export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
     setTransferData(ev, { id: record._id }, RefType)
   }
 
-  useLayoutEffect(() => {
-    const handleDiscard = (ev) => {
-      onDiscard?.({ id: record._id })
-    }
+  const handleDiscard = (ev) => {
+    onDiscard?.(ev)
+  }
 
-    // The 'discard' event is custom, indicating this element was dropped outside
-    // any drop area. It's fired in main.jsx.
-    draggableRef.current.addEventListener('discard', handleDiscard)
-    return () => { draggableRef.current.removeEventListener('discard', handleDiscard) }
-
-  }, [onDiscard])
+  useDiscardEvent(rootRef.current, handleDiscard)
 
   return <SmallRecordView
-    record       = {record}
-    onClick      = {handleClick}
-    onRemove     = {onRemove ? handleRemove : null}
-    onDragStart  = {handleDragStart}
-    draggableRef = {draggableRef}
+    record      = {record}
+    onClick     = {handleClick}
+    onRemove    = {onRemove ? handleRemove : null}
+    onDragStart = {handleDragStart}
+    rootRef     = {rootRef}
   />
 }
 
 
-function SmallRecordView({ record, onClick, onRemove, onDragStart, onDiscard, draggableRef }) {
+function SmallRecordView({ record, onClick, onRemove, onDragStart, rootRef }) {
   return (
     <article
-      ref         = {draggableRef}
+      ref         = {rootRef}
       className   = {"record small " + record.kind}
       draggable   = {true}
       onClick     = {onClick}

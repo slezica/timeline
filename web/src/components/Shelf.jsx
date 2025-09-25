@@ -1,7 +1,8 @@
 import { useStore } from '../store'
 import SmallRecord from './SmallRecord'
-import { getTransferData, RefType } from '../utils'
+import { getTransferData, indexInParent, RefType, useDiscardEvent } from '../utils'
 import EditableList from './EditableList'
+import DropTarget from './DropTarget'
 
 
 export default function Shelf({ onClick }) {
@@ -12,52 +13,61 @@ export default function Shelf({ onClick }) {
     onClick?.(record)
   }
 
+  const handleRecordDiscard = (ev) => {
+    const index = indexInParent(ev.currentTarget)
 
-  const handleRecordDiscard = (ref) => {
-    const newRefs = [...shelf.refs]
-
-    const refIndex = newRefs.findIndex(it => it.id == ref.id)
-    newRefs.splice(refIndex, 1)
+    const newRefs = [
+      ...shelf.refs.slice(0, index),
+      ...shelf.refs.slice(index + 1),
+    ]
 
     shelf.replace(newRefs)
   }
 
-  const handleListChange = (newRefs) => {
+  const handleRefDrop = (ev) => {
+    const ref = getTransferData(ev, RefType)
+    if (!ref) { return }
+    ev.stopPropagation()
+
+    const index = [...ev.currentTarget.parentElement.children].indexOf(ev.currentTarget)
+
+    const newRefs = [
+      ...shelf.refs.slice(0, index).filter(it => it.id != ref.id),
+      ref,
+      ...shelf.refs.slice(index).filter(it => it.id != ref.id),
+    ]
+
     shelf.replace(newRefs)
   }
 
   return <ShelfView
-    refs={shelf.refs}
-    records={records}
-    onListChange={handleListChange}
-    onRecordDiscard={handleRecordDiscard}
-    onRecordClick={handleRecordClick}
+    refs            = {shelf.refs}
+    records         = {records}
+    onRefDrop       = {handleRefDrop}
+    onRecordDiscard = {handleRecordDiscard}
+    onRecordClick   = {handleRecordClick}
   />
 }
 
 
-function ShelfView({ refs, records, onListChange, onRecordDiscard, onRecordClick }) {
-  const eventToRef = (ev) => {
-    const data = getTransferData(ev, RefType)
-    return (data?.id && records.byId[data.id]) ? data : null
-  }
-
-  const refToChild = (ref) => (
-    records.byId[ref.id] != null
-      ? <SmallRecord record={records.byId[ref.id]} onClick={onRecordClick} onDiscard={onRecordDiscard} />
-      : <div>Placeholder</div>
-  )
-
+function ShelfView({ refs, records, onRefDrop, onRecordDiscard, onRecordClick }) {
   return (
     <section className="shelf">
-      <EditableList
-        className="refs"
-        entries={refs}
-        isEqual={(a, b) => a.id == b.id}
-        fromEvent={eventToRef}
-        toChild={refToChild}
-        onChange={onListChange}
-      />
+      <ol className="refs">
+        {refs.map(ref =>
+          <DropTarget key={ref.id} onDrop={onRefDrop}>
+            <li className="ref">
+              <SmallRecord
+                record    = {records.byId[ref.id]}
+                onClick   = {ev => onRecordClick(records.byId[ref.id])}
+                onDiscard = {onRecordDiscard}
+              />
+            </li>
+          </DropTarget>
+        )}
+
+        <DropTarget onDrop={onRefDrop}><div className="sentinel" /></DropTarget>
+      </ol>
     </section>
   )
 }
