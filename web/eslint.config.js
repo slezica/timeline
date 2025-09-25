@@ -2,11 +2,17 @@ import js from '@eslint/js'
 import globals from 'globals'
 import react from 'eslint-plugin-react'
 
+import ternaryChain from './eslint/eslint-plugin-ternary-chain.js'
+
+
 export default [
   { ignores: ['dist'] },
   {
     files: ['**/*.js', '**/*.jsx'],
-    plugins: { react },
+    plugins: {
+      react,
+      'ternary-chain': ternaryChain
+    },
 
     languageOptions: {
       ecmaVersion: 2020,
@@ -23,6 +29,9 @@ export default [
 
       'indent': ['error', 2, {
         offsetTernaryExpressions: true,
+        ignoredNodes: [
+          'ConditionalExpression ConditionalExpression'
+        ]
       }],
 
       'no-unused-vars': ['warn', {
@@ -34,6 +43,8 @@ export default [
       'react/jsx-uses-vars': 'error',
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
+
+      'ternary-chain/align-ternary-chain': 'error',
     },
   },
 ]
