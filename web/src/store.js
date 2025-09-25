@@ -29,8 +29,7 @@ import { validateRecord } from './schema'
   @typedef {AsyncState & {
   result: T | null,
   run: (...args: any[]) => Promise<T>
-}} AsyncOperation */
-
+}} AsyncAction */
 
 /**
   @typedef {{
@@ -60,9 +59,9 @@ import { validateRecord } from './schema'
       replace: (refs: Ref[]) => Promise<void>
     },
 
-    saveRecord: AsyncOperation<Record>,
-    deleteRecord: AsyncOperation<Record>,
-    importFile: AsyncOperation<Record[]>
+    saveRecord: AsyncAction<Record>,
+    deleteRecord: AsyncAction<Record>,
+    importFile: AsyncAction<Record[]>
   }} StoreState
 */
 
@@ -92,7 +91,7 @@ export const useStore = zs.create((set, get) => {
   })
 
   // Store factory (member functions defined below):
-  const createStore = () => ({
+  const createState = () => ({
     ready: false,
     initialize: initializeStore,
 
@@ -312,5 +311,5 @@ export const useStore = zs.create((set, get) => {
     }
   }
 
-  return createStore()
+  return createState()
 })
