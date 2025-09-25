@@ -1,31 +1,44 @@
 import { useLayoutEffect } from "react"
 
 
-export function scheduled(asyncFn) {
-  let pending = false
+// debounce implementation that:
+// 1. Fires immediately.
+// 2. Fires again with the latest parameters after a delay.
+// 3. If the function is async, it awaits before firing again to avoid concurrency.
+export function debounce(delay, fn) {
+  let timer = null
+  let latestArgs, latestThis
   let running = false
+  let pending = false
 
-  return async function scheduledFn() {
-    if (running) {
-      pending = true
-      return
-    }
-
+  const invoke = async () => {
     running = true
-    pending = false
+    await Promise.resolve(fn.apply(latestThis, latestArgs))
+    running = false
 
-    try {
-      await asyncFn()
+    if (pending) {
+      pending = false
+      timer = setTimeout(invoke, delay)
+    } else {
+      timer = null
+    }
+  }
 
-    } catch (err) {
-      console.error(err)
+  return async function (...args) {
+    latestArgs = args
+    latestThis = this
 
-    } finally {
-      running = false
-      if (pending) { Promise.resolve().then(scheduledFn) }
+    if (!timer && !running) {
+      await invoke()
+
+    } else {
+      pending = true
+      clearTimeout(timer)
+      if (!running) { timer = setTimeout(invoke, delay) }
     }
   }
 }
+
 
 
 export const RefType =  'application/vnd.garden.ref+json'

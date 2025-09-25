@@ -1,7 +1,7 @@
 import * as zs from 'zustand'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
-import { genId, scheduled } from './utils'
+import { debounce, genId } from './utils'
 import { validateRecord } from './schema'
 
 
@@ -146,7 +146,7 @@ export const useStore = zs.create((set, get) => {
     set({ ready: true })
   }
 
-  const fetchRecords = scheduled(async () => {
+  const fetchRecords = debounce(500, async () => {
     const { set } = scope('records')
 
     set({ loading: true })
@@ -176,7 +176,7 @@ export const useStore = zs.create((set, get) => {
     }
   })
 
-  const fetchTimeline = scheduled(async () => {
+  const fetchTimeline = debounce(500, async () => {
     const { set } = scope('timeline')
 
     set({ loading: true })
