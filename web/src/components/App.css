@@ -27,8 +27,8 @@
   --black: oklch(20% 2% 270);
   --white: #fafafa;
 
-  --main-width: 600px;
-  --aside-width: 300px;
+  --main-width: 500px;
+  --aside-width: 350px;
 }
 
 * {
@@ -126,7 +126,6 @@ body, #app {
 }
 
 #app > aside {
-  width: 300px;
   max-height: 100vh;
   overflow-y: scroll;
   transition: opacity 0.15s ease;
