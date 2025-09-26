@@ -23,8 +23,8 @@ export default function ImportFileForm() {
   }
 
   return <ImportFileFormView
-    loading={importFile.loading}
-    error={importFile.error}
+    loading ={importFile.loading}
+    error   ={importFile.error}
     onSubmit={handleSubmit}
     onChange={handleChange}
     inputRef={inputRef}

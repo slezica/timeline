@@ -54,12 +54,12 @@ function SearchFormView({ query, inputRef, onInput, onKeyDown, onSubmit }) {
     <form className="search" onSubmit={onSubmit}>
       <fieldset>
         <input
-          type="text"
-          value={query}
-          onInput={onInput}
-          onKeyDown={onKeyDown}
-          placeholder="Search"
-          ref={inputRef}
+          type        = "text"
+          value       = {query}
+          onInput     = {onInput}
+          onKeyDown   = {onKeyDown}
+          placeholder = "Search"
+          ref         = {inputRef}
         />
       </fieldset>
     </form>

@@ -70,9 +70,9 @@ function TimelineView({ groups, records, timeline, onRecordClick, scrollToElemen
 
             {records.byId[entry.id]
               ? <LargeRecord
-                  entries={group}
-                  record={records.byId[entry.id]}
-                  onClick={onRecordClick}
+                  entries   ={group}
+                  record    ={records.byId[entry.id]}
+                  onClick   ={onRecordClick}
                   onRefClick={onRecordClick}
                 />
               : <div>placeholder</div>

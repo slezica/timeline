@@ -74,7 +74,7 @@ export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
     onRefDrop    = {handleRefDrop}
     onRefDiscard = {handleRefDiscard}
     onDragStart  = {handleDragStart}
-    onBodyInput  = { handleBodyInput}
+    onBodyInput  = {handleBodyInput}
   />
 }
 
