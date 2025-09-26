@@ -27,7 +27,7 @@
   --black: oklch(20% 2% 270);
   --white: #fafafa;
 
-  --center-max-width: 500px;
+  --center-max-width: 550px;
   --aside-width: 350px;
 }
 
@@ -442,6 +442,7 @@ html, body, #app {
 ol.refs {
   display: flex;
   flex-direction: column;
+  padding-bottom: 1rem;
 
   --line-mid: calc(var(--item-spacing) / 2);
   --line-start: calc(var(--line-mid) - 1px);
