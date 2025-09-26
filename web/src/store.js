@@ -268,9 +268,7 @@ export const useStore = zs.create(immer((set, get) => {
       const putQ = await db.put(deletedRecord)
       deletedRecord._rev = putQ.rev
 
-      set(state => {
-        a.ready(state.deleteRecord, { record: deletedRecord })
-      })
+      set(state => { a.ready(state.deleteRecord, { record: deletedRecord }) })
 
       return deletedRecord
 
