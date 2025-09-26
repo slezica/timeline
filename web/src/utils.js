@@ -7,16 +7,26 @@ export function debounce(delay, fn) {
 }
 
 
+
+
 export const RefType =  'application/vnd.garden.ref+json'
+
+let globalDataTransfer = {
+  'text/plain': ''
+}
+
+export function clearTransferData(ev) {
+  globalDataTransfer = {}
+}
 
 export function setTransferData(ev, data, mimeType) {
   ev.dataTransfer.effectAllowed = 'copy'
-  ev.dataTransfer.setData(mimeType, JSON.stringify(data))
+  globalDataTransfer[mimeType] = JSON.stringify(data)
 }
 
 export function getTransferData(ev, mimeType='unknown') {
   try {
-    return JSON.parse(ev.dataTransfer.getData(mimeType))
+    return JSON.parse(globalDataTransfer[mimeType])
   } catch {
     return null
   }

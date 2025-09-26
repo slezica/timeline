@@ -3,6 +3,7 @@ import '@picocss/pico'
 import App from './components/App'
 
 import './samples'
+import { clearTransferData } from './utils'
 
 (function setUpDropOutsideToDiscard() {
   let draggedEl = null
@@ -29,7 +30,14 @@ import './samples'
     ev.preventDefault()
     draggedEl.dispatchEvent(new CustomEvent('discard', { bubbles: false }))
   })
-})()
+})();
+
+(function setUpGlobalDataTransfer() {
+  // Since drop with dataTransfer does not work on mobile, we use a global object (see utils).
+  window.addEventListener('drop', () => {
+    setTimeout(clearTransferData, 100)
+  }, true)
+})();
 
 const container = document.body
 const root = createRoot(container)
