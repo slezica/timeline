@@ -79,6 +79,25 @@ window.miniSearch = miniSearch
   @type {import('zustand').UseBoundStore<import('zustand').StoreApi<StoreState>>}
 */
 export const useStore = zs.create(immer((set, get) => {
+  const a = {
+    loading: (state) => {
+      state.loading = true
+      state.error = null
+    },
+
+    ready: (state, extra) => {
+      state.loading = false
+      state.ready = true
+      state.error = null
+      Object.assign(state, extra)
+    },
+
+    error: (state, error) => {
+      console.error(error) // TODO
+      state.loading = false
+      state.error = JSON.parse(JSON.stringify(error))
+    },
+  }
 
   // Store factory (member functions defined below):
   const createState = () => ({
@@ -139,9 +158,7 @@ export const useStore = zs.create(immer((set, get) => {
   }
 
   const fetchRecords = debounce(500, async () => {
-    set(state => {
-      state.records.loading = true
-    })
+    set(state => { a.loading(state.records) })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
@@ -160,25 +177,15 @@ export const useStore = zs.create(immer((set, get) => {
         miniSearch.has(searchDoc.id) ? miniSearch.replace(searchDoc) : miniSearch.add(searchDoc)
       }
 
-      set(state => {
-        state.records.loading = false
-        state.records.error = null
-        state.records.ready = true
-        state.records.byId = byId
-      })
+      set(state => { a.ready(state.records, { byId }) })
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state.records.error = JSON.stringify(err)
-      })
+      set(state => { a.error(state.records, err) })
     }
   })
 
   const fetchTimeline = debounce(500, async () => {
-    set(state => {
-      state.timeline.loading = true
-    })
+    set(state => { a.loading(state.timeline) })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
@@ -191,18 +198,10 @@ export const useStore = zs.create(immer((set, get) => {
         refs.unshift(entry)
       }
 
-      set(state => {
-        state.timeline.loading = false
-        state.timeline.error = null
-        state.timeline.ready = true
-        state.timeline.refs = refs
-      })
+      set(state => { a.ready(state.timeline, { refs }) })
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state.timeline.error = JSON.stringify(err)
-      })
+      set(state => { a.error(state.timeline, err) })
     }
   })
 
@@ -223,32 +222,19 @@ export const useStore = zs.create(immer((set, get) => {
   }
 
   const fetchCollection = async (id) => {
-    set(state => {
-      state[id].loading = true
-    })
+    set(state => { a.loading(state[id]) })
 
     try {
       const collection = await db.get(id)
-      set(state => {
-        state[id].loading = false
-        state[id].error = null
-        state[id].ready = true
-        state[id].refs = collection.refs
-      })
+      set(state => { a.ready(state[id], { refs: collection.refs }) })
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state[id].loading = false
-        state[id].error = JSON.parse(JSON.stringify(err))
-      })
+      set(state => { a.error(state[id], err) })
     }
   }
 
   const replaceCollection = async (id, refs) => {
-    set(state => {
-      state[id].refs = refs
-    })
+    set(state => a.ready(state[id], { refs }))
 
     const collection = await db.get(id)
     collection.refs = refs
@@ -256,11 +242,7 @@ export const useStore = zs.create(immer((set, get) => {
   }
 
   const saveRecord = async (record) => {
-    set(state => {
-      state.saveRecord.loading = false
-      state.saveRecord.error = null
-      state.saveRecord.result = null
-    })
+    set(state => { a.loading(state.saveRecord) })
 
     try {
       record._id ??= genId()
@@ -268,63 +250,38 @@ export const useStore = zs.create(immer((set, get) => {
       const putQ = await db.put(record) // TODO actually check `.ok`
       record._rev = putQ.rev
 
-      set(state => {
-        state.saveRecord.loading = false
-        state.saveRecord.error = null
-        state.saveRecord.result = record
-      })
+      set(state => { a.ready(state.saveRecord, { record }) })
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state.saveRecord.loading = false
-        state.saveRecord.error = JSON.parse(JSON.stringify(err))
-        state.saveRecord.result = null
-      })
+      set(state => { a.error(state.saveRecord, err) })
     }
 
     return record
   }
 
   const deleteRecord = async (record) => {
-    set(state => {
-      state.deleteRecord.loading = true
-      state.deleteRecord.error = null
-      state.deleteRecord.result = null
-    })
+    set(state => { a.loading(state.deleteRecord) })
 
     try {
-      const updatedRecord = {
-        ...record,
-        deleted: true
-      }
+      const deletedRecord = { ...record, deleted: true }
 
-      const putQ = await db.put(updatedRecord)
-      updatedRecord._rev = putQ.rev
+      const putQ = await db.put(deletedRecord)
+      deletedRecord._rev = putQ.rev
 
       set(state => {
-        state.deleteRecord.loading = false
-        state.deleteRecord.error = null
-        state.deleteRecord.result = updatedRecord
+        a.ready(state.deleteRecord, { record: deletedRecord })
       })
 
-      return updatedRecord
+      return deletedRecord
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state.deleteRecord.loading = false
-        state.deleteRecord.error = JSON.parse(JSON.stringify(err))
-        state.deleteRecord.result = null
-      })
+      set(state => { a.error(state.deleteRecord, err) })
     }
   }
 
   const importFile = async (file) => {
     set(state => {
-      state.importFile.result = null
-      state.importFile.error = null
-      state.importFile.loading = true
+      a.loading(state.importFile)
     })
 
     const fileContent = await new Promise((resolve, reject) => {
@@ -338,19 +295,10 @@ export const useStore = zs.create(immer((set, get) => {
 
     try {
       await db.bulkDocs(data.records)
-      set(state => {
-        state.importFile.loading = false
-        state.importFile.error = null
-        state.importFile.result = data.records
-      })
+      set(state => a.ready(state.importFile))
 
     } catch (err) {
-      console.error(err)
-      set(state => {
-        state.importFile.loading = false
-        state.importFile.error = JSON.parse(JSON.stringify(err))
-        state.importFile.result = null
-      })
+      set(state => { a.error(state.importFile, err) })
     }
   }
 

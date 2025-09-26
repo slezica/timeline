@@ -30,6 +30,7 @@ export default function App() {
     }
 
     timeline.search(query, searchOptions).then(refs => {
+      refs = [...refs]
       refs.sort((a, b) => a.date < b.date)
       setQueryIndex({ ...timeline, refs })
     })

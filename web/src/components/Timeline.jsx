@@ -6,6 +6,7 @@ import LargeRecord from './LargeRecord'
 export default function Timeline({ timeline, onRecordClick }) {
   const [ groups, setGroups ] = useState([])
   const records = useStore(state => state.records)
+  const [mostRecent, setMostRecent] = useState()
 
   useEffect(() => {
     if (!timeline.ready) { return }
@@ -31,12 +32,8 @@ export default function Timeline({ timeline, onRecordClick }) {
       }
     }
 
-    if (mostRecentEntry) {
-      mostRecentEntry.isMostRecent = true
-    }
-
     setGroups(groups)
-
+    setMostRecent(mostRecentEntry)
   }, [timeline])
 
 
