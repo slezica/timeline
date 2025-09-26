@@ -131,21 +131,22 @@ function WidgetRecordView({
         }
 
         {record.kind == 'task' &&
-        <div className="tags">
-          <Tag icon="calendar">{formatDisplayDate(record.dueDate) || '–'}</Tag>
-          <Tag icon="check">{formatDisplayDate(record.doneDate) || '–'}</Tag>
-        </div>
+          <div className="tags">
+            <Tag icon="calendar">{formatDisplayDate(record.dueDate) || '–'}</Tag>
+            <Tag icon="check">{formatDisplayDate(record.doneDate) || '–'}</Tag>
+          </div>
         }
 
         {record.kind == 'contact' &&
-        <div className="tags">
-          <Tag icon="envelope">{record.email || '–'}</Tag>
+          <div className="tags">
+            <Tag icon="envelope">{record.email || '–'}</Tag>
 
-          {record.phones.length > 0
-            ? record.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)
-            : <Tag icon="phone"><em>Unknown</em></Tag>
-          }
-        </div>}
+            {record.phones.length > 0
+              ? record.phones.map((it, i) => <Tag key={i} icon="phone">{it.number}</Tag>)
+              : <Tag icon="phone"><em>Unknown</em></Tag>
+            }
+          </div>
+        }
       </div>
 
       <ol className="refs">

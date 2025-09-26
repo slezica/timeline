@@ -140,9 +140,9 @@ body, #app {
   grid-area: r;
 }
 
-#app > aside:not(:hover):not(:has(:focus)):not(:has(.dragover)) {
-  opacity: 0.5;
-}
+/* #app > aside:not(:hover):not(:has(:focus)):not(:has(.dragover)) { */
+/*   opacity: 0.5; */
+/* } */
 
 /* ---------------------------------------------------------------------------------------------- */
 
@@ -201,7 +201,9 @@ body, #app {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    &:empty { display: none; }
   }
+
 
   .extras .tags {
     display: grid;
