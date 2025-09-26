@@ -46,12 +46,12 @@ export default function App() {
     setQuery(query)
   }
 
-  const handleLeftVisibleChange = (shouldShow) => {
-    setLeftOpen(shouldShow)
+  const handleToggleLeft = () => {
+    setLeftOpen(!isLeftOpen)
   }
 
-  const handleRightVisibleChange = (shouldShow) => {
-    setRightOpen(shouldShow)
+  const handleToggleRight = () => {
+    setRightOpen(!isRightOpen)
   }
 
   const handleModalClose   = () => { setEditingRecord(null) }
@@ -81,8 +81,8 @@ export default function App() {
 
       <footer>
         <BottomBar
-          onLeftVisibleChange  = {handleLeftVisibleChange}
-          onRightVisibleChange = {handleRightVisibleChange}
+          onToggleLeft  = {handleToggleLeft}
+          onToggleRight = {handleToggleRight}
         />
       </footer>
 

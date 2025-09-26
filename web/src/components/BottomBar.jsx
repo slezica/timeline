@@ -1,19 +1,10 @@
-import { useState } from "react"
-
-export function BottomBar({ onLeftVisibleChange, onRightVisibleChange }) {
-  const [isLeftVisible, setLeftVisible] = useState()
-  const [isRightVisible, setRightVisible] = useState()
-
+export function BottomBar({ onToggleLeft, onToggleRight }) {
   const handleToggleLeft = (ev) => {
-    const isVisible = !isLeftVisible
-    setLeftVisible(isVisible)
-    onLeftVisibleChange?.(isVisible)
+    onToggleLeft?.()
   }
 
   const handleToggleRight = (ev) => {
-    const isVisible = !isRightVisible
-    setRightVisible(isVisible)
-    onRightVisibleChange?.(isVisible)
+    onToggleRight?.()
   }
 
   return (
