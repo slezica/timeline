@@ -57,7 +57,7 @@ export default function App() {
       </main>
 
       <aside className="right">
-        <Shelf onRecordClick={handleRecordClick} />
+        <Shelf />
       </aside>
 
       <Modal open={editingRecord !== null} onClose={handleModalClose}>
