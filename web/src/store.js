@@ -6,6 +6,9 @@ import { debounce, genId } from './utils'
 import { validateRecord } from './schema'
 
 
+const DEBOUNCE_DELAY = 500
+
+
 /**
   @typedef {import('./schema').Phone} Phone
   @typedef {import('./schema').Ref} Ref
@@ -171,7 +174,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     })
   }
 
-  const fetchRecords = debounce(500, async () => {
+  const fetchRecords = debounce(DEBOUNCE_DELAY, async () => {
     set(state => { a.loading(state.records) })
 
     try {
@@ -200,7 +203,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     }
   })
 
-  const fetchTimeline = debounce(500, async () => {
+  const fetchTimeline = debounce(DEBOUNCE_DELAY, async () => {
     set(state => { a.loading(state.timeline) })
 
     try {
@@ -234,7 +237,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     }
   }
 
-  const fetchCollection = async (id) => {
+  const fetchCollection = debounce(DEBOUNCE_DELAY, async (id) => {
     set(state => { a.loading(state[id]) })
 
     try {
@@ -244,7 +247,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     } catch (err) {
       set(state => { a.error(state[id], err) })
     }
-  }
+  })
 
   const replaceCollection = async (id, refs) => {
     set(state => a.ready(state[id], { refs }))
