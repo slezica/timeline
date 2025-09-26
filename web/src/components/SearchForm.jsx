@@ -39,11 +39,11 @@ export default function SearchForm({ onQueryChange }) {
 
   return (
     <SearchFormView
-      query={query}
-      inputRef={inputRef}
-      onInput={handleInput}
-      onKeyDown={handleKeyDown}
-      onSubmit={handleSearchSubmit}
+      query     = {query}
+      inputRef  = {inputRef}
+      onInput   = {handleInput}
+      onKeyDown = {handleKeyDown}
+      onSubmit  = {handleSearchSubmit}
     />
   )
 }
