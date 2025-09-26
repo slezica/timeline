@@ -81,7 +81,9 @@ window.miniSearch = miniSearch
 /**
   @type {import('zustand').UseBoundStore<import('zustand').StoreApi<StoreState>>}
 */
-export const useStore = zs.create(immer((set, get) => {
+export const useStore = zs.create(immer((set, get, api) => {
+  window.store = api
+
   const a = {
     loading: (state) => {
       state.loading = true
@@ -174,11 +176,11 @@ export const useStore = zs.create(immer((set, get) => {
     set(state => { a.loading(state.records) })
 
     try {
-      const byDateQ = await db.allDocs()
+      const allDocsQ = await db.allDocs({ include_docs: true })
 
       const byId = {}
-      for (let row of byDateQ.rows) {
-        if (!row.type == 'record') { continue }
+      for (let row of allDocsQ.rows) {
+        if (row.doc?.type != 'record') { continue }
 
         if (!validateRecord(row.doc)) {
           console.warn(validateRecord.errors)

@@ -37,7 +37,6 @@ export default function App() {
 
   }, [timeline, query])
 
-
   const handleSearch = (query) => {
     setQuery(query)
   }
@@ -64,10 +63,10 @@ export default function App() {
       <Modal open={editingRecord !== null} onClose={handleModalClose}>
         {editingRecord && (
           <EditRecordForm
-            record={editingRecord}
-            onSave={handleRecordSave}
-            onCancel={handleModalClose}
-            onDelete={handleModalClose}
+            record   = {editingRecord}
+            onSave   = {handleRecordSave}
+            onCancel = {handleModalClose}
+            onDelete = {handleModalClose}
           />
         )}
       </Modal>
