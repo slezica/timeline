@@ -14,14 +14,14 @@ export default function Timeline({ timeline, onRecordClick }) {
     // Merge consecutive same-ID entries, mark entry closest to present:
     const groups = []
     const present = new Date().toISOString()
-    let mostRecentEntry = null
+    let newMostRecent = null
 
     for (let i = timeline.refs.length - 1; i > 0; i--) {
       const entry = timeline.refs[i]
       const lastGroup = groups[groups.length - 1]
 
       if (entry.date < present) {
-        mostRecentEntry = entry
+        newMostRecent = entry
       }
 
       if (lastGroup && entry.id == lastGroup[0].id) {
@@ -33,7 +33,7 @@ export default function Timeline({ timeline, onRecordClick }) {
     }
 
     setGroups(groups)
-    setMostRecent(mostRecentEntry)
+    setMostRecent(newMostRecent)
   }, [timeline])
 
 
@@ -45,23 +45,24 @@ export default function Timeline({ timeline, onRecordClick }) {
 
   return (
     <TimelineView
-      groups={groups}
-      records={records}
-      timeline={timeline}
-      onRecordClick={onRecordClick}
-      scrollToElement={scrollToElement}
+      groups          = {groups}
+      records         = {records}
+      timeline        = {timeline}
+      mostRecent      = {mostRecent}
+      onRecordClick   = {onRecordClick}
+      scrollToElement = {scrollToElement}
     />
   )
 }
 
 
-function TimelineView({ groups, records, timeline, onRecordClick, scrollToElement }) {
+function TimelineView({ groups, records, timeline, mostRecent, onRecordClick, scrollToElement }) {
   return (
     <section className="timeline">
       { groups.map(group => {
         const entry = group[0]
         const key = entry.event + entry.id
-        const isMostRecent = group.some(entry => entry.isMostRecent)
+        const isMostRecent = group.some(entry => entry == mostRecent)
 
         return (
           <div className="timeline-entry" key={key} data-date={group[group.length-1].date}>
