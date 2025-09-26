@@ -2,13 +2,14 @@ import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import TinyRecord from './TinyRecord'
 import Tag from './Tag'
-import { debounce, getTransferData, indexInParent, RefType, setTransferData } from '../utils'
+import { debounce, getTransferData, indexInParent, RefType, setTransferData, useDiscardEvent } from '../utils'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 
-export default function WidgetRecord({ record, onClick, onRefClick }) {
+export default function WidgetRecord({ record, onClick, onRefClick, onDiscard }) {
   const records = useStore(state => state.records)
   const [data, setData] = useState({})
+  const rootRef = useRef()
 
   const saveData = useCallback(debounce(100, async (newRecord) => {
     await records.save(newRecord)
@@ -70,7 +71,14 @@ export default function WidgetRecord({ record, onClick, onRefClick }) {
     update({ body: ev.target.value })
   }
 
+  const handleDiscard = (ev) => {
+    onDiscard?.(ev)
+  }
+
+  useDiscardEvent(rootRef.current, handleDiscard)
+
   return <WidgetRecordView
+    rootRef      = {rootRef}
     record       = {{...record, ...data}}
     records      = {records}
     onClick      = {handleClick}
@@ -84,6 +92,7 @@ export default function WidgetRecord({ record, onClick, onRefClick }) {
 
 
 function WidgetRecordView({
+  rootRef,
   record,
   records,
   onClick,
@@ -98,6 +107,7 @@ function WidgetRecordView({
 
   return (
     <article
+      ref         = {rootRef}
       className   = {"record widget " + record.kind}
       draggable   = {true}
       onDragStart = {onDragStart}

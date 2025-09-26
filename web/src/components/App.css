@@ -378,7 +378,7 @@ body, #app {
   cursor: grab;
 }
 
-.shelf {
+.collection {
   display: flex;
   height: 100%;
   min-height: 300px;
