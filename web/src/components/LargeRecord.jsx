@@ -5,7 +5,7 @@ import Tag from './Tag'
 import { getTransferData, indexInParent, RefType, setTransferData } from '../utils'
 
 
-export default function LargeRecord({ entries, record, onClick, onRefClick }) {
+export default function LargeRecord({ record, onClick, onRefClick }) {
   const records = useStore(state => state.records)
 
   const handleClick = (ev) => {
@@ -49,7 +49,6 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
   }
 
   return <LargeRecordView
-    entries      = {entries}
     record       = {record}
     records      = {records}
     onClick      = {handleClick}
@@ -61,7 +60,7 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
 }
 
 
-function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefDrop, onRefDiscard, onDragStart }) {
+function LargeRecordView({ record, records, onClick, onRefClick, onRefDrop, onRefDiscard, onDragStart }) {
   return (
     <article
       className   = {"record large " + record.kind}
@@ -73,12 +72,6 @@ function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefD
       <header>
         <i className={`circle ${record.kind} dot`} />
         <strong className="title">{record.title || 'Untitled'}</strong>
-
-        {entries.map(entry =>
-          <span className="tags" key={entry.event}>
-            <kbd className={"tag " + entry.event}>{entry.event}</kbd>
-          </span>
-        )}
       </header>
 
       {record.body && (
@@ -95,10 +88,10 @@ function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefD
         }
 
         {record.kind == 'task' &&
-        <div className="tags">
-          <Tag icon="calendar" name="Due">{formatDisplayDate(record.dueDate) || '–'}</Tag>
-          <Tag icon="check" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
-        </div>
+          <div className="tags">
+            <Tag icon="calendar" name="Due">{formatDisplayDate(record.dueDate) || '–'}</Tag>
+            <Tag icon="check" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
+          </div>
         }
 
         {record.kind == 'contact' &&

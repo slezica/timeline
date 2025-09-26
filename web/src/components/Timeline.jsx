@@ -71,10 +71,9 @@ function TimelineView({ groups, records, timeline, mostRecent, onRecordClick, sc
 
             {records.byId[entry.id]
               ? <LargeRecord
-                  entries   ={group}
-                  record    ={records.byId[entry.id]}
-                  onClick   ={onRecordClick}
-                  onRefClick={onRecordClick}
+                  record     = {records.byId[entry.id]}
+                  onClick    = {onRecordClick}
+                  onRefClick = {onRecordClick}
                 />
               : <div>placeholder</div>
             }
