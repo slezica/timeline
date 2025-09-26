@@ -3,16 +3,24 @@ import { useStore } from '../store'
 import TinyRecord from './TinyRecord'
 import Tag from './Tag'
 import { debounce, getTransferData, indexInParent, RefType, setTransferData } from '../utils'
-import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 
 export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
   const records = useStore(state => state.records)
-  const [data, setData] = useState({ ...record })
+  const [data, setData] = useState({})
+  const rev = useRef(record._rev)
 
-  const saveChanges = useCallback(debounce(5000, (ev) => {
-    records.save({ ...record, ...data })
+  const saveData = useCallback(debounce(100, async (newRecord) => {
+    const { _rev } = await records.save(newRecord)
+    rev.current = _rev
   }), [])
+
+  const update = (newData) => {
+    const updated = { ...record, ...data, ...newData, _rev: rev.current }
+    setData(updated)
+    saveData(updated)
+  }
 
   const handleClick = (ev) => {
     onClick?.(record)
@@ -40,8 +48,7 @@ export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
       ...record.refs.slice(index).filter(it => it.id != ref.id),
     ]
 
-    setData({ ...data, refs: newRefs })
-    saveChanges()
+    update({ refs: newRefs })
   }
 
   const handleRefDiscard = (ev) => {
@@ -52,8 +59,7 @@ export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
       ...record.refs.slice(index + 1),
     ]
 
-    setData({ ...data, refs: newRefs })
-    saveChanges()
+    update({ refs: newRefs })
   }
 
   const handleBodyInput = (ev) => {
@@ -61,8 +67,7 @@ export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
     el.style.height = 'auto'
     el.style.height = Math.min(el.scrollHeight, 15) + 'em'
 
-    setData({ ...data, body: ev.target.value })
-    saveChanges()
+    update({ body: ev.target.value })
   }
 
   return <WidgetRecordView

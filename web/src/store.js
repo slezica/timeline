@@ -6,7 +6,7 @@ import { debounce, genId } from './utils'
 import { validateRecord } from './schema'
 
 
-const DEBOUNCE_DELAY = 500
+const DEBOUNCE_DELAY = 3000
 
 
 /**
@@ -160,14 +160,14 @@ export const useStore = zs.create(immer((set, get, api) => {
 
     db.changes({ since: 'now', live: true, include_docs: true, timeout: false })
       .on('change', () => {
-        fetchRecords()
-        fetchTimeline()
+        // fetchRecords()
+        // fetchTimeline()
       }) // scheduled
 
     await fetchRecords()
+    await fetchTimeline()
     await fetchCollection('desk')
     await fetchCollection('shelf')
-    await fetchTimeline()
 
     set(state => {
       state.ready = true
@@ -258,14 +258,12 @@ export const useStore = zs.create(immer((set, get, api) => {
   }
 
   const saveRecord = async (record) => {
-    record = { _id: genId(), ...record }
-
     const prevRecord = get().records.byId[record._id]
-    set(state => { state.records.byId[record._id] = record })
 
     try {
       const putQ = await db.put(record) // TODO actually check `.ok`
-      record = { _rev: putQ.rev, ...record }
+      record = { ...record, _rev: putQ.rev }
+      set(state => { state.records.byId[record._id] = record })
 
     } catch (err) {
       set(state => { state.records.byId[record._id] = prevRecord })
