@@ -63,13 +63,11 @@ export default function LargeRecord({ record, onClick, onRefClick }) {
 function LargeRecordView({ record, records, onClick, onRefClick, onRefDrop, onRefDiscard, onDragStart }) {
   return (
     <article
-      className   = {"record large " + record.kind}
-      draggable   = {true}
-      onDragStart = {onDragStart}
-      onClick     = {onClick}
-      data-id     = {record.id}
+      className = {"record large " + record.kind}
+      onClick   = {onClick}
+      data-id   = {record.id}
     >
-      <header>
+      <header draggable={true} onDragStart={onDragStart}>
         <i className={`circle ${record.kind} dot`} />
         <strong className="title">{record.title || 'Untitled'}</strong>
       </header>
