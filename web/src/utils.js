@@ -1,61 +1,10 @@
 import { useLayoutEffect } from "react"
+import { debounce as perfectDebounce } from "perfect-debounce"
 
 
 export function debounce(delay, fn) {
-  // 1. Fires immediately.
-  // 2. Fires again with the latest parameters after a delay.
-  // 3. If the function is async, it awaits before firing again to avoid concurrency.
-
-  let latestArgs, latestThis
-  let running = false
-  let pending = false
-  let timer = null
-  let waiters = []
-
-  const schedule = () => {
-    clearTimeout(timer)
-    timer = setTimeout(run, delay)
-    pending = false
-  }
-
-  const run = async () => {
-    running = true
-
-    try {
-      const value = await Promise.resolve(fn.apply(latestThis, latestArgs))
-      for (let waiter of waiters) {
-        waiter.resolve(value)
-      }
-
-    } catch (err) {
-      for (let waiter of waiters) {
-        waiter.reject(err)
-      }
-
-    } finally {
-      running = false
-      waiters = []
-      if (pending) { schedule() }
-    }
-  }
-
-  return function debounced(...args) {
-    latestArgs = args
-    latestThis = this
-
-    const { promise, resolve, reject } = Promise.withResolvers()
-    waiters.push({ resolve, reject })
-
-    if (!running && !pending) {
-      run()
-    } else if (!pending) {
-      schedule()
-    }
-
-    return promise
-  }
+  return perfectDebounce(fn, delay, { leading: true, trailing: true })
 }
-
 
 
 export const RefType =  'application/vnd.garden.ref+json'
