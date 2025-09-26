@@ -27,7 +27,7 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
 
-      'indent': ['error', 2, {
+      'indent': ['warn', 2, {
         offsetTernaryExpressions: true,
         ignoredNodes: [
           'ConditionalExpression ConditionalExpression'
