@@ -7,8 +7,9 @@ import EditRecordForm from './EditRecordForm'
 
 import './App.css'
 import Shelf from './Shelf'
-import { Toolbar } from './Toolbar'
+import { TopBar } from './TopBar'
 import Desk from './Desk'
+import { BottomBar } from './BottomBar'
 
 
 export default function App() {
@@ -42,6 +43,14 @@ export default function App() {
     setQuery(query)
   }
 
+  const handleOpenLeft = () => {
+
+  }
+
+  const handleOpenRight = () => {
+
+  }
+
   const handleModalClose   = () => { setEditingRecord(null) }
   const handleRecordCreate = (record) => { setEditingRecord(record) }
   const handleRecordSave   = (record) => { setEditingRecord(null) }
@@ -50,7 +59,7 @@ export default function App() {
   return (
     <div id="app">
       <header>
-        <Toolbar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
+        <TopBar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
       </header>
 
       <main>
@@ -58,7 +67,7 @@ export default function App() {
           <Desk />
         </aside>
 
-        <div class="center">
+        <div className="center">
           <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
         </div>
 
@@ -68,7 +77,7 @@ export default function App() {
       </main>
 
       <footer>
-        <Toolbar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
+        <BottomBar onOpenLeft={handleOpenLeft} onOpenRight={handleOpenRight} />
       </footer>
 
       <Modal open={editingRecord !== null} onClose={handleModalClose}>

@@ -1,7 +1,7 @@
 import CreateRecordFormMini from "./CreateRecordFormMini"
 import SearchForm from "./SearchForm"
 
-export function Toolbar({ onSearch, onRecordCreate }) {
+export function TopBar({ onSearch, onRecordCreate }) {
   const handleQueryChange = (query) => {
     onSearch?.(query)
   }
@@ -11,11 +11,9 @@ export function Toolbar({ onSearch, onRecordCreate }) {
   }
 
   return (
-    <div className="toolbar">
-      <header>
-        <SearchForm onQueryChange={handleQueryChange} />
-        <CreateRecordFormMini onRecordCreate={handleRecordCreate} />
-      </header>
+    <div className="toolbar top">
+      <SearchForm onQueryChange={handleQueryChange} />
+      <CreateRecordFormMini onRecordCreate={handleRecordCreate} />
     </div>
   )
 }

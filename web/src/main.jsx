@@ -3,6 +3,7 @@ import '@picocss/pico'
 import App from './components/App'
 
 import './samples'
+import { putSampleData } from './samples'
 import { clearTransferData } from './utils'
 
 (function setUpDropOutsideToDiscard() {

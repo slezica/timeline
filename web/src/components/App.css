@@ -27,7 +27,7 @@
   --black: oklch(20% 2% 270);
   --white: #fafafa;
 
-  --main-width: 500px;
+  --center-max-width: 500px;
   --aside-width: 350px;
 }
 
@@ -89,59 +89,88 @@ ul, ol {
 
 html, body, #app {
   height: 100vh;
+  height: 100dvh;
 }
 
 #app {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+
+  & > header,
+  & > footer {
+    flex: 0;
+  }
+  
+  & > main {
+    flex: 1;
+  }
 }
 
-#app > header {
+#app > header,
+#app > footer {
   display: flex;
   justify-content: center;
-  padding: 0.75rem;
   background-color: rgb(17, 20, 26); /* TODO */
 
   .toolbar {
-    width: var(--main-width)
+    flex: 0 1 var(--center-max-width);
   }
 }
 
 #app > main {
   display: flex;
   min-height: 0;
-  gap: 1.75rem;
   justify-content: center;
+
+  & > * {
+    min-width: 0;
+    height: 100%;
+    padding: 0.75rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    background-color: var(--pico-background-color);
+  }
 
   & > .left,
   & > .right {
-    flex: 0 0.5 300px;
-    min-width: 0;
-    height: 100%;
-    overflow-y: scroll;
-    overflow-x: hidden;
+    flex: 0 1 300px;
   }
 
   & > .center {
-    flex: 0 1 600px;
-    min-width: 0;
-    height: 100%;
+    flex: 0 1 var(--center-max-width);
     overflow-y: scroll;
     overflow-x: hidden;
   }
 }
 
-#app > aside {
-  height: 100%;
+@media (max-width: 768px) {
+  #app > main  {
+    & > .left,
+    & > .right {
+      width: 80vw;
+      position: fixed;
+      top: 0;
+      z-index: 1000;
+    }
+
+    & > .left {
+      left: 0;
+      transform: translateX(-100%);
+    }
+
+    & > .right {
+      position: fixed;
+      right: 0;
+      box-shadow: -8px 0 12px -6px rgba(0, 0, 0, 0.5);
+      /* transform: translateX(100%); */
+    }
+  }
 }
 
-#app > aside.left {
-  grid-area: l;
-}
-
-#app > aside.right {
-  grid-area: r;
+@media (min-width: 769px) {
+  #app > footer {
+    display: none;
+  }
 }
 
 /* #app > aside:not(:hover):not(:has(:focus)):not(:has(.dragover)) { */
@@ -152,7 +181,6 @@ html, body, #app {
 
 .timeline {
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 1.5rem;
   max-width: 100%;
@@ -409,7 +437,6 @@ ol.refs {
   --line-mid: calc(var(--item-spacing) / 2);
   --line-start: calc(var(--line-mid) - 1px);
   --line-end: calc(var(--line-mid) + 1px);
-  --sentinel-height: 1rem;
 
   margin-top: calc(-1 * var(--item-spacing));
 
@@ -433,7 +460,7 @@ ol.refs {
   }
 
   & > .sentinel {
-    height: var(--sentinel-height);
+    flex: 1;
     margin-bottom: -1rem;
   }
 }
@@ -455,10 +482,12 @@ ol.refs {
 .modal-content {
   width: 100%;
   max-width: min(650px, 80vw);
-  max-height: 90vh;
   border-radius: 4px;
   overflow-y: auto;
   background-color: var(--pico-card-background-color);
+
+  max-height: 90vh;
+  max-height: 90dvh;
 }
 
 
@@ -528,19 +557,25 @@ i {
 /* ---------------------------------------------------------------------------------------------- */
 
 .toolbar {
-  header {
-    display: flex;
-    gap: 0.5rem;
-  }
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 0.75rem;
 
-  header .search { flex: 1; }
-  header .create { flex: 0; }
-
-  header .create button {
+  button {
     height: 100%;
-    aspect-ratio: 1/1;
   }
 }
+
+.toolbar.top {
+  .search { flex: 1 }
+  .create { flex: 0; }
+}
+
+
+/* ---------------------------------------------------------------------------------------------- */
 
 form.edit-record {
   position: relative;
