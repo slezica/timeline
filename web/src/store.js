@@ -1,4 +1,5 @@
 import * as zs from 'zustand'
+import { immer } from 'zustand/middleware/immer'
 import MiniSearch from 'minisearch'
 import { db, initializeDb } from './database'
 import { debounce, genId } from './utils'
@@ -77,18 +78,7 @@ window.miniSearch = miniSearch
 /**
   @type {import('zustand').UseBoundStore<import('zustand').StoreApi<StoreState>>}
 */
-export const useStore = zs.create((set, get) => {
-  const scope = (key) => ({
-    ctx: () => get(),
-    get: () => get()[key],
-    set: (partial, replace) => set(state => {
-      const prev = state[key]
-      const next = (typeof partial === 'function') ? partial(prev) : partial
-      const comb = replace ? next : { ...prev, ...next }
-
-      return { [key]: comb }
-    })
-  })
+export const useStore = zs.create(immer((set, get) => {
 
   // Store factory (member functions defined below):
   const createState = () => ({
@@ -143,13 +133,15 @@ export const useStore = zs.create((set, get) => {
     await fetchCollection('shelf')
     await fetchTimeline()
 
-    set({ ready: true })
+    set(state => {
+      state.ready = true
+    })
   }
 
   const fetchRecords = debounce(500, async () => {
-    const { set } = scope('records')
-
-    set({ loading: true })
+    set(state => {
+      state.records.loading = true
+    })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
@@ -168,18 +160,25 @@ export const useStore = zs.create((set, get) => {
         miniSearch.has(searchDoc.id) ? miniSearch.replace(searchDoc) : miniSearch.add(searchDoc)
       }
 
-      set({ loading: false, error: null, ready: true, byId })
+      set(state => {
+        state.records.loading = false
+        state.records.error = null
+        state.records.ready = true
+        state.records.byId = byId
+      })
 
     } catch (err) {
       console.error(err)
-      set({ error: JSON.stringify(err) })
+      set(state => {
+        state.records.error = JSON.stringify(err)
+      })
     }
   })
 
   const fetchTimeline = debounce(500, async () => {
-    const { set } = scope('timeline')
-
-    set({ loading: true })
+    set(state => {
+      state.timeline.loading = true
+    })
 
     try {
       const byDateQ = await db.query('index/byDate', { include_docs: true })
@@ -192,17 +191,22 @@ export const useStore = zs.create((set, get) => {
         refs.unshift(entry)
       }
 
-      set({ loading: false, error: null, ready: true, refs })
+      set(state => {
+        state.timeline.loading = false
+        state.timeline.error = null
+        state.timeline.ready = true
+        state.timeline.refs = refs
+      })
 
     } catch (err) {
       console.error(err)
-      set({ error: JSON.stringify(err) })
+      set(state => {
+        state.timeline.error = JSON.stringify(err)
+      })
     }
   })
 
   const searchTimeline = async (query="", options) => {
-    const { get } = scope('timeline')
-
     if (query) {
       const results = miniSearch.search(query, options)
 
@@ -211,31 +215,40 @@ export const useStore = zs.create((set, get) => {
         ids.add(result.id)
       }
 
-      return get().refs.filter(it => ids.has(it.id))
+      return get().timeline.refs.filter(it => ids.has(it.id))
 
     } else {
-      return get().refs
+      return get().timeline.refs
     }
   }
 
   const fetchCollection = async (id) => {
-    const { set } = scope(id)
-
-    set({ loading: true })
+    set(state => {
+      state[id].loading = true
+    })
 
     try {
       const collection = await db.get(id)
-      set({ loading: false, error: null, ready: true, refs: collection.refs })
+      set(state => {
+        state[id].loading = false
+        state[id].error = null
+        state[id].ready = true
+        state[id].refs = collection.refs
+      })
 
     } catch (err) {
       console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(err)) })
+      set(state => {
+        state[id].loading = false
+        state[id].error = JSON.parse(JSON.stringify(err))
+      })
     }
   }
 
   const replaceCollection = async (id, refs) => {
-    const { set } = scope(id)
-    set({ refs })
+    set(state => {
+      state[id].refs = refs
+    })
 
     const collection = await db.get(id)
     collection.refs = refs
@@ -243,9 +256,11 @@ export const useStore = zs.create((set, get) => {
   }
 
   const saveRecord = async (record) => {
-    const { set } = scope('createRecord')
-
-    set({ loading: false, error: null, result: null })
+    set(state => {
+      state.saveRecord.loading = false
+      state.saveRecord.error = null
+      state.saveRecord.result = null
+    })
 
     try {
       record._id ??= genId()
@@ -253,20 +268,30 @@ export const useStore = zs.create((set, get) => {
       const putQ = await db.put(record) // TODO actually check `.ok`
       record._rev = putQ.rev
 
-      set({ loading: false, error: null, result: record })
+      set(state => {
+        state.saveRecord.loading = false
+        state.saveRecord.error = null
+        state.saveRecord.result = record
+      })
 
     } catch (err) {
       console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
+      set(state => {
+        state.saveRecord.loading = false
+        state.saveRecord.error = JSON.parse(JSON.stringify(err))
+        state.saveRecord.result = null
+      })
     }
 
     return record
   }
 
   const deleteRecord = async (record) => {
-    const { set } = scope('deleteRecord')
-
-    set({ loading: true, error: null, result: null })
+    set(state => {
+      state.deleteRecord.loading = true
+      state.deleteRecord.error = null
+      state.deleteRecord.result = null
+    })
 
     try {
       const updatedRecord = {
@@ -277,20 +302,30 @@ export const useStore = zs.create((set, get) => {
       const putQ = await db.put(updatedRecord)
       updatedRecord._rev = putQ.rev
 
-      set({ loading: false, error: null, result: updatedRecord })
+      set(state => {
+        state.deleteRecord.loading = false
+        state.deleteRecord.error = null
+        state.deleteRecord.result = updatedRecord
+      })
 
       return updatedRecord
 
     } catch (err) {
       console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
+      set(state => {
+        state.deleteRecord.loading = false
+        state.deleteRecord.error = JSON.parse(JSON.stringify(err))
+        state.deleteRecord.result = null
+      })
     }
   }
 
   const importFile = async (file) => {
-    const { set } = scope('importFile')
-
-    set({ result: null, error: null, loading: true })
+    set(state => {
+      state.importFile.result = null
+      state.importFile.error = null
+      state.importFile.loading = true
+    })
 
     const fileContent = await new Promise((resolve, reject) => {
       const reader = new FileReader()
@@ -303,13 +338,21 @@ export const useStore = zs.create((set, get) => {
 
     try {
       await db.bulkDocs(data.records)
-      set({ loading: false, error: null, result: data.records })
+      set(state => {
+        state.importFile.loading = false
+        state.importFile.error = null
+        state.importFile.result = data.records
+      })
 
     } catch (err) {
       console.error(err)
-      set({ loading: false, error: JSON.parse(JSON.stringify(err)), result: null })
+      set(state => {
+        state.importFile.loading = false
+        state.importFile.error = JSON.parse(JSON.stringify(err))
+        state.importFile.result = null
+      })
     }
   }
 
   return createState()
-})
+}))
