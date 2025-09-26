@@ -20,6 +20,9 @@ export default function App() {
   const [queryIndex, setQueryIndex] = useState([])
   const [editingRecord, setEditingRecord] = useState(null)
 
+  const [isLeftOpen, setLeftOpen] = useState(false)
+  const [isRightOpen, setRightOpen] = useState(false)
+
   useEffect(() => {
     store.initialize()
   }, [])
@@ -43,12 +46,12 @@ export default function App() {
     setQuery(query)
   }
 
-  const handleOpenLeft = () => {
-
+  const handleLeftVisibleChange = (shouldShow) => {
+    setLeftOpen(shouldShow)
   }
 
-  const handleOpenRight = () => {
-
+  const handleRightVisibleChange = (shouldShow) => {
+    setRightOpen(shouldShow)
   }
 
   const handleModalClose   = () => { setEditingRecord(null) }
@@ -63,7 +66,7 @@ export default function App() {
       </header>
 
       <main>
-        <aside className="left">
+        <aside className={`left ${isLeftOpen ? '' : 'closed'}`}>
           <Desk />
         </aside>
 
@@ -71,13 +74,16 @@ export default function App() {
           <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
         </div>
 
-        <aside className="right">
+        <aside className={`right ${isRightOpen ? '' : 'closed'}`}>
           <Shelf />
         </aside>
       </main>
 
       <footer>
-        <BottomBar onOpenLeft={handleOpenLeft} onOpenRight={handleOpenRight} />
+        <BottomBar
+          onLeftVisibleChange  = {handleLeftVisibleChange}
+          onRightVisibleChange = {handleRightVisibleChange}
+        />
       </footer>
 
       <Modal open={editingRecord !== null} onClose={handleModalClose}>

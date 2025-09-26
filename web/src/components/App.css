@@ -85,6 +85,11 @@ ul, ol {
   padding: 0;
 }
 
+.expand {
+  flex: 1;
+}
+
+
 /* ---------------------------------------------------------------------------------------------- */
 
 html, body, #app {
@@ -145,25 +150,29 @@ html, body, #app {
 
 @media (max-width: 768px) {
   #app > main  {
-    & > .left,
-    & > .right {
+    position: relative;
+    overflow: hidden;
+
+    & > aside {
       width: 80vw;
-      position: fixed;
+      position: absolute;
       top: 0;
       z-index: 1000;
+      transition: transform 0.2s ease-out;
     }
 
-    & > .left {
+    & > aside.left {
       left: 0;
-      transform: translateX(-100%);
+      box-shadow: 8px 0 12px -6px rgba(0, 0, 0, 0.5);
     }
 
-    & > .right {
-      position: fixed;
+    & > aside.right {
       right: 0;
       box-shadow: -8px 0 12px -6px rgba(0, 0, 0, 0.5);
-      /* transform: translateX(100%); */
     }
+
+    & > aside.left.closed { transform: translateX(-100%); }
+    & > aside.right.closed { transform: translateX(100%); }
   }
 }
 
@@ -566,12 +575,22 @@ i {
 
   button {
     height: 100%;
+    aspect-ratio: 1/1;
   }
 }
 
 .toolbar.top {
   .search { flex: 1 }
   .create { flex: 0; }
+}
+
+.toolbar.bottom {
+  button {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
 }
 
 
@@ -616,5 +635,4 @@ i.dot {
   &.task    { color: var(--red); }
   &.contact { color: var(--blue); }
 }
-
 
