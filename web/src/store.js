@@ -26,10 +26,12 @@ import { validateRecord } from './schema'
   ready: boolean
 }} AsyncState */
 
-/** @template T
+/** 
+  @template T
   @typedef {AsyncState & {
-  result: T | null,
-  run: (...args: any[]) => Promise<T>
+    loading: boolean,
+    error: string | null,
+    ready: boolean
 }} AsyncAction */
 
 /**
@@ -72,6 +74,7 @@ const miniSearch = new MiniSearch({
   storeFields: ['id'],
   processTerm: (term) => term.toLowerCase()
 })
+
 window.miniSearch = miniSearch
 
 
@@ -100,8 +103,19 @@ export const useStore = zs.create(immer((set, get) => {
   }
 
   const s = {
-    asyncState: (extra) => ({ ...extra, loading: false, error: null, ready: false }),
-    asyncAction: (extra) => ({ ...extra, loading: false, error: null, ready: true })
+    asyncState: (extra) => ({
+      ...extra,
+      loading: false,
+      error: null,
+      ready: false,
+    }),
+
+    asyncAction: (extra) => ({
+      ...extra,
+      loading: false,
+      error: null,
+      ready: true,
+    })
   }
 
   // Store factory (member functions defined below):
@@ -110,31 +124,31 @@ export const useStore = zs.create(immer((set, get) => {
     initialize: initializeStore,
 
     records: s.asyncState({
-      byId: {},
-      fetch: fetchRecords
+      byId  : {},
+      fetch : fetchRecords,
+      save  : saveRecord,
+      delete: deleteRecord
     }),
 
     timeline: s.asyncState({
-      refs: [],
-      fetch: fetchTimeline,
+      refs  : [],
+      fetch : fetchTimeline,
       search: searchTimeline
     }),
 
     shelf: s.asyncState({
-      refs: [],
-      fetch: () => fetchCollection('shelf'),
+      refs   : [],
+      fetch  : () => fetchCollection('shelf'),
       replace: (refs) => replaceCollection('shelf', refs)
     }),
 
     desk: s.asyncState({
-      refs: [],
-      fetch: () => fetchCollection('desk'),
+      refs   : [],
+      fetch  : () => fetchCollection('desk'),
       replace: (refs) => replaceCollection('desk', refs)
     }),
 
-    saveRecord: s.asyncAction(saveRecord),
     importFile: s.asyncAction(importFile),
-    deleteRecord: s.asyncAction(deleteRecord),
   })
 
   const initializeStore = async () => {

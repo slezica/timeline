@@ -7,7 +7,6 @@ import { getTransferData, indexInParent, RefType, setTransferData } from '../uti
 
 export default function LargeRecord({ entries, record, onClick, onRefClick }) {
   const records = useStore(state => state.records)
-  const saveRecord = useStore(state => state.saveRecord)
 
   const handleClick = (ev) => {
     onClick?.(record)
@@ -35,7 +34,7 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
       ...record.refs.slice(index).filter(it => it.id != ref.id),
     ]
 
-    saveRecord.run({ ...record, refs: newRefs })
+    records.save({ ...record, refs: newRefs })
   }
 
   const handleRefDiscard = (ev) => {
@@ -46,7 +45,7 @@ export default function LargeRecord({ entries, record, onClick, onRefClick }) {
       ...record.refs.slice(index + 1),
     ]
 
-    saveRecord.run({ ...record, refs: newRefs })
+   records.save({ ...record, refs: newRefs })
   }
 
   return <LargeRecordView

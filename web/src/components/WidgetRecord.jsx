@@ -8,11 +8,10 @@ import { useCallback, useLayoutEffect, useRef, useState } from 'react'
 
 export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
   const records = useStore(state => state.records)
-  const saveRecord = useStore(state => state.saveRecord)
   const [data, setData] = useState({ ...record })
 
   const saveChanges = useCallback(debounce(5000, (ev) => {
-    saveRecord.run({ ...record, ...data })
+    records.save({ ...record, ...data })
   }), [])
 
   const handleClick = (ev) => {

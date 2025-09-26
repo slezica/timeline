@@ -8,8 +8,6 @@ import { getTransferData, RefType } from '../utils'
 export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   const [data, setData] = useState({ ...record })
   const records = useStore(state => state.records)
-  const updateRecord = useStore(state => state.updateRecord)
-  const saveRecord = useStore(state => state.saveRecord)
 
   const handleChange = (name, value) => {
     setData(prev => ({ ...prev, [name]: value }))
@@ -24,7 +22,7 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
       title: data.title
     }
 
-    saveRecord.run(updatedRecord)
+    records.save(updatedRecord)
     onSave?.()
   }
 
@@ -33,12 +31,7 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   }
 
   const handleDelete = () => {
-    const updatedRecord = {
-      ...record,
-      deleted: true
-    }
-
-    updateRecord.run(updatedRecord)
+    records.delete(record)
     onDelete?.()
   }
 
