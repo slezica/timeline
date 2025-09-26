@@ -251,44 +251,32 @@ export const useStore = zs.create(immer((set, get, api) => {
 
   const replaceCollection = async (id, refs) => {
     set(state => a.ready(state[id], { refs }))
-
+    
     const collection = await db.get(id)
     collection.refs = refs
     await db.put(collection)
   }
 
   const saveRecord = async (record) => {
-    set(state => { a.loading(state.saveRecord) })
+    record = { _id: genId(), ...record }
+
+    const prevRecord = get().records.byId[record._id]
+    set(state => { state.records.byId[record._id] = record })
 
     try {
-      record._id ??= genId()
       const putQ = await db.put(record) // TODO actually check `.ok`
       record._rev = putQ.rev
 
-      set(state => { a.ready(state.saveRecord, { record }) })
-
     } catch (err) {
-      set(state => { a.error(state.saveRecord, err) })
+      set(state => { state.records.byId[record._id] = prevRecord })
+      throw err
     }
 
     return record
   }
 
   const deleteRecord = async (record) => {
-    set(state => { a.loading(state.deleteRecord) })
-
-    try {
-      const deletedRecord = { ...record, deleted: true }
-      const putQ = await db.put(deletedRecord)
-      deletedRecord._rev = putQ.rev
-
-      set(state => { a.ready(state.deleteRecord, { record: deletedRecord }) })
-
-      return deletedRecord
-
-    } catch (err) {
-      set(state => { a.error(state.deleteRecord, err) })
-    }
+    return saveRecord({ ...record, deleted: true })
   }
 
   const importFile = async (file) => {
