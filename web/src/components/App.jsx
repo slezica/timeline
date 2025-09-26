@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { useStore } from '../store'
+import { isInside } from '../utils'
 
 import Timeline from './Timeline'
 import Modal from './Modal'
@@ -23,6 +24,10 @@ export default function App() {
   const [isLeftOpen, setLeftOpen] = useState(false)
   const [isRightOpen, setRightOpen] = useState(false)
 
+  const leftSidebarRef = useRef()
+  const rightSidebarRef = useRef()
+  const dragSourceRef = useRef(null)
+
   useEffect(() => {
     store.initialize()
   }, [])
@@ -41,6 +46,43 @@ export default function App() {
     })
 
   }, [timeline, query])
+
+  useLayoutEffect(() => {
+    const handleDragStart = (ev) => {
+      dragSourceRef.current = ev.target.closest('main > aside')
+    }
+
+    const handleDragOver = (ev) => {
+      if (!dragSourceRef.current) { return }
+
+      if (dragSourceRef.current == leftSidebarRef.current && isLeftOpen) {
+        const leftRect = leftSidebarRef.current.getBoundingClientRect()
+        if (!isInside(ev, leftRect)) {
+          setLeftOpen(false)
+        }
+
+      } else if (dragSourceRef.current == rightSidebarRef.current && isRightOpen) {
+        const rightRect = rightSidebarRef.current.getBoundingClientRect()
+        if (!isInside(ev, rightRect)) {
+          setRightOpen(false)
+        }
+      }
+    }
+
+    const handleDragEnd = () => {
+      dragSourceRef.current = null
+    }
+
+    window.addEventListener('dragstart', handleDragStart, true)
+    window.addEventListener('dragover', handleDragOver, true)
+    window.addEventListener('dragend', handleDragEnd, true)
+
+    return () => {
+      window.removeEventListener('dragstart', handleDragStart, true)
+      window.removeEventListener('dragover', handleDragOver, true)
+      window.removeEventListener('dragend', handleDragEnd, true)
+    }
+  }, [])
 
   const handleSearch = (query) => {
     setQuery(query)
@@ -66,7 +108,7 @@ export default function App() {
       </header>
 
       <main>
-        <aside className={`left ${isLeftOpen ? '' : 'closed'}`}>
+        <aside ref={leftSidebarRef} className={`left ${isLeftOpen ? '' : 'closed'}`}>
           <Desk />
         </aside>
 
@@ -74,7 +116,7 @@ export default function App() {
           <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
         </div>
 
-        <aside className={`right ${isRightOpen ? '' : 'closed'}`}>
+        <aside ref={rightSidebarRef} className={`right ${isRightOpen ? '' : 'closed'}`}>
           <Shelf />
         </aside>
       </main>

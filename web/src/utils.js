@@ -53,3 +53,11 @@ export function useDiscardEvent(el, onDiscard) {
 export function indexInParent(el) {
   return [...el.parentElement.children].indexOf(el)
 }
+
+
+export function isInside(ev, rect) {
+  return ev.clientX >= rect.left &&
+         ev.clientX <= rect.right &&
+         ev.clientY >= rect.top &&
+         ev.clientY <= rect.bottom
+}

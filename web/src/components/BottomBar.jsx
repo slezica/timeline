@@ -10,7 +10,7 @@ export function BottomBar({ onToggleLeft, onToggleRight }) {
   return (
     <div className="toolbar bottom">
       <button type="button" onPointerDown={handleToggleLeft}>A</button>
-      <div class="expand" />
+      <div className="expand" />
       <button type="button" onPointerDown={handleToggleRight}>B</button>
     </div>
   )
