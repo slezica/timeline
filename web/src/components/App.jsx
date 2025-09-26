@@ -53,17 +53,23 @@ export default function App() {
         <Toolbar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
       </header>
 
-      <aside className="left">
-        <Desk />
-      </aside>
-
       <main>
-        <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
+        <aside className="left">
+          <Desk />
+        </aside>
+
+        <div class="center">
+          <Timeline timeline={queryIndex} onRecordClick={handleRecordClick} />
+        </div>
+
+        <aside className="right">
+          <Shelf />
+        </aside>
       </main>
 
-      <aside className="right">
-        <Shelf />
-      </aside>
+      <footer>
+        <Toolbar onSearch={handleSearch} onRecordCreate={handleRecordCreate} />
+      </footer>
 
       <Modal open={editingRecord !== null} onClose={handleModalClose}>
         {editingRecord && (
