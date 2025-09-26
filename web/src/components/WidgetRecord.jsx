@@ -6,20 +6,20 @@ import { debounce, getTransferData, indexInParent, RefType, setTransferData } fr
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 
-export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
+export default function WidgetRecord({ record, onClick, onRefClick }) {
   const records = useStore(state => state.records)
   const [data, setData] = useState({})
-  const rev = useRef(record._rev)
 
   const saveData = useCallback(debounce(100, async (newRecord) => {
-    const { _rev } = await records.save(newRecord)
-    rev.current = _rev
+    await records.save(newRecord)
   }), [])
 
-  const update = (newData) => {
-    const updated = { ...record, ...data, ...newData, _rev: rev.current }
-    setData(updated)
-    saveData(updated)
+  const update = (fields) => {
+    const newData = { ...data, ...fields } 
+    setData(newData)
+
+    const newRecord = { ...record, ...newData }
+    saveData(newRecord)
   }
 
   const handleClick = (ev) => {
@@ -71,7 +71,6 @@ export default function WidgetRecord({ entries, record, onClick, onRefClick }) {
   }
 
   return <WidgetRecordView
-    entries      = {entries}
     record       = {{...record, ...data}}
     records      = {records}
     onClick      = {handleClick}
