@@ -237,7 +237,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     }
   }
 
-  const fetchCollection = debounce(DEBOUNCE_DELAY, async (id) => {
+  const fetchCollection = async (id) => {
     set(state => { a.loading(state[id]) })
 
     try {
@@ -247,7 +247,7 @@ export const useStore = zs.create(immer((set, get, api) => {
     } catch (err) {
       set(state => { a.error(state[id], err) })
     }
-  })
+  }
 
   const replaceCollection = async (id, refs) => {
     set(state => a.ready(state[id], { refs }))
