@@ -97,7 +97,7 @@ function LargeRecordView({ entries, record, records, onClick, onRefClick, onRefD
         {record.kind == 'task' &&
         <div className="tags">
           <Tag icon="calendar" name="Due">{formatDisplayDate(record.dueDate) || '–'}</Tag>
-          <Tag icon="calendar" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
+          <Tag icon="check" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
         </div>
         }
 

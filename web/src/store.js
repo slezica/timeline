@@ -265,7 +265,7 @@ export const useStore = zs.create(immer((set, get, api) => {
 
     try {
       const putQ = await db.put(record) // TODO actually check `.ok`
-      record._rev = putQ.rev
+      record = { _rev: putQ.rev, ...record }
 
     } catch (err) {
       set(state => { state.records.byId[record._id] = prevRecord })

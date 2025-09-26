@@ -118,8 +118,8 @@ function WidgetRecordView({
 
         {record.kind == 'task' &&
         <div className="tags">
-          <Tag icon="calendar" name="Due">{formatDisplayDate(record.dueDate) || '–'}</Tag>
-          <Tag icon="calendar" name="Done">{formatDisplayDate(record.doneDate) || '–'}</Tag>
+          <Tag icon="calendar">{formatDisplayDate(record.dueDate) || '–'}</Tag>
+          <Tag icon="check">{formatDisplayDate(record.doneDate) || '–'}</Tag>
         </div>
         }
 
