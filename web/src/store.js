@@ -26,12 +26,11 @@ import { validateRecord } from './schema'
   ready: boolean
 }} AsyncState */
 
-/** 
+/**
   @template T
   @typedef {AsyncState & {
-    loading: boolean,
-    error: string | null,
-    ready: boolean
+    result: T | null,
+    run: (...args: any[]) => Promise<T>
 }} AsyncAction */
 
 /**
@@ -41,7 +40,9 @@ import { validateRecord } from './schema'
 
     records: AsyncState & {
       byId: Record<string, Record>,
-      fetch: () => Promise<void>
+      fetch: () => Promise<void>,
+      save: (record: Record) => Promise<Record>,
+      delete: (record: Record) => Promise<Record>
     },
 
     timeline: AsyncState & {
@@ -62,9 +63,7 @@ import { validateRecord } from './schema'
       replace: (refs: Ref[]) => Promise<void>
     },
 
-    saveRecord: AsyncAction<Record>,
-    deleteRecord: AsyncAction<Record>,
-    importFile: AsyncAction<Record[]>
+    importFile: AsyncState & ((file: File) => Promise<void>)
   }} StoreState
 */
 
@@ -209,10 +208,7 @@ export const useStore = zs.create(immer((set, get, api) => {
 
       const refs = []
       for (let row of byDateQ.rows) {
-        const entry = { id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key }
-
-        // Sorted index:
-        refs.unshift(entry)
+        refs.unshift({ id: row.doc._id, kind: row.doc.kind, event: row.value.event, date: row.key })
       }
 
       set(state => { a.ready(state.timeline, { refs }) })
@@ -263,7 +259,6 @@ export const useStore = zs.create(immer((set, get, api) => {
 
     try {
       record._id ??= genId()
-
       const putQ = await db.put(record) // TODO actually check `.ok`
       record._rev = putQ.rev
 
@@ -281,7 +276,6 @@ export const useStore = zs.create(immer((set, get, api) => {
 
     try {
       const deletedRecord = { ...record, deleted: true }
-
       const putQ = await db.put(deletedRecord)
       deletedRecord._rev = putQ.rev
 
@@ -295,9 +289,7 @@ export const useStore = zs.create(immer((set, get, api) => {
   }
 
   const importFile = async (file) => {
-    set(state => {
-      a.loading(state.importFile)
-    })
+    set(state => { a.loading(state.importFile) })
 
     const fileContent = await new Promise((resolve, reject) => {
       const reader = new FileReader()
