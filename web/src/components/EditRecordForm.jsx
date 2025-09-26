@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import DropTarget from './DropTarget'
 import TinyRecord from './TinyRecord'
 import { useStore } from '../store'
@@ -90,9 +90,9 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
 
 
 function TopRecordFields({ record, data, onChange }) {
-  const handleTitleRef = (el) => {
+  const handleTitleRef = useCallback((el) => {
     el?.focus()
-  }
+  }, [])
 
   const changeHandler = (name) => (ev) => { onChange(name, ev.target.value) }
 
