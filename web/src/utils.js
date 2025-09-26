@@ -1,11 +1,6 @@
 import { useLayoutEffect } from "react"
 
 
-funct
-
-
-
-
 export function debounce(delay, fn) {
   // 1. Fires immediately.
   // 2. Fires again with the latest parameters after a delay.
