@@ -21,9 +21,9 @@ import { validateRecord } from './schema'
 */
 
 /** @typedef {{
-  ready: boolean,
+  loading: boolean,
   error: string | null,
-  loading: boolean
+  ready: boolean
 }} AsyncState */
 
 /** @template T
@@ -99,43 +99,42 @@ export const useStore = zs.create(immer((set, get) => {
     },
   }
 
+  const s = {
+    asyncState: (extra) => ({ ...extra, loading: false, error: null, ready: false }),
+    asyncAction: (extra) => ({ ...extra, loading: false, error: null, ready: true })
+  }
+
   // Store factory (member functions defined below):
   const createState = () => ({
     ready: false,
     initialize: initializeStore,
 
-    records: {
-      ready: false, error: null, loading: false,
+    records: s.asyncState({
       byId: {},
-
       fetch: fetchRecords
-    },
+    }),
 
-    timeline: {
-      ready: false, error: null, loading: false,
+    timeline: s.asyncState({
       refs: [],
-
       fetch: fetchTimeline,
       search: searchTimeline
-    },
+    }),
 
-    shelf: {
-      ready: false, error: null, loading: false, 
+    shelf: s.asyncState({
       refs: [],
       fetch: () => fetchCollection('shelf'),
       replace: (refs) => replaceCollection('shelf', refs)
-    },
+    }),
 
-    desk: {
-      ready: false, error: null, loading: false, 
+    desk: s.asyncState({
       refs: [],
       fetch: () => fetchCollection('desk'),
       replace: (refs) => replaceCollection('desk', refs)
-    },
+    }),
 
-    saveRecord: { loading: false, error: null, result: null, run: saveRecord },
-    deleteRecord: { loading: false, error: null, result: null, run: deleteRecord },
-    importFile: { loading: false, error: null, result: null, run: importFile },
+    saveRecord: s.asyncAction(saveRecord),
+    importFile: s.asyncAction(importFile),
+    deleteRecord: s.asyncAction(deleteRecord),
   })
 
   const initializeStore = async () => {
