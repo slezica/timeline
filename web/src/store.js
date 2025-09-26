@@ -161,10 +161,12 @@ export const useStore = zs.create(immer((set, get) => {
     set(state => { a.loading(state.records) })
 
     try {
-      const byDateQ = await db.query('index/byDate', { include_docs: true })
+      const byDateQ = await db.allDocs()
 
       const byId = {}
       for (let row of byDateQ.rows) {
+        if (!row.type == 'record') { continue }
+
         if (!validateRecord(row.doc)) {
           console.warn(validateRecord.errors)
         }

@@ -15,6 +15,76 @@ addKeywords(ajv, ["uniqueItemProperties"])
   id  : string,
   name: string
 }} Ref */
+
+
+/** @typedef {{
+  type: string,
+  number: string
+}} Phone */
+
+
+/** @typedef {{
+  _id: string,
+  _rev?: string
+}} BaseDoc */
+
+
+/** @typedef {BaseDoc & {
+  type: 'record',
+  kind: string,
+  createdDate: string,
+  updatedDate: string,
+  title: string,
+  body: string,
+  refs: Ref[],
+  deleted?: boolean
+}} BaseRecord */
+
+
+/** @typedef {BaseRecord & {
+  kind: 'task',
+  dueDate: string | null,
+  doneDate: string | null
+}} Task */
+
+
+/** @typedef {BaseRecord & {
+  kind: 'note'
+}} Note */
+
+
+/** @typedef {BaseRecord & {
+  kind: 'contact',
+  email?: string | null,
+  phones?: Phone[],
+  organization?: string | null,
+  birthday?: string | null,
+  picture?: string | null
+}} Contact */
+
+
+/** @typedef {BaseDoc & {
+  type: 'status',
+  migration: number
+}} Status */
+
+
+/** @typedef {BaseDoc & {
+  type: 'collection',
+  refs: Ref[]
+}} Collection */
+
+
+/** @typedef {{
+  type: string
+}} Design */
+
+
+/** @typedef {Task | Note | Contact} Record */
+
+/** @typedef {Record | Collection | Status | Design} Doc */
+
+
 export const refSchema = {
   type: 'object',
   required: ['id'],
@@ -26,10 +96,6 @@ export const refSchema = {
 }
 
 
-/** @typedef {{
-  type: string,
-  number: string
-}} Phone */
 export const phoneSchema = {
   type: 'object',
   required: ['type', 'number'],
@@ -42,10 +108,6 @@ export const phoneSchema = {
 }
 
 
-/** @typedef {{
-  _id: string,
-  _rev?: string
-}} BaseDoc */
 export const baseDocSchema = {
   type: 'object',
   required: ['_id', 'type'],
@@ -61,16 +123,6 @@ export const baseDocSchema = {
 }
 
 
-/** @typedef {BaseDoc & {
-  type: 'record',
-  kind: string,
-  createdDate: string,
-  updatedDate: string,
-  title: string,
-  body: string,
-  refs: Ref[],
-  deleted?: boolean
-}} BaseRecord */
 export const baseRecordSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'kind', 'createdDate', 'updatedDate', 'title', 'body', 'refs'],
@@ -110,11 +162,6 @@ export const baseRecordSchema = {
 }
 
 
-/** @typedef {BaseRecord & {
-  kind: 'task',
-  dueDate: string | null,
-  doneDate: string | null
-}} Task */
 export const taskSchema = {
   ...baseRecordSchema,
   required: [...baseRecordSchema.required, 'dueDate', 'doneDate'],
@@ -129,9 +176,6 @@ export const taskSchema = {
 }
 
 
-/** @typedef {BaseRecord & {
-  kind: 'note'
-}} Note */
 export const noteSchema = {
   ...baseRecordSchema,
 
@@ -143,14 +187,6 @@ export const noteSchema = {
 }
 
 
-/** @typedef {BaseRecord & {
-  kind: 'contact',
-  email?: string | null,
-  phones?: Phone[],
-  organization?: string | null,
-  birthday?: string | null,
-  picture?: string | null
-}} Contact */
 export const contactSchema = {
   ...baseRecordSchema,
   required: [...baseRecordSchema.required ],
@@ -185,16 +221,11 @@ export const contactSchema = {
 }
 
 
-/** @typedef {Task | Note | Contact} Record */
 export const recordSchema = {
   oneOf: [taskSchema, noteSchema, contactSchema]
 }
 
 
-/** @typedef {BaseDoc & {
-  type: 'status',
-  migration: number
-}} Status */
 export const statusSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'migration'],
@@ -211,10 +242,6 @@ export const statusSchema = {
 }
 
 
-/** @typedef {BaseDoc & {
-  type: 'collection',
-  refs: Ref[]
-}} Collection */
 export const collectionSchema = {
   ...baseDocSchema,
   required: [...baseDocSchema.required, 'refs'],
@@ -227,9 +254,6 @@ export const collectionSchema = {
 }
 
 
-/** @typedef {{
-  type: string
-}} Design */
 export const designSchema = {
   type: 'object',
   properties: {
@@ -238,7 +262,6 @@ export const designSchema = {
 }
 
 
-/** @typedef {Record | Collection | Status | Design} Doc */
 export const docSchema = {
   oneOf: [recordSchema, collectionSchema, statusSchema, designSchema]
 }
