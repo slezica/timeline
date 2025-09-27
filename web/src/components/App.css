@@ -28,7 +28,7 @@
   --white: #fafafa;
 
   --center-max-width: 550px;
-  --aside-width: 350px;
+  --aside-max-width: 400px;
 }
 
 * {
@@ -138,7 +138,7 @@ html, body, #app {
 
   & > .left,
   & > .right {
-    flex: 0 1 300px;
+    flex: 0 1 var(--aside-max-width);
   }
 
   & > .center {
