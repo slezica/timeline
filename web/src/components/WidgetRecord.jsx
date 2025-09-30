@@ -2,6 +2,7 @@ import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import TinyRecord from './TinyRecord'
 import Tag from './Tag'
+import DropList from './DropList'
 import { debounce, getTransferData, indexInParent, RefType, setTransferData, useDiscardEvent } from '../utils'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
@@ -33,15 +34,15 @@ export default function WidgetRecord({ record, onClick, onRefClick, onDiscard })
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id }, RefType)
+    const ref = { id: record._id }
+    setTransferData(ev, RefType, { ref })
   }
 
   const handleRefDrop = (ev) => {
-    const ref = getTransferData(ev, RefType)
-    if (!ref || ref.id == record.id) { return }
-    ev.stopPropagation()
+    const { ref, dropSpot } = getTransferData(ev, RefType)
+    if (!dropSpot || !ref || ref.id == record.id) { return }
 
-    const index = indexInParent(ev.currentTarget)
+    const index = dropSpot.index
 
     const newRefs = [
       ...record.refs.slice(0, index).filter(it => it.id != ref.id),
@@ -109,15 +110,15 @@ function WidgetRecordView({
     <article
       ref         = {rootRef}
       className   = {"record widget " + record.kind}
-      draggable   = {true}
-      onDragStart = {onDragStart}
       onClick     = {onClick}
       data-id     = {record.id}
     >
-      <header>
-        <i className={`circle ${record.kind} dot`} />
-        <strong className="title">{record.title || 'Untitled'}</strong>
-      </header>
+      <DropTarget onDrop={onRefDrop} onDragStart={onDragStart}>
+        <header draggable={true}>
+          <i className={`circle ${record.kind} dot`} />
+          <strong className="title">{record.title || 'Untitled'}</strong>
+        </header>
+      </DropTarget>
 
       {record.body && (
         <textarea className="body" value={record.body} onInput={onBodyInput}  />
@@ -149,22 +150,18 @@ function WidgetRecordView({
         }
       </div>
 
-      <ol className="refs">
-        {record.refs.map(ref =>
-          <DropTarget key={ref.id} onDrop={onRefDrop}>
-            <li className="ref">
-              <TinyRecord
-                record    = {records.byId[ref.id]}
-                onClick   = {ev => onRefClick(records.byId[ref.id])}
-                onDiscard = {onRefDiscard}
-              />
-            </li>
-          </DropTarget>
-        )}
-
-        <DropTarget onDrop={onRefDrop}><div className="sentinel" /></DropTarget>
-      </ol>
-
+      <div className="refs">
+        <DropList onDrop={onRefDrop}>
+          {record.refs.map(ref =>
+            <TinyRecord
+              key       = {ref.id}
+              record    = {records.byId[ref.id]}
+              onClick   = {ev => onRefClick(records.byId[ref.id])}
+              onDiscard = {onRefDiscard}
+            />
+          )}
+        </DropList>
+      </div>
 
       {window.DEBUG && <pre>{JSON.stringify(record, null, 2)}</pre>}
     </article>

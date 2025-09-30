@@ -51,7 +51,7 @@ export default function DropTarget({ onDragEnter, onDragLeave, onDragOver, onDro
       className,
       onDragEnterCapture: handleDragEnterCapture,
       onDragLeaveCapture: handleDragLeaveCapture,
-      onDragOverCapture: handleDragOver,
+      onDragOver: handleDragOver,
       onDropCapture: handleDropCapture,
       onDrop: handleDrop
     })

@@ -29,7 +29,8 @@ import { clearTransferData } from './utils'
     if (ev.defaultPrevented) { return }
 
     ev.preventDefault()
-    draggedEl.dispatchEvent(new CustomEvent('discard', { bubbles: false }))
+    const newEv = new CustomEvent('discard', { bubbles: false })
+    draggedEl.dispatchEvent(newEv)
   })
 })();
 

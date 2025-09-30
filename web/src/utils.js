@@ -19,17 +19,26 @@ export function clearTransferData(ev) {
   globalDataTransfer = {}
 }
 
-export function setTransferData(ev, data, mimeType) {
+export function setTransferData(ev, mimeType, data) {
   ev.dataTransfer.effectAllowed = 'copy'
   globalDataTransfer[mimeType] = JSON.stringify(data)
 }
 
 export function getTransferData(ev, mimeType='unknown') {
   try {
-    return JSON.parse(globalDataTransfer[mimeType])
+    const data = JSON.parse(globalDataTransfer[mimeType])
+    return data
+
   } catch {
     return null
   }
+}
+
+export function extendTransferData(ev, mimeType='unknown', extras) {
+  const prev = Object.assign({}, getTransferData(ev, mimeType))
+  const next = Object.assign(prev, extras)
+
+  setTransferData(ev, mimeType, next)
 }
 
 export function genId() {

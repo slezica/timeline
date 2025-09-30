@@ -1,8 +1,8 @@
-import DropTarget from './DropTarget'
 import { useStore } from '../store'
 import TinyRecord from './TinyRecord'
 import Tag from './Tag'
-import { getTransferData, indexInParent, RefType, setTransferData } from '../utils'
+import { getTransferData, RefType, setTransferData } from '../utils'
+import DropList from './DropList'
 
 
 export default function LargeRecord({ record, onClick, onRefClick }) {
@@ -18,15 +18,15 @@ export default function LargeRecord({ record, onClick, onRefClick }) {
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id }, RefType)
+    const ref = { id: record._id }
+    setTransferData(ev, RefType, { ref })
   }
 
   const handleRefDrop = (ev) => {
-    const ref = getTransferData(ev, RefType)
-    if (!ref || ref.id == record.id) { return }
-    ev.stopPropagation()
+    const { ref, dropSpot } = getTransferData(ev, RefType)
+    if (!dropSpot || !ref || ref.id == record.id) { return }
 
-    const index = indexInParent(ev.currentTarget)
+    const index = dropSpot.index
 
     const newRefs = [
       ...record.refs.slice(0, index).filter(it => it.id != ref.id),
@@ -38,14 +38,17 @@ export default function LargeRecord({ record, onClick, onRefClick }) {
   }
 
   const handleRefDiscard = (ev) => {
-    const index = indexInParent(ev.currentTarget)
+    const { ref, dropSpot } = getTransferData(ev, RefType)
+    if (!ref || ref.id == record.id) { return }
+
+    const index = dropSpot.index
 
     const newRefs = [
       ...record.refs.slice(0, index),
       ...record.refs.slice(index + 1),
     ]
 
-   records.save({ ...record, refs: newRefs })
+    records.save({ ...record, refs: newRefs })
   }
 
   return <LargeRecordView
@@ -103,22 +106,18 @@ function LargeRecordView({ record, records, onClick, onRefClick, onRefDrop, onRe
         </div>}
       </div>
 
-      <ol className="refs">
-        {record.refs.map(ref =>
-          <DropTarget key={ref.id} onDrop={onRefDrop}>
-            <li className="ref">
-              <TinyRecord
-                record    = {records.byId[ref.id]}
-                onClick   = {ev => onRefClick(records.byId[ref.id])}
-                onDiscard = {onRefDiscard}
-              />
-            </li>
-          </DropTarget>
-        )}
-
-        <DropTarget onDrop={onRefDrop}><div className="sentinel" /></DropTarget>
-      </ol>
-
+      <div className="refs">
+        <DropList onDrop={onRefDrop}>
+          {record.refs.map(ref =>
+            <TinyRecord
+              key       = {ref.id}
+              record    = {records.byId[ref.id]}
+              onClick   = {ev => onRefClick(records.byId[ref.id])}
+              onDiscard = {onRefDiscard}
+            />
+          )}
+        </DropList>
+      </div>
 
       {window.DEBUG && <pre>{JSON.stringify(record, null, 2)}</pre>}
     </article>

@@ -40,7 +40,7 @@ export default function EditRecordForm({ record, onSave, onCancel, onDelete }) {
   }
 
   const handleSelfDrop = (ev) => {
-    const ref = getTransferData(ev, RefType)
+    const { ref } = getTransferData(ev, RefType)
     if (!ref) { return }
 
     const newRefOrder = [...data.refs]

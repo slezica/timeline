@@ -17,7 +17,8 @@ export default function SmallRecord({ record, onClick, onRemove, onDiscard }) {
 
   const handleDragStart = (ev) => {
     ev.stopPropagation()
-    setTransferData(ev, { id: record._id }, RefType)
+    const ref = { id: record._id }
+    setTransferData(ev, RefType, { ref })
   }
 
   const handleDiscard = (ev) => {

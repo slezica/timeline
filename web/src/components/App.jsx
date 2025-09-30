@@ -11,6 +11,7 @@ import Shelf from './Shelf'
 import { TopBar } from './TopBar'
 import Desk from './Desk'
 import { BottomBar } from './BottomBar'
+import DropList from './DropList'
 
 
 export default function App() {
